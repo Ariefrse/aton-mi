@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Sidebar from "./components/Sidebar";
 import Legend from "./components/Legend";
+import MessageOverview from "./components/MessageOverview";
 
 function App() {
   const [layers, setLayers] = useState<ScatterplotLayer>();
@@ -23,7 +24,8 @@ function App() {
         </div>
       </header>
       <div className="flex-1 relative">
-        <Sidebar />
+        {/* <Sidebar /> */}
+        <MessageOverview />
         <DeckGL
           initialViewState={{
             longitude: 101.5466,
