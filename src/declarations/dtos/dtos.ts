@@ -1,11 +1,11 @@
 /* CODE CONVENTION & STANDARDS
-  - DTOs describe the request/response data between server and client
-  - Data/payload sent between server and client should follow the DTOs
-  - Close communication with backend team is necessary for any changes
+  - DTOs (Data Transfer Objects) describe the request/response data between server and client.
+  - Data/payload exchanged between the server and client should conform to these DTOs.
+  - Close communication with the backend team is necessary for any changes to the DTOs.
 
-  NAMING CONVENTION : 
-  - Suffixed with "ResDto" for response from server
-  - Suffixed with "ReqDto" for request from client
+  NAMING CONVENTION:
+  - Use "ResDto" suffix for responses from the server.
+  - Use "ReqDto" suffix for requests to the server.
 */
 
 import { AIS_MESSAGE_TYPES } from "../constants/constants"

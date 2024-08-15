@@ -1,3 +1,12 @@
+/* CODE CONVENTION & STANDARDS
+  - Constants are used to define fixed values and enumerations used throughout the application
+  - Constants should be maintained for values that are used repeatedly and have a fixed set of possibilities
+
+  NAMING CONVENTION:
+  - Constants are named in SNAKE_CASE
+*/
+
+
 // AIS Message Types Constant
 export const AIS_MESSAGE_TYPES = {
   POSITION_REPORT_CLASS_A: 1,
