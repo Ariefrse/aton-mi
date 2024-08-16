@@ -97,7 +97,7 @@ export type AtonMsgCountResDto = {
   payload: string
   items: {
     ts1: Timestamp
-    ts2: string
+    ts2: Timestamp
     msg21_cnt: number
     msg6_cnt: number
     msg8_cnt: number
@@ -139,7 +139,7 @@ export type AllAtonResDto = BaseAtonResDto & {
   lcl_ts: Timestamp
   packageType: PackageType
   packageID: number
-  packageCh: string
+  packageCh: PackageCh
   messageType: MessageType
   messageTypeDesc: string
   repeat: number
