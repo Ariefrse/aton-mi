@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.2.4",
     "@deck.gl/aggregation-layers": "^9.0.26",
     "@deck.gl/core": "^9.0.26",
     "@deck.gl/layers": "^9.0.26",
