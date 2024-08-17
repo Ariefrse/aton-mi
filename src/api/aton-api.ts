@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { AtonMsgCountResDto, AtonInitialCountResDto, AtonStatsResDto, AllAtonResDto, TAtonWsPayload } from "../declarations/dtos/dtos";
+import { AtonMsgCountResDto, AtonInitialCountResDto, AtonStatsResDto, AllAtonResDto, AtonWsPayload } from "../declarations/dtos/dtos";
 import { useAtonStore } from "../store/store";
 
 const WS_ENDPOINT = "wss://dash.datainsight.my/wss/";
@@ -46,7 +46,7 @@ function useWebSocket() {
     return () => initWs.close();
   }, []);
 
-  const sendMsg = useCallback((payload: TAtonWsPayload) => {
+  const sendMsg = useCallback((payload: AtonWsPayload) => {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(payload);
     } else {

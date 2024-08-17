@@ -6,7 +6,6 @@
   - Constants are named in SNAKE_CASE
 */
 
-
 // AIS Message Types Constant
 export const AIS_MESSAGE_TYPES = {
   POSITION_REPORT_CLASS_A: 1,

@@ -16,12 +16,12 @@ export type Percentage = string // i.e "23.00%"
 export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse'
 export type PackageCh = 'A' | 'B'
 export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM'
-export type TAtonWsPayload = 'getatoninitialcount' | 'getallatonvoltdata' | 'getallatonbeatdata' | 'getallaton' | 'getatonmsgcount' | 'ping' | 'getdailystatisticstartfrom';
+export type AtonWsPayload = 'getatoninitialcount' | 'getallatonvoltdata' | 'getallatonbeatdata' | 'getallaton' | 'getatonmsgcount' | 'ping' | 'getdailystatisticstartfrom';
 export type MessageType = typeof AIS_MESSAGE_TYPES[keyof typeof AIS_MESSAGE_TYPES]
 
 // Base type for common fields
 type BaseAtonResDto = {
-  payload: TAtonWsPayload
+  payload: AtonWsPayload
   ts: Timestamp
   lcl_ts?: Timestamp
   mmsi: number
@@ -95,7 +95,7 @@ type PositionDataResDto = {
 
 // Refined types
 export type AtonMsgCountResDto = {
-  payload: TAtonWsPayload
+  payload: AtonWsPayload
   items: {
     ts1: Timestamp
     ts2: Timestamp
@@ -157,7 +157,7 @@ export type AllAtonResDto = BaseAtonResDto & {
 }
 
 export type AtonInitialCountResDto = {
-  payload: TAtonWsPayload
+  payload: AtonWsPayload
   aton_cnt: number
   msg21_cnt: number
   msg6_cnt: number

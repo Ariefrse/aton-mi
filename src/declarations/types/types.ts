@@ -1,7 +1,3 @@
-import { Layer, LayersList } from "@deck.gl/core";
-import { LineLayer, ScatterplotLayerProps } from '@deck.gl/layers';
-import { HeatmapLayer } from '@deck.gl/aggregation-layers';
-
 /* CODE STANDARDS & CONVENTION
   TYPES :
   - Refer to the types/interfaces required for our client/frontend app to work
@@ -10,19 +6,14 @@ import { HeatmapLayer } from '@deck.gl/aggregation-layers';
   - Types should be well-documented and maintained to avoid misunderstandings
 
   NAMING STANDARD :
-  - Types prefixed with "T" means our own custom type
   - All types from 3rd party libraries should be imported here prefixed with "T"
   - This is to ease refactoring of Types and imports
 */
 
-// LAYER TYPES
-
 // Deck.GL Layer Types
-export type TLayer = Layer | undefined | false | null | LayersList
-export type TLayersList = LayersList
-export class TLineLayer extends LineLayer { }
-export class THeatmapLayer extends HeatmapLayer { }
-export type TScatterplotLayerProps = ScatterplotLayerProps
+export type { Layer, LayersList } from "@deck.gl/core";
+export type { LineLayer, ScatterplotLayerProps } from '@deck.gl/layers';
+export { HeatmapLayer } from '@deck.gl/aggregation-layers';
 
 // Others
-export type TShipTypeColorMapping = { [key: number]: string; };
+export type ShipTypeColorMap = { [key: number]: string; };
