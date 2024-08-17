@@ -11,16 +11,17 @@
 import { AIS_MESSAGE_TYPES } from "../constants/constants"
 
 // Define common types for shared fields
-type Timestamp = string // i.e "2024-08-15 07:53:33"
-type Percentage = string // i.e "23.00%"
-type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse'
-type PackageCh = 'A' | 'B'
-type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM'
-type MessageType = typeof AIS_MESSAGE_TYPES[keyof typeof AIS_MESSAGE_TYPES]
+export type Timestamp = string // i.e "2024-08-15 07:53:33"
+export type Percentage = string // i.e "23.00%"
+export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse'
+export type PackageCh = 'A' | 'B'
+export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM'
+export type TAtonWsPayload = 'getatoninitialcount' | 'getallatonvoltdata' | 'getallatonbeatdata' | 'getallaton' | 'getatonmsgcount' | 'ping' | 'getdailystatisticstartfrom';
+export type MessageType = typeof AIS_MESSAGE_TYPES[keyof typeof AIS_MESSAGE_TYPES]
 
 // Base type for common fields
 type BaseAtonResDto = {
-  payload: string
+  payload: TAtonWsPayload
   ts: Timestamp
   lcl_ts?: Timestamp
   mmsi: number
@@ -94,7 +95,7 @@ type PositionDataResDto = {
 
 // Refined types
 export type AtonMsgCountResDto = {
-  payload: string
+  payload: TAtonWsPayload
   items: {
     ts1: Timestamp
     ts2: Timestamp
@@ -156,7 +157,7 @@ export type AllAtonResDto = BaseAtonResDto & {
 }
 
 export type AtonInitialCountResDto = {
-  payload: string
+  payload: TAtonWsPayload
   aton_cnt: number
   msg21_cnt: number
   msg6_cnt: number
