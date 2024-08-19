@@ -34,7 +34,7 @@ export default function MapModule() {
         <DeckGL initialViewState={initialViewState} controller={true}>
           <Map
             ref={mapRef}
-            mapboxAccessToken="pk.eyJ1IjoibmF6cnVsLWp1Z2dlcm5heiIsImEiOiJjbGxudWd3c2wwM282M2VvNHI3bWsyY3ViIn0.tIwOlxD2FcESclugJAr98A"
+            mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
             mapStyle="mapbox://styles/mapbox/satellite-v9"
           >
             <NavigationControl

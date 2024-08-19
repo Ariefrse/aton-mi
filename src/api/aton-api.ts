@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { AtonMsgCountResDto, AtonInitialCountResDto, AtonStatsResDto, AllAtonResDto, AtonWsPayload } from "../declarations/dtos/dtos";
 import { useAtonStore } from "../store/store";
 
-const WS_ENDPOINT = "wss://dash.datainsight.my/wss/";
+const WS_ENDPOINT = import.meta.env.VITE_WS_ENDPOINT;
 
 function useWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
