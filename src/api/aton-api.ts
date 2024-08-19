@@ -30,9 +30,9 @@ function useWebSocket() {
         if (data.payload === "getatoninitialcount")
           setAtonInitialCount(data as AtonInitialCountResDto);
         if (data.payload === "getatonstatistics")
-          setAtonStatsData(data as AtonStatsResDto[]);
+          setAtonStatsData([data] as AtonStatsResDto[]);
         if (data.payload === "getallaton")
-          setAllAtonData(data as AllAtonResDto[]);
+          setAllAtonData([data] as AllAtonResDto[]);
       }
     };
 
