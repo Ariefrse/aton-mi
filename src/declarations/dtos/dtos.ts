@@ -9,490 +9,448 @@ export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
 export type AtonWsPayload = 'getatoninitialcount' | 'getallatonvoltdata' | 'getallatonbeatdata' | 'getallaton' | 'getatonmsgcount' | 'ping' | 'getdailystatisticstartfrom';
 export type MessageType = typeof AIS_MESSAGE_TYPES[keyof typeof AIS_MESSAGE_TYPES]
 
-// Base type for common fields
+// Base type for common fields in Aton responses
 type BaseAtonResDto = {
-  /**The type of WebSocket payload.*/
+  /** The type of WebSocket payload. */
   payload: AtonWsPayload
 
-  /**Timestamp of the data.*/
+  /** Timestamp of the data. */
   ts: Timestamp
 
-  /**Local timestamp of the data.*/
+  /** Local timestamp of the data. */
   lcl_ts?: Timestamp
 
-  /**Maritime Mobile Service Identity (MMSI) number.*/
+  /** Maritime Mobile Service Identity (MMSI) number. */
   mmsi: number
 
-  /**Name of the aid to navigation.*/
+  /** Name of the aid to navigation. */
   al_name: string
 
-  /**MMSI number of the aid to navigation.*/
+  /** MMSI number of the aid to navigation. */
   al_mmsi: number
 
-  /**Region of the aid to navigation.*/
+  /** Region of the aid to navigation. */
   al_region: string
 
-  /**Type of the aid to navigation.*/
-  al_type: string
+  /** Type of the aid to navigation. */
+  al_type: AtonType
 
-  /**Region of the data.*/
+  /** Region of the data. */
   region?: string
-
-  /**Type of the aid to navigation (e.g., Beacon, Buoy).*/
-  type?: AtonType
 }
 
-// Type for sensor data
+// Sensor data type
 type SensorDataResDto = {
-  /**Internal voltage.*/
+  /** Internal voltage. */
   volt_int: number
 
-  /**External voltage 1.*/
+  /** External voltage 1. */
   volt_ex1: number
 
-  /**External voltage 2.*/
+  /** External voltage 2. */
   volt_ex2: number
 
-  /**Offset position.*/
+  /** Offset position. */
   off_pos: number
 
-  /**Ambient temperature.*/
+  /** Ambient temperature. */
   ambient: number
 
-  /**Racon value.*/
+  /** Racon value. */
   racon: number
 
-  /**Light value.*/
+  /** Light value. */
   light: number
 
-  /**Health status.*/
+  /** Health status. */
   health: number
 
-  /**Beat value.*/
+  /** Beat value. */
   beat: number
 
-  /**Alarm active status.*/
+  /** Alarm active status. */
   alarm_active: number
 
-  /**Buoy LED power.*/
+  /** Buoy LED power. */
   buoy_led_power: number
 
-  /**Buoy low voltage input.*/
+  /** Buoy low voltage input. */
   buoy_low_vin: number
 
-  /**Buoy photocell value.*/
+  /** Buoy photocell value. */
   buoy_photocell: number
 
-  /**Buoy temperature.*/
+  /** Buoy temperature. */
   buoy_temp: number
 
-  /**Buoy force-off status.*/
+  /** Buoy force-off status. */
   buoy_force_off: number
 
-  /**Buoy light status.*/
+  /** Buoy light status. */
   buoy_islight: number
 
-  /**Buoy error LED short status.*/
+  /** Buoy error LED short status. */
   buoy_errled_short: number
 
-  /**Buoy error LED open status.*/
+  /** Buoy error LED open status. */
   buoy_errled_open: number
 
-  /**Buoy error LED voltage low status.*/
+  /** Buoy error LED voltage low status. */
   buoy_errled_voltlow: number
 
-  /**Buoy error LED voltage input low status.*/
+  /** Buoy error LED voltage input low status. */
   buoy_errled_vinlow: number
 
-  /**Buoy error LED power status.*/
+  /** Buoy error LED power status. */
   buoy_errled_power: number
 
-  /**Buoy maximum power adjustment.*/
+  /** Buoy maximum power adjustment. */
   buoy_adjmaxpower: number
 
-  /**Buoy sensor interrupt status.*/
+  /** Buoy sensor interrupt status. */
   buoy_sensor_interrupt: number
 
-  /**Buoy solar charging status.*/
+  /** Buoy solar charging status. */
   buoy_solarcharging: number
 }
 
-// Type for position data
+// Position data type
 type PositionDataResDto = {
-  /**Timestamp of the position data.*/
+  /** Timestamp of the position data. */
   ss_ts?: Timestamp
 
-  /**Type of package.*/
+  /** Type of package. */
   ss_packageType?: PackageType
 
-  /**ID of the package.*/
+  /** ID of the package. */
   ss_packageID?: number
 
-  /**Channel of the package.*/
+  /** Channel of the package. */
   ss_packageCh?: PackageCh
 
-  /**Type of message.*/
+  /** Type of message. */
   ss_messageType?: MessageType
 
-  /**Description of the message type.*/
+  /** Description of the message type. */
   ss_messageTypeDesc?: string
 
-  /**Repeat indicator.*/
+  /** Repeat indicator. */
   ss_repeat?: number
 
-  /**MMSI number.*/
+  /** MMSI number. */
   ss_mmsi?: number
 
-  /**Type of aid.*/
+  /** Type of aid. */
   ss_aidType?: number
 
-  /**Description of the aid type.*/
+  /** Description of the aid type. */
   ss_aidTypeDesc?: string
 
-  /**Name of the aid.*/
+  /** Name of the aid. */
   ss_aidName?: string
 
-  /**Position accuracy.*/
+  /** Position accuracy. */
   ss_positionAccuracy?: number
 
-  /**Description of the position accuracy.*/
+  /** Description of the position accuracy. */
   ss_positionAccuracyDesc?: string
 
-  /**Longitude of the position.*/
+  /** Longitude of the position. */
   ss_longitude?: number
 
-  /**Latitude of the position.*/
+  /** Latitude of the position. */
   ss_latitude?: number
 
-  /**Distance to the bow.*/
+  /** Distance to the bow. */
   ss_to_bow?: number
 
-  /**Distance to the stern.*/
+  /** Distance to the stern. */
   ss_to_stern?: number
 
-  /**Distance to the port.*/
+  /** Distance to the port. */
   ss_to_port?: number
 
-  /**Distance to the starboard.*/
+  /** Distance to the starboard. */
   ss_to_starboard?: number
 
-  /**Electronic position fixing device (EPFD) value.*/
+  /** Electronic position fixing device (EPFD) value. */
   ss_epfd?: number
 
-  /**Description of the EPFD.*/
+  /** Description of the EPFD. */
   ss_epfdDesc?: string
 
-  /**UTC second value.*/
+  /** UTC second value. */
   ss_utc_second?: number
 
-  /**Offset position.*/
+  /** Offset position. */
   ss_off_position?: number
 
-  /**Regional indicator.*/
+  /** Regional indicator. */
   ss_regional?: number
 
-  /**RAIM flag status.*/
+  /** RAIM flag status. */
   ss_raimFlag?: number
 
-  /**Virtual aid indicator.*/
+  /** Virtual aid indicator. */
   ss_virtualAid?: number
 
-  /**Assigned indicator.*/
+  /** Assigned indicator. */
   ss_assigned?: number
 
-  /**Row count by MMSI.*/
+  /** Row count by MMSI. */
   ss_rowcountby_mmsi?: number
 }
 
 // Refined types
-export type AtonMsgCountResDto = {
-  /**The type of WebSocket payload.*/
-  payload: AtonWsPayload
-
-  /**Timestamp of the first message count.*/
+export type AtonMsgCountResDto = BaseAtonResDto & {
+  /** Timestamp of the first message count. */
   ts1: Timestamp
 
-  /**Timestamp of the second message count.*/
+  /** Timestamp of the second message count. */
   ts2: Timestamp
 
-  /**Count of message type 21.*/
+  /** Count of message type 21. */
   msg21_cnt: number
 
-  /**Count of message type 6.*/
+  /** Count of message type 6. */
   msg6_cnt: number
 
-  /**Count of message type 8.*/
+  /** Count of message type 8. */
   msg8_cnt: number
 
-  /**Count of message type 21 for yesterday.*/
+  /** Count of message type 21 for yesterday. */
   msg21_cnt_yesterday: number
 
-  /**Count of message type 6 for yesterday.*/
+  /** Count of message type 6 for yesterday. */
   msg6_cnt_yesterday: number
 
-  /**Count of message type 8 for yesterday.*/
+  /** Count of message type 8 for yesterday. */
   msg8_cnt_yesterday: number
 }
 
 export type AtonStatsResDto = BaseAtonResDto & {
-  /**Number of records.*/
+  /** Number of records. */
   no: number
 
-  /**Minimum temperature.*/
+  /** Minimum temperature. */
   minTemp: number
 
-  /**Maximum temperature.*/
+  /** Maximum temperature. */
   maxTemp: number
 
-  /**Minimum battery voltage for Aton.*/
+  /** Minimum battery voltage for Aton. */
   minBattAton: number
 
-  /**Maximum battery voltage for Aton.*/
+  /** Maximum battery voltage for Aton. */
   maxBattAton: number
 
-  /**Mean battery voltage for Aton.*/
+  /** Mean battery voltage for Aton. */
   meanBattAton: number
 
-  /**Median battery voltage for Aton.*/
+  /** Median battery voltage for Aton. */
   medianBattAton: number
 
-  /**Standard deviation of battery voltage for Aton.*/
+  /** Standard deviation of battery voltage for Aton. */
   stddevBattAton: number
 
-  /**Skewness of battery voltage for Aton.*/
+  /** Skewness of battery voltage for Aton. */
   skewBattAton: number
 
-  /**Kurtosis of battery voltage for Aton.*/
+  /** Kurtosis of battery voltage for Aton. */
   kurtBattAton: number
 
-  /**Minimum battery voltage for Lant.*/
+  /** Minimum battery voltage for Lant. */
   minBattLant: number
 
-  /**Maximum battery voltage for Lant.*/
+  /** Maximum battery voltage for Lant. */
   maxBattLant: number
 
-  /**Mean battery voltage for Lant.*/
+  /** Mean battery voltage for Lant. */
   meanBattLant: number
 
-  /**Median battery voltage for Lant.*/
+  /** Median battery voltage for Lant. */
   medianBattLant: number
 
-  /**Standard deviation of battery voltage for Lant.*/
+  /** Standard deviation of battery voltage for Lant. */
   stddevBattLant: number
 
-  /**Skewness of battery voltage for Lant.*/
+  /** Skewness of battery voltage for Lant. */
   skewBattLant: number
 
-  /**Kurtosis of battery voltage for Lant.*/
+  /** Kurtosis of battery voltage for Lant. */
   kurtBattLant: number
 
-  /**Offset position.*/
+  /** Offset position. */
   off_pos: string
 
-  /**Count of message type 6.*/
-  msg6Count: number //TODO: Discuss with BE team on why msg6Count doesn't follow naming convention of "msg_6_cnt"
+  /** Count of message type 6. */
+  msg6Count: number
 
-  /**Transmission site.*/
+  /** Transmission site. */
   siteTx: string
 
-  /**Row number.*/
+  /** Row number. */
   rownum: number
 
-  /**Timestamp of the data.*/
+  /** Timestamp of the data. */
   at_ts: Timestamp
 
-  /**Last seen timestamp.*/
+  /** Last seen timestamp. */
   lastseen: number
 
-  /**Last maintenance date.*/
+  /** Last maintenance date. */
   last_maintain: string
 }
 
 export type AllAtonResDto = BaseAtonResDto & {
-  /**Timestamp of the data.*/
-  ts: Timestamp
-
-  /**Local timestamp of the data.*/
-  lcl_ts: Timestamp
-
-  /**Type of package.*/
+  /** Type of package. */
   packageType: PackageType
 
-  /**ID of the package.*/
+  /** ID of the package. */
   packageID: number
 
-  /**Channel of the package.*/
+  /** Channel of the package. */
   packageCh: PackageCh
 
-  /**Type of message.*/
+  /** Type of message. */
   messageType: MessageType
 
-  /**Description of the message type.*/
+  /** Description of the message type. */
   messageTypeDesc: string
 
-  /**Repeat indicator.*/
+  /** Repeat indicator. */
   repeat: number
 
-  /**Sequence number.*/
+  /** Sequence number. */
   seqno: number
 
-  /**Destination MMSI number.*/
+  /** Destination MMSI number. */
   dest_mmsi: number
 
-  /**Retransmit indicator.*/
+  /** Retransmit indicator. */
   retransmit: number
 
-  /**Data access code.*/
+  /** Data access code. */
   dac: number
 
-  /**Function identifier.*/
+  /** Function identifier. */
   fid: number
 
-  /**Sensor data.*/
+  /** Sensor data. */
   sensorData: SensorDataResDto
 
-  /**Row count by MMSI.*/
-  aa_rowcountby_mmsi:number
+  /** Row count by MMSI. */
+  aa_rowcountby_mmsi: number
 
-  /**Position data.*/
+  /** Position data (optional). */
   positionData?: PositionDataResDto
 
-  /**Name of the Aton.*/
+  /** Name of the Aton. */
   atonname: string
 
-  /**Status of the Aton.*/
+  /** Status of the Aton. */
   status: number
 }
 
-export type AtonInitialCountResDto = {
-  /**The type of WebSocket payload.*/
-  payload: AtonWsPayload
-
-  /**Count of Aton devices.*/
+export type AtonInitialCountResDto = BaseAtonResDto & {
+  /** Count of Aton devices. */
   aton_cnt: number
 
-  /**Count of message type 21.*/
+  /** Count of message type 21. */
   msg21_cnt: number
 
-  /**Count of message type 6.*/
+  /** Count of message type 6. */
   msg6_cnt: number
 
-  /**Count of message type 8.*/
+  /** Count of message type 8. */
   msg8_cnt: number
 
-  /**Count of light devices.*/
+  /** Light count. */
   light_cnt: number
 
-  /**Percentage of light devices.*/
+  /** Percentage of light count. */
   light_cnt_p: Percentage
 
-  /**Count of battery Aton devices.*/
+  /** Battery count for Aton. */
   battAton_cnt: number
 
-  /**Percentage of battery Aton devices.*/
+  /** Percentage of battery count for Aton. */
   battAton_cnt_p: Percentage
 
-  /**Count of battery Lant devices.*/
+  /** Battery count for Lant. */
   battLant_cnt: number
 
-  /**Percentage of battery Lant devices.*/
+  /** Percentage of battery count for Lant. */
   battLant_cnt_p: Percentage
 
-  /**Count of light-dependent resistors.*/
+  /** LDR count. */
   ldr_cnt: number
 
-  /**Percentage of light-dependent resistors.*/
+  /** Percentage of LDR count. */
   ldr_cnt_p: Percentage
 
-  /**Count of off-position indicators.*/
+  /** Offset position count. */
   offpos_cnt: number
 
-  /**Percentage of off-position indicators.*/
+  /** Percentage of offset position count. */
   offpos_cnt_p: Percentage
 
-  /**Count of message type 6 indicators.*/
+  /** Count of message type 6 with no data. */
   no_msg6_cnt: number
 
-  /**Percentage of message type 6 indicators.*/
+  /** Percentage of message type 6 with no data. */
   no_msg6_cnt_p: Percentage
 }
 
-export type AtonDataResDto = {
-  payload: string;
-  ts: string;
-  lcl_ts: string;
-  packageType: string;
-  packageID: number;
-  packageCh: string;
-  messageType: number;
-  messageTypeDesc: string;
-  repeat: number;
-  mmsi: number;
-  seqno: number;
-  dest_mmsi: number;
-  retransmit: number;
-  dac: number;
-  fid: number;
-  volt_int: number;
-  volt_ex1: number;
-  volt_ex2: number;
-  off_pos: number;
-  ambient: number;
-  racon: number;
-  light: number;
-  health: number;
-  beat: number;
-  alarm_active: number;
-  buoy_led_power: number;
-  buoy_low_vin: number;
-  buoy_photocell: number;
-  buoy_temp: number;
-  buoy_force_off: number;
-  buoy_islight: number;
-  buoy_errled_short: number;
-  buoy_errled_open: number;
-  buoy_errled_voltlow: number;
-  buoy_errled_vinlow: number;
-  buoy_errled_power: number;
-  buoy_adjmaxpower: number;
-  buoy_sensor_interrupt: number;
-  buoy_solarcharging: number;
-  aa_rowcountby_mmsi: number;
-  ss_ts: string;
-  ss_packageType: string;
-  ss_packageID: number;
-  ss_packageCh: string;
-  ss_messageType: number;
-  ss_messageTypeDesc: string;
-  ss_repeat: number;
-  ss_mmsi: number;
-  ss_aidType: number;
-  ss_aidTypeDesc: string;
-  ss_aidName: string;
-  ss_positionAccuracy: number;
-  ss_positionAccuracyDesc: string;
-  ss_longitude: number;
-  ss_latitude: number;
-  ss_to_bow: number;
-  ss_to_stern: number;
-  ss_to_port: number;
-  ss_to_starboard: number;
-  ss_epfd: number;
-  ss_epfdDesc: string;
-  ss_utc_second: number;
-  ss_off_position: number;
-  ss_regional: number;
-  ss_raimFlag: number;
-  ss_virtualAid: number;
-  ss_assigned: number;
-  ss_rowcountby_mmsi: number;
-  al_name: string;
-  al_mmsi: number;
-  al_region: string;
-  al_type: string;
-  atonname: string;
-  region: string;
-  type: string;
-  status: number;
-};
+export type AtonDataResDto = BaseAtonResDto & {
+  /** Package type. */
+  packageType: PackageType
 
+  /** ID of the package. */
+  packageID: number
+
+  /** Channel of the package. */
+  packageCh: PackageCh
+
+  /** Message type. */
+  messageType: MessageType
+
+  /** Description of the message type. */
+  messageTypeDesc: string
+
+  /** Repeat indicator. */
+  repeat: number
+
+  /** MMSI number. */
+  mmsi: number
+
+  /** Sequence number. */
+  seqno: number
+
+  /** Destination MMSI number. */
+  dest_mmsi: number
+
+  /** Retransmit indicator. */
+  retransmit: number
+
+  /** Data access code. */
+  dac: number
+
+  /** Function identifier. */
+  fid: number
+
+  /** Sensor data. */
+  sensorData: SensorDataResDto
+
+  /** Row count by MMSI. */
+  aa_rowcountby_mmsi: number
+
+  /** Position data (optional). */
+  positionData?: PositionDataResDto
+
+  /** Name of the Aton. */
+  atonname: string
+
+  /** Status of the Aton. */
+  status: number
+}

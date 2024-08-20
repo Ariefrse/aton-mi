@@ -6,19 +6,50 @@ import Legend from "../components/Legend";
 import Sidebar from "../components/Sidebar";
 import { CiViewTable } from "react-icons/ci";
 import { RiRefreshLine } from "react-icons/ri";
-import { allAtonData } from "../dummy-data/all-aton";
 import { LayersList } from "@deck.gl/core";
-import { AllAtonResDto } from "../declarations/dtos/dtos";
+import {
+  AllAtonResDto,
+  AtonDataResDto,
+  AtonType,
+} from "../declarations/dtos/dtos";
 
 type ScatterplotLayerData = {
   position: [number, number];
-  // color: [number, number, number];
-  // atonType: number;
+  atonname: string;
+  status: number;
+  region: string;
+  latitude: number;
+  longitude: number;
+  atonbatt: number;
+  lantBatt: number;
+  offPosition: string;
+  ambient: string;
+  light: number;
+  localTime: string;
+  utcTime: string;
+};
+
+type HoverInfo = {
+  structure: AtonType;
+  name: string;
+  region: string;
+  latitude: number;
+  longitude: number;
+  atonbatt: number;
+  lantBatt: number;
+  offPosition: string;
+  ambient: string;
+  light: number;
+  localTime: string;
+  utcTime: string;
+  x: number; // x position of the hover event
+  y: number; // y position of the hover event
 };
 
 export default function MapModule() {
   const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
   const initialViewState = {
     longitude: 101.5466,
     latitude: 3.0891,
@@ -36,17 +67,66 @@ export default function MapModule() {
     };
 
     socket.onmessage = (event) => {
-      const data = JSON.parse(event.data)
+      const data = JSON.parse(event.data);
 
       const newLayer = new ScatterplotLayer({
         id: `scatterplot-layer-${data.ss_longitude}-${data.ss_latitude}`,
         data: [
           {
             position: [data.ss_longitude, data.ss_latitude],
-          },
-        ] as ScatterplotLayerData[],
+            atonname: data.atonname,
+            status: data.status,
+            region: data.region,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            atonbatt: data.atonbatt,
+            lantBatt: data.lantBatt,
+            offPosition: data.offPosition,
+            ambient: data.ambient,
+            light: data.light,
+            localTime: data.localTime,
+            utcTime: data.utcTime,
+          } as ScatterplotLayerData,
+        ],
         getRadius: 5000,
         getFillColor: [255, 0, 0],
+        pickable: true,
+        onHover: (info) => {
+          if (info.object) {
+            setHoverInfo({
+              structure: info.object.structure,
+              name: info.object.atonname,
+              region: info.object.region,
+              latitude: info.object.latitude,
+              longitude: info.object.longitude,
+              atonbatt: info.object.atonbatt,
+              lantBatt: info.object.lantBatt,
+              offPosition: info.object.offPosition,
+              ambient: info.object.ambient,
+              light: info.object.light,
+              localTime: info.object.localTime,
+              utcTime: info.object.utcTime,
+              x: info.x,
+              y: info.y,
+            });
+          }
+        },
+        getTooltip: (info: any) =>
+          info.object &&
+          `
+            <div>
+              <strong>Position:</strong> ${info.object.atonname}<br/>
+              <strong>Region:</strong> ${info.object.region}<br/>
+              <strong>Latitude:</strong> ${info.object.latitude}<br/>
+              <strong>Longitude:</strong> ${info.object.longitude}<br/>
+              <strong>Aton Battery:</strong> ${info.object.atonbatt}<br/>
+              <strong>Lant Battery:</strong> ${info.object.lantBatt}<br/>
+              <strong>Offset Position:</strong> ${info.object.offPosition}<br/>
+              <strong>Ambient:</strong> ${info.object.ambient}<br/>
+              <strong>Light:</strong> ${info.object.light}<br/>
+              <strong>Local Time:</strong> ${info.object.localTime}<br/>
+              <strong>UTC Time:</strong> ${info.object.utcTime}
+            </div>`,
       });
 
       setLayers((prevLayers) =>
@@ -78,7 +158,11 @@ export default function MapModule() {
         <Sidebar />
         {/* <MessageOverview /> */}
         {/* <TableModule /> */}
-        <DeckGL initialViewState={initialViewState} controller={true} layers={layers}>
+        <DeckGL
+          initialViewState={initialViewState}
+          controller={true}
+          layers={layers}
+        >
           <Map
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
@@ -92,6 +176,40 @@ export default function MapModule() {
             />
           </Map>
         </DeckGL>
+        {hoverInfo && (
+          <div
+            className="absolute bg-gray-700 p-2 rounded"
+            style={{
+              left: hoverInfo.x + 10,
+              top: hoverInfo.y + 10,
+              pointerEvents: "none",
+            }}
+          >
+            <div>
+              <strong>Position:</strong> {hoverInfo.name}
+              <br />
+              <strong>Region:</strong> {hoverInfo.region}
+              <br />
+              <strong>Latitude:</strong> {hoverInfo.latitude}
+              <br />
+              <strong>Longitude:</strong> {hoverInfo.longitude}
+              <br />
+              <strong>Aton Battery:</strong> {hoverInfo.atonbatt}
+              <br />
+              <strong>Lant Battery:</strong> {hoverInfo.lantBatt}
+              <br />
+              <strong>Offset Position:</strong> {hoverInfo.offPosition}
+              <br />
+              <strong>Ambient:</strong> {hoverInfo.ambient}
+              <br />
+              <strong>Light:</strong> {hoverInfo.light}
+              <br />
+              <strong>Local Time:</strong> {hoverInfo.localTime}
+              <br />
+              <strong>UTC Time:</strong> {hoverInfo.utcTime}
+            </div>
+          </div>
+        )}
         <Legend />
       </div>
     </div>

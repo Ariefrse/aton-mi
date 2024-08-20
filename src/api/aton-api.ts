@@ -4,6 +4,7 @@ import { useAtonStore } from "../store/store";
 
 const WS_ENDPOINT = import.meta.env.VITE_WS_ENDPOINT;
 
+// TODO: Still issues with this hook.
 function useWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const {
