@@ -5,7 +5,7 @@ export type Timestamp = string // i.e "2024-08-15 07:53:33"
 export type Percentage = string // i.e "23.00%"
 export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse'
 export type PackageCh = 'A' | 'B'
-export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM'
+export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
 export type AtonWsPayload = 'getatoninitialcount' | 'getallatonvoltdata' | 'getallatonbeatdata' | 'getallaton' | 'getatonmsgcount' | 'ping' | 'getdailystatisticstartfrom';
 export type MessageType = typeof AIS_MESSAGE_TYPES[keyof typeof AIS_MESSAGE_TYPES]
 
@@ -416,3 +416,83 @@ export type AtonInitialCountResDto = {
   /**Percentage of message type 6 indicators.*/
   no_msg6_cnt_p: Percentage
 }
+
+export type AtonDataResDto = {
+  payload: string;
+  ts: string;
+  lcl_ts: string;
+  packageType: string;
+  packageID: number;
+  packageCh: string;
+  messageType: number;
+  messageTypeDesc: string;
+  repeat: number;
+  mmsi: number;
+  seqno: number;
+  dest_mmsi: number;
+  retransmit: number;
+  dac: number;
+  fid: number;
+  volt_int: number;
+  volt_ex1: number;
+  volt_ex2: number;
+  off_pos: number;
+  ambient: number;
+  racon: number;
+  light: number;
+  health: number;
+  beat: number;
+  alarm_active: number;
+  buoy_led_power: number;
+  buoy_low_vin: number;
+  buoy_photocell: number;
+  buoy_temp: number;
+  buoy_force_off: number;
+  buoy_islight: number;
+  buoy_errled_short: number;
+  buoy_errled_open: number;
+  buoy_errled_voltlow: number;
+  buoy_errled_vinlow: number;
+  buoy_errled_power: number;
+  buoy_adjmaxpower: number;
+  buoy_sensor_interrupt: number;
+  buoy_solarcharging: number;
+  aa_rowcountby_mmsi: number;
+  ss_ts: string;
+  ss_packageType: string;
+  ss_packageID: number;
+  ss_packageCh: string;
+  ss_messageType: number;
+  ss_messageTypeDesc: string;
+  ss_repeat: number;
+  ss_mmsi: number;
+  ss_aidType: number;
+  ss_aidTypeDesc: string;
+  ss_aidName: string;
+  ss_positionAccuracy: number;
+  ss_positionAccuracyDesc: string;
+  ss_longitude: number;
+  ss_latitude: number;
+  ss_to_bow: number;
+  ss_to_stern: number;
+  ss_to_port: number;
+  ss_to_starboard: number;
+  ss_epfd: number;
+  ss_epfdDesc: string;
+  ss_utc_second: number;
+  ss_off_position: number;
+  ss_regional: number;
+  ss_raimFlag: number;
+  ss_virtualAid: number;
+  ss_assigned: number;
+  ss_rowcountby_mmsi: number;
+  al_name: string;
+  al_mmsi: number;
+  al_region: string;
+  al_type: string;
+  atonname: string;
+  region: string;
+  type: string;
+  status: number;
+};
+

@@ -20,7 +20,7 @@ function App() {
 
   // UNCOMMENT TO TEST GLOBAL ZUSTAND STATE
   // console.log("atonInitialCount", atonInitialCount)
-  console.log("allAton", allAton?.map(aton => aton.mmsi))
+  // console.log("allAton", allAton?.map(aton => aton.mmsi))
   // console.log("atonMsgCount", atonMsgCount)
   // console.log("atonStats", atonStats)
 
