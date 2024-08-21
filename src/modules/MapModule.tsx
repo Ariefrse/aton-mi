@@ -109,24 +109,8 @@ export default function MapModule() {
               x: info.x,
               y: info.y,
             });
-          }
-        },
-        getTooltip: (info: any) =>
-          info.object &&
-          `
-            <div>
-              <strong>Position:</strong> ${info.object.atonname}<br/>
-              <strong>Region:</strong> ${info.object.region}<br/>
-              <strong>Latitude:</strong> ${info.object.latitude}<br/>
-              <strong>Longitude:</strong> ${info.object.longitude}<br/>
-              <strong>Aton Battery:</strong> ${info.object.atonbatt}<br/>
-              <strong>Lant Battery:</strong> ${info.object.lantBatt}<br/>
-              <strong>Offset Position:</strong> ${info.object.offPosition}<br/>
-              <strong>Ambient:</strong> ${info.object.ambient}<br/>
-              <strong>Light:</strong> ${info.object.light}<br/>
-              <strong>Local Time:</strong> ${info.object.localTime}<br/>
-              <strong>UTC Time:</strong> ${info.object.utcTime}
-            </div>`,
+          } else setHoverInfo(null)
+        }
       });
 
       setLayers((prevLayers) =>
