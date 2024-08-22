@@ -13,7 +13,7 @@
 // Deck.GL Layer Types
 export type { Layer, LayersList } from "@deck.gl/core";
 export type { LineLayer, ScatterplotLayerProps } from '@deck.gl/layers';
-export { HeatmapLayer } from '@deck.gl/aggregation-layers';
+export type { HeatmapLayer, HexagonLayerProps } from '@deck.gl/aggregation-layers';
 
 // Others
 export type ShipTypeColorMap = { [key: number]: string; };

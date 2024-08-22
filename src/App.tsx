@@ -5,23 +5,22 @@ import { useEffect } from "react";
 import { useAtonStore } from "./store/store";
 
 function App() {
-  // const sendMsg = useWebSocket();
-  // const { atonInitialCount, allAton, atonMsgCount, atonStats } = useAtonStore();
+  const sendMsg = useWebSocket();
+  const { atonInitialCount, allAton, atonMsgCount, atonStats } = useAtonStore();
 
   // UNCOMMENT TO TEST
-  // useEffect(() => {
-  //   if (sendMsg) {
-  //     sendMsg("getatoninitialcount");
-  //     sendMsg("getallaton");
-  //     sendMsg("getatoninitialcount");
-  //     sendMsg("getatonmsgcount");
+  useEffect(() => {
+    if (sendMsg) {
+      // sendMsg("getatoninitialcount");
+      sendMsg("getallaton");
+      // sendMsg("getatonmsgcount");
   //     sendMsg("getdailystatisticstartfrom");
-  //   }
-  // }, [sendMsg]);
+    }
+  }, [sendMsg]);
 
   // UNCOMMENT TO TEST GLOBAL ZUSTAND STATE
   // console.log("atonInitialCount", atonInitialCount)
-  // console.log("allAton", allAton)
+  // console.log("allAton", allAton?.map(aton => aton.mmsi))
   // console.log("atonMsgCount", atonMsgCount)
   // console.log("atonStats", atonStats)
 

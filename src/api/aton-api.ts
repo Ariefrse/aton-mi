@@ -2,8 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { AtonMsgCountResDto, AtonInitialCountResDto, AtonStatsResDto, AllAtonResDto, AtonWsPayload } from "../declarations/dtos/dtos";
 import { useAtonStore } from "../store/store";
 
-const WS_ENDPOINT = "wss://dash.datainsight.my/wss/";
+const WS_ENDPOINT = import.meta.env.VITE_WS_ENDPOINT;
 
+// TODO: Still issues with this hook.
 function useWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const {
@@ -30,9 +31,9 @@ function useWebSocket() {
         if (data.payload === "getatoninitialcount")
           setAtonInitialCount(data as AtonInitialCountResDto);
         if (data.payload === "getatonstatistics")
-          setAtonStatsData(data as AtonStatsResDto[]);
+          setAtonStatsData([data] as AtonStatsResDto[]);
         if (data.payload === "getallaton")
-          setAllAtonData(data as AllAtonResDto[]);
+          setAllAtonData([data] as AllAtonResDto[]);
       }
     };
 
