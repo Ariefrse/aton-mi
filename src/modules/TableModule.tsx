@@ -1,110 +1,10 @@
-export default function TableModule() {
-  const data = [
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-  ];
+import { AtonDataResDto } from "../declarations/dtos/dtos";
+import { allAtonData } from "../dummy-data/all-aton";
 
-  const headers = Object.keys(data[0]);
+export default function TableModule() {
+  
+
+  const headers = Object.keys(allAtonData[0]);
 
   return (
     <div className="relative h-screen">
@@ -132,14 +32,14 @@ export default function TableModule() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {data.map((person: any, index) => (
-                  <tr key={index}>
+                {allAtonData.map((atonData: AtonDataResDto) => (
+                  <tr key={atonData.mmsi}>
                     {headers.map((header) => (
                       <td
                         key={header}
                         className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-6"
                       >
-                        {person[header]}
+                        {atonData[header]}
                       </td>
                     ))}
                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
@@ -147,7 +47,7 @@ export default function TableModule() {
                         href="#"
                         className="text-indigo-600 hover:text-indigo-900"
                       >
-                        Edit<span className="sr-only">, {person.name}</span>
+                        Edit<span className="sr-only">, {atonData.name}</span>
                       </a>
                     </td>
                   </tr>

@@ -15,48 +15,20 @@ import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-
-type ScatterplotLayerData = {
-  position: [number, number];
-  atonname: string;
-  status: number;
-  region: string;
-  latitude: number;
-  longitude: number;
-  atonbatt: number;
-  lantBatt: number;
-  offPosition: string;
-  ambient: string;
-  light: number;
-  localTime: string;
-  utcTime: string;
-};
-
-type HoverInfo = {
-  structure: AtonType;
-  name: string;
-  region: string;
-  latitude: number;
-  longitude: number;
-  atonbatt: number;
-  lantBatt: number;
-  offPosition: string;
-  ambient: string;
-  light: number;
-  localTime: string;
-  utcTime: string;
-  x: number;
-  y: number;
-};
+import { allAtonData, AtonData } from "../dummy-data/all-aton";
 
 export default function MapModule() {
-  // Floating Components
-  const { toggles, setToggles, tableOptions, setTableOptions } = useAtonStore();
+  const { toggles, setToggles, tableOptions, setTableOptions, setAllAtonData } =
+    useAtonStore();
 
   // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
+  const [hoverInfo, setHoverInfo] = useState({
+    name: "",
+    mmsi: null,
+    lantBatt: null,
+  });
   const [initialViewState, setInitialViewState] = useState({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -65,36 +37,113 @@ export default function MapModule() {
     bearing: 0,
   });
 
+  // UNCOMMENT FOR LIVE WEBSOCKET DATA
+  // useEffect(() => {
+  //   const socket = new WebSocket("wss://dash.datainsight.my/wss/");
+
+  //   socket.onopen = () => {
+  //     console.log("Connected to WebSocket server");
+  //     socket.send("getallaton");
+  //   };
+
+  //   socket.onmessage = (event) => {
+  //     // const data = JSON.parse(event.data);
+  //     const data = allAtonData
+
+  //     // setAllAtonData(data)
+
+  //     const newLayer = new ScatterplotLayer({
+  //       id: `scatterplot-layer-${data.ss_longitude}-${data.ss_latitude}`,
+  //       data: [
+  //         {
+  //           position: [data.ss_longitude, data.ss_latitude],
+  //           atonname: data.atonname,
+  //           status: data.status,
+  //           region: data.region,
+  //           latitude: data.latitude,
+  //           longitude: data.longitude,
+  //           atonbatt: data.atonbatt,
+  //           lantBatt: data.lantBatt,
+  //           offPosition: data.offPosition,
+  //           ambient: data.ambient,
+  //           light: data.light,
+  //           localTime: data.localTime,
+  //           utcTime: data.utcTime,
+  //         }
+  //       ],
+  //       getRadius: 5000,
+  //       getFillColor: [255, 0, 0],
+  //       pickable: true,
+
+  //       onHover: (info) => {
+  //         if (info.object) {
+  //           setHoverInfo({
+  //             structure: info.object.structure,
+  //             name: info.object.atonname,
+  //             region: info.object.region,
+  //             latitude: info.object.latitude,
+  //             longitude: info.object.longitude,
+  //             atonbatt: info.object.atonbatt,
+  //             lantBatt: info.object.lantBatt,
+  //             offPosition: info.object.offPosition,
+  //             ambient: info.object.ambient,
+  //             light: info.object.light,
+  //             localTime: info.object.localTime,
+  //             utcTime: info.object.utcTime,
+  //             x: info.x,
+  //             y: info.y,
+  //           });
+  //         } else setHoverInfo(null);
+  //       },
+  //     });
+
+  //     setLayers((prevLayers) =>
+  //       prevLayers ? [...prevLayers, newLayer] : [newLayer]
+  //     );
+  //   };
+
+  //   socket.onclose = () => console.log("WebSocket connection closed");
+  //   socket.onerror = (error) => console.error("WebSocket error:", error);
+
+  //   return () => socket.close();
+  // }, []);
+
+  // State to hold all received data
+  const [atonData, setAtonData] = useState<AtonData[] | null>(null);
+
   useEffect(() => {
-    const socket = new WebSocket("wss://dash.datainsight.my/wss/");
+    async function fetchData() {
+      try {
+        const response = await fetch("https://api.example.com/aton");
+        const data = await response.json();
 
-    socket.onopen = () => {
-      console.log("Connected to WebSocket server");
-      socket.send("getallaton");
-    };
+        setAtonData(data);
+      } catch (error) {
+        console.error("Error fetching AtoN data:", error);
+      }
+    }
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    fetchData();
+  }, []);
 
+  useEffect(() => {
+    atonData?.map((aton) => {
       const newLayer = new ScatterplotLayer({
-        id: `scatterplot-layer-${data.ss_longitude}-${data.ss_latitude}`,
-        data: [
-          {
-            position: [data.ss_longitude, data.ss_latitude],
-            atonname: data.atonname,
-            status: data.status,
-            region: data.region,
-            latitude: data.latitude,
-            longitude: data.longitude,
-            atonbatt: data.atonbatt,
-            lantBatt: data.lantBatt,
-            offPosition: data.offPosition,
-            ambient: data.ambient,
-            light: data.light,
-            localTime: data.localTime,
-            utcTime: data.utcTime,
-          } as ScatterplotLayerData,
-        ],
+        id: `${aton.mmsi}`,
+        data: aton.data.map((item) => ({
+          position: [item.ss_longitude, item.ss_latitude],
+          atonname: aton.name,
+          status: item.status,
+          region: item.region,
+          latitude: item.ss_latitude,
+          longitude: item.ss_longitude,
+          offPosition: item.ss_off_position,
+          ambient: item.ambient,
+          light: item.light,
+          localTime: item.lcl_ts,
+          utcTime: item.ss_utc_second,
+          structure: aton.type,
+        })),
         getRadius: 5000,
         getFillColor: [255, 0, 0],
         pickable: true,
@@ -102,11 +151,11 @@ export default function MapModule() {
         onHover: (info) => {
           if (info.object) {
             setHoverInfo({
-              structure: info.object.structure,
-              name: info.object.atonname,
+              structure: info.object.type,
+              name: info.object.name,
               region: info.object.region,
-              latitude: info.object.latitude,
-              longitude: info.object.longitude,
+              latitude: info.object.ss_latitude,
+              longitude: info.object.ss_longitude,
               atonbatt: info.object.atonbatt,
               lantBatt: info.object.lantBatt,
               offPosition: info.object.offPosition,
@@ -124,12 +173,7 @@ export default function MapModule() {
       setLayers((prevLayers) =>
         prevLayers ? [...prevLayers, newLayer] : [newLayer]
       );
-    };
-
-    socket.onclose = () => console.log("WebSocket connection closed");
-    socket.onerror = (error) => console.error("WebSocket error:", error);
-
-    return () => socket.close();
+    });
   }, []);
 
   return (
@@ -139,7 +183,10 @@ export default function MapModule() {
           <>
             <h1 className="text-2xl font-bold">AtoN</h1>
             <div className="flex gap-6 mr-8">
-              <RiRefreshLine fontSize={25} className="text-blue-400 hover:cursor-pointer" />
+              <RiRefreshLine
+                fontSize={25}
+                className="text-blue-400 hover:cursor-pointer"
+              />
               <CiViewTable
                 fontSize={30}
                 className="text-blue-400 hover:cursor-pointer"
