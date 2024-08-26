@@ -9,6 +9,7 @@ import {
 
 type Toggles = {
   legend: boolean;
+  legendToggleBtn: boolean;
   atonSummaryToggleBtn: boolean;
   atonSummary: boolean;
   tableModule: boolean;
@@ -18,6 +19,8 @@ type Toggles = {
 };
 
 type TableOptions = {
+  fromDate: string
+  toDate: string;
   sortBy: string;
   sortOrder: "asc" | "desc";
 };
@@ -49,6 +52,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   selectedAtonType: null,
   toggles: {
     legend: false,
+    legendToggleBtn: true,
     atonSummaryToggleBtn: true,
     atonSummary: false,
     tableModule: false,
@@ -57,7 +61,9 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     messageCountOverview: false,
   },
   tableOptions: {
-    sortBy: "rownum",
+    fromDate: '',
+    toDate: '',
+    sortBy: "timestamp",
     sortOrder: "asc",
   },
 

@@ -4,6 +4,7 @@ import { AIS_MESSAGE_TYPES } from "../constants/constants"
 export type Timestamp = string // i.e "2024-08-15 07:53:33"
 export type Percentage = string // i.e "23.00%"
 export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse'
+export type Status = 'Good' | 'Warning' | 'Error'
 export type PackageCh = 'A' | 'B'
 export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
 export type AtonWsPayload = 'getatoninitialcount' | 'getallatonvoltdata' | 'getallatonbeatdata' | 'getallaton' | 'getatonmsgcount' | 'ping' | 'getdailystatisticstartfrom';

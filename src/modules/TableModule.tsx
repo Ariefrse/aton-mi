@@ -159,27 +159,4 @@ export default function TableModule() {
       </div>
     </div>
   );
-
-  // return (
-  //   <div className="relative max-h-screen">
-  //     <div className="absolute inset-0 flex justify-center items-center">
-  //       <div className="relative w-full h-full bg-gray-900 bg-opacity-50 shadow-lg rounded-lg overflow-hidden">
-  //         <div className="overflow-x-auto overflow-y-auto h-[98%] w-[98%] m-auto z-10">
-  //           <div className="bg-red-400 w-full h-full">
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //             <p>test</p>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
 }

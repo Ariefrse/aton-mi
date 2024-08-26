@@ -11,6 +11,8 @@ import {
 } from "chart.js";
 import { Fragment } from "react/jsx-runtime";
 import { useAtonStore } from "../store/store";
+import { CloseButton } from "@headlessui/react";
+import { IoMdClose } from "react-icons/io";
 
 // Register Chart.js components
 ChartJS.register(
@@ -115,27 +117,33 @@ const data = [
 ];
 
 const MessageCountOverview = () => {
-  const { toggles, setToggles } = useAtonStore()
+  const { toggles, setToggles } = useAtonStore();
 
   return (
-    <div className="bg-gray-700 z-10 p-4 rounded-lg h-full">
-      <div className="vessel-info-title">
-        <div className="flex justify-between">
-          <h4 className="text-lg font-bold">Message 6, 8, 21 Counting...</h4>
-          <button onClick={() => setToggles({...toggles, messageCountOverview: false})}>X</button>
+    <div className="relative">
+      <div className="bg-gray-700 z-10 p-4 rounded-lg h-full">
+        <div className="vessel-info-title">
+          <div className="flex justify-between">
+            <h4 className="text-lg font-bold">Message 6, 8, 21 Counting...</h4>
+            <IoMdClose
+              className="absolute top-1 right-2"
+              fontSize={24}
+              onClick={() =>
+                setToggles({ ...toggles, messageCountOverview: false })
+              }
+            />
+          </div>
+          {data.map((section, index) => (
+            <Fragment key={index}>
+              <div className="title mt-4">
+                <h4 className="text-gray-300">{section.title}</h4>
+              </div>
+              <div className="mt-4">
+                <Line data={section.chartData} options={{ responsive: true }} />
+              </div>
+            </Fragment>
+          ))}
         </div>
-
-        {data.map((section, index) => (
-          <Fragment key={index}>
-            <div className="title mt-4">
-              <h4 className="text-gray-300">{section.title}</h4>
-            </div>
-
-            <div className="mt-4">
-              <Line data={section.chartData} options={{ responsive: true }} />
-            </div>
-          </Fragment>
-        ))}
       </div>
     </div>
   );

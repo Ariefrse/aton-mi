@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { useAtonStore } from "../store/store";
+import { IoMdClose } from "react-icons/io";
 
 const AtonSummary = () => {
   const { setSelectedAton, toggles, setToggles } = useAtonStore();
@@ -17,8 +18,19 @@ const AtonSummary = () => {
   };
 
   return (
-    <aside className="min-w-max bg-gray-800 z-10 text-white p-10 rounded-lg shadow-lg max-w-xs">
-      <div className="flex justify-between items-center mb-4">
+    <aside className="relative min-w-max bg-gray-800 z-10 text-white p-10 rounded-lg shadow-lg max-w-xs">
+      <IoMdClose
+        className="absolute top-2 right-2"
+        fontSize={24}
+        onClick={() =>
+          setToggles({
+            ...toggles,
+            atonSummary: false,
+            atonSummaryToggleBtn: true,
+          })
+        }
+      />
+      <div className="flex gap-10 justify-between items-center mb-4">
         <div className="w-auto">
           <h2 className="text-xl font-bold whitespace-nowrap">
             AtoN Summary
@@ -27,18 +39,6 @@ const AtonSummary = () => {
             </span>
           </h2>
         </div>
-        <button
-          className="text-white w-4"
-          onClick={() =>
-            setToggles({
-              ...toggles,
-              atonSummary: false,
-              atonSummaryToggleBtn: true,
-            })
-          }
-        >
-          X
-        </button>
       </div>
       <hr className="my-2 border-gray-600" />
       <p className="my-2">Structure</p>

@@ -11,14 +11,10 @@ import { AtonType } from "../declarations/dtos/dtos";
 import HoverInfo from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
-import DropDownMenu from "../components/DropDownMenu";
-import TextInput from "../components/TextInput";
-import CloseButton from "../components/CloseButton";
-import CsvButton from "../components/CsvButton";
-import { BackspaceIcon } from "@heroicons/react/24/outline";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
+import LegendToggleBtn from "../components/LegendToggleBtn";
 
 type ScatterplotLayerData = {
   position: [number, number];
@@ -143,10 +139,10 @@ export default function MapModule() {
           <>
             <h1 className="text-2xl font-bold">AtoN</h1>
             <div className="flex gap-6 mr-8">
-              <RiRefreshLine fontSize={25} className="text-blue-400" />
+              <RiRefreshLine fontSize={25} className="text-blue-400 hover:cursor-pointer" />
               <CiViewTable
                 fontSize={30}
-                className="text-blue-400"
+                className="text-blue-400 hover:cursor-pointer"
                 onClick={() =>
                   setToggles({
                     ...toggles,
@@ -194,6 +190,7 @@ export default function MapModule() {
         {toggles.tableModule && <TableModule />}
         {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
         {toggles.legend && <Legend />}
+        {toggles.legendToggleBtn && <LegendToggleBtn />}
       </div>
     </div>
   );
