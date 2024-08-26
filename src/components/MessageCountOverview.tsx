@@ -113,7 +113,7 @@ const data = [
   },
 ];
 
-const MessageOverview = () => {
+const MessageCountOverview = () => {
   return (
     <div className="bg-gray-700 z-10 absolute top-2 left-2 p-4 rounded-lg">
       <div className="vessel-info-title">
@@ -135,4 +135,4 @@ const MessageOverview = () => {
   );
 };
 
-export default MessageOverview;
+export default MessageCountOverview;

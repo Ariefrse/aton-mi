@@ -3,15 +3,21 @@ import Map, { MapRef, NavigationControl } from "react-map-gl";
 import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
-import Sidebar from "../components/Sidebar";
+import AtonSummary from "../components/AtonSummary";
 import { CiViewTable } from "react-icons/ci";
 import { RiRefreshLine } from "react-icons/ri";
 import { LayersList } from "@deck.gl/core";
-import {
-  AllAtonResDto,
-  AtonDataResDto,
-  AtonType,
-} from "../declarations/dtos/dtos";
+import { AtonType } from "../declarations/dtos/dtos";
+import HoverInfo from "../components/HoverInfo";
+import TableModule from "./TableModule";
+import MessageCountOverview from "../components/MessageCountOverview";
+import DropDownMenu from "../components/DropDownMenu";
+import TextInput from "../components/TextInput";
+import CloseButton from "../components/CloseButton";
+import CsvButton from "../components/CsvButton";
+import { BackspaceIcon } from "@heroicons/react/24/outline";
+import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
+import { useAtonStore } from "../store/store";
 
 type ScatterplotLayerData = {
   position: [number, number];
@@ -42,21 +48,25 @@ type HoverInfo = {
   light: number;
   localTime: string;
   utcTime: string;
-  x: number; // x position of the hover event
-  y: number; // y position of the hover event
+  x: number;
+  y: number;
 };
 
 export default function MapModule() {
+  // Floating Components
+  const { toggles, setToggles, tableOptions, setTableOptions } = useAtonStore()
+
+  // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
-  const initialViewState = {
+  const [initialViewState, setInitialViewState] = useState({
     longitude: 101.5466,
     latitude: 3.0891,
     zoom: 13,
     pitch: 0,
     bearing: 0,
-  };
+  });
 
   useEffect(() => {
     const socket = new WebSocket("wss://dash.datainsight.my/wss/");
@@ -91,6 +101,7 @@ export default function MapModule() {
         getRadius: 5000,
         getFillColor: [255, 0, 0],
         pickable: true,
+
         onHover: (info) => {
           if (info.object) {
             setHoverInfo({
@@ -109,8 +120,8 @@ export default function MapModule() {
               x: info.x,
               y: info.y,
             });
-          } else setHoverInfo(null)
-        }
+          } else setHoverInfo(null);
+        },
       });
 
       setLayers((prevLayers) =>
@@ -118,32 +129,49 @@ export default function MapModule() {
       );
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
+    socket.onclose = () => console.log("WebSocket connection closed");
+    socket.onerror = (error) => console.error("WebSocket error:", error);
 
     return () => socket.close();
   }, []);
 
   return (
-    <div className="h-[90vh] overflow-hidden p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
+    <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
       <div className="mb-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">AtoN</h1>
-        <div className="flex gap-6 mr-8">
-          <RiRefreshLine fontSize={30} className="text-blue-400" />
-          <CiViewTable fontSize={30} className="text-blue-400" />
-        </div>
+        {toggles.tableModule === true ? null : (
+          <>
+            <h1 className="text-2xl font-bold">AtoN</h1>
+            <div className="flex gap-6 mr-8">
+              <RiRefreshLine fontSize={30} className="text-blue-400" />
+              <CiViewTable fontSize={30} className="text-blue-400" />
+            </div>
+          </>
+        )}
+        {toggles.tableModule && (
+          <>
+            <h1 className="text-2xl font-bold">AtoN Analytics</h1>
+            <DropDownMenu />
+            <DropDownMenu />
+            <TextInput />
+            <BackspaceIcon className="w-10 h-10" />
+            <div className="flex justify-center gap-2 items-center">
+              <p>From</p>
+              <input className="rounded-md text-gray-500 p-1" type="date" />
+            </div>
+            <div className="flex justify-center gap-2">
+              <p>To</p>
+              <input className="rounded-md text-gray-500 p-1" type="date" />
+            </div>
+            <BackspaceIcon className="w-10 h-10" />
+            <CsvButton />
+            <CloseButton />
+          </>
+        )}
       </div>
       <div className="flex-1 relative">
-        <Sidebar />
-        {/* <MessageOverview /> */}
-        {/* <TableModule /> */}
         <DeckGL
           initialViewState={initialViewState}
+          onViewStateChange={({ viewState }) => setInitialViewState(viewState)}
           controller={true}
           layers={layers}
         >
@@ -151,6 +179,9 @@ export default function MapModule() {
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
             mapStyle="mapbox://styles/mapbox/satellite-v9"
+            style={{
+              zIndex: 0,
+            }}
           >
             <NavigationControl
               visualizePitch
@@ -160,41 +191,17 @@ export default function MapModule() {
             />
           </Map>
         </DeckGL>
-        {hoverInfo && (
-          <div
-            className="absolute bg-gray-700 p-2 rounded"
-            style={{
-              left: hoverInfo.x + 10,
-              top: hoverInfo.y + 10,
-              pointerEvents: "none",
-            }}
-          >
-            <div>
-              <strong>Position:</strong> {hoverInfo.name}
-              <br />
-              <strong>Region:</strong> {hoverInfo.region}
-              <br />
-              <strong>Latitude:</strong> {hoverInfo.latitude}
-              <br />
-              <strong>Longitude:</strong> {hoverInfo.longitude}
-              <br />
-              <strong>Aton Battery:</strong> {hoverInfo.atonbatt}
-              <br />
-              <strong>Lant Battery:</strong> {hoverInfo.lantBatt}
-              <br />
-              <strong>Offset Position:</strong> {hoverInfo.offPosition}
-              <br />
-              <strong>Ambient:</strong> {hoverInfo.ambient}
-              <br />
-              <strong>Light:</strong> {hoverInfo.light}
-              <br />
-              <strong>Local Time:</strong> {hoverInfo.localTime}
-              <br />
-              <strong>UTC Time:</strong> {hoverInfo.utcTime}
-            </div>
-          </div>
+        {/* Floating Component */}
+        {hoverInfo && <HoverInfo hoverInfo={hoverInfo} />}
+        {toggles.atonSummary && <AtonSummary />}
+        {toggles.tableModule && <TableModule />}
+        {toggles.tableToggelBtn && (
+          <AtonSummaryToggleBtn
+            onClick={() => setToggles({ ...toggles, atonSummary: true })}
+          />
         )}
-        <Legend />
+        {toggles.messageCountOverview && <MessageCountOverview />}
+        {toggles.legend && <Legend />}
       </div>
     </div>
   );
