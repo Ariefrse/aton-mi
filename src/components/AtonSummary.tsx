@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { useAtonStore } from "../store/store";
 
 const AtonSummary = () => {
-  const { setSelectedAton, toggles: modal, setToggles: setModal } = useAtonStore();
+  const { setSelectedAton, toggles, setToggles } = useAtonStore();
 
   const atonSummaryInfoData = {
     atonType: ["Buoy", "Lighthouse", "Beacon"],
@@ -17,18 +17,25 @@ const AtonSummary = () => {
   };
 
   return (
-    <aside className="relative top-2 left-2 min-w-max bg-gray-800 z-10 text-white p-10 rounded-lg shadow-lg max-w-xs">
+    <aside className="min-w-max bg-gray-800 z-10 text-white p-10 rounded-lg shadow-lg max-w-xs">
       <div className="flex justify-between items-center mb-4">
         <div className="w-auto">
           <h2 className="text-xl font-bold whitespace-nowrap">
-            AtoN Summary<span className="text-sm text-gray-400 pl-2 whitespace-nowrap">
+            AtoN Summary
+            <span className="text-sm text-gray-400 pl-2 whitespace-nowrap">
               (23/07/2024)
             </span>
           </h2>
         </div>
         <button
           className="text-white w-4"
-          onClick={() => setModal({ ...modal, atonSummary: false })}
+          onClick={() =>
+            setToggles({
+              ...toggles,
+              atonSummary: false,
+              atonSummaryToggleBtn: true,
+            })
+          }
         >
           X
         </button>
@@ -60,7 +67,15 @@ const AtonSummary = () => {
             )}
           </Fragment>
         ))}
-        <div className="absolute bottom-2 right-2 bg-red-600 rounded-full w-10 h-10" />
+        <button
+          className="absolute bottom-2 right-2 bg-red-600 rounded-full w-10 h-10"
+          onClick={() =>
+            setToggles({
+              ...toggles,
+              messageCountOverview: !toggles.messageCountOverview,
+            })
+          }
+        />
       </div>
     </aside>
   );

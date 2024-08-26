@@ -18,6 +18,7 @@ import CsvButton from "../components/CsvButton";
 import { BackspaceIcon } from "@heroicons/react/24/outline";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
+import TableOptions from "../components/TableOptions";
 
 type ScatterplotLayerData = {
   position: [number, number];
@@ -54,7 +55,7 @@ type HoverInfo = {
 
 export default function MapModule() {
   // Floating Components
-  const { toggles, setToggles, tableOptions, setTableOptions } = useAtonStore()
+  const { toggles, setToggles, tableOptions, setTableOptions } = useAtonStore();
 
   // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
@@ -142,31 +143,22 @@ export default function MapModule() {
           <>
             <h1 className="text-2xl font-bold">AtoN</h1>
             <div className="flex gap-6 mr-8">
-              <RiRefreshLine fontSize={30} className="text-blue-400" />
-              <CiViewTable fontSize={30} className="text-blue-400" />
+              <RiRefreshLine fontSize={25} className="text-blue-400" />
+              <CiViewTable
+                fontSize={30}
+                className="text-blue-400"
+                onClick={() =>
+                  setToggles({
+                    ...toggles,
+                    tableModule: !toggles.tableModule,
+                    atonSummaryToggleBtn: false,
+                  })
+                }
+              />
             </div>
           </>
         )}
-        {toggles.tableModule && (
-          <>
-            <h1 className="text-2xl font-bold">AtoN Analytics</h1>
-            <DropDownMenu />
-            <DropDownMenu />
-            <TextInput />
-            <BackspaceIcon className="w-10 h-10" />
-            <div className="flex justify-center gap-2 items-center">
-              <p>From</p>
-              <input className="rounded-md text-gray-500 p-1" type="date" />
-            </div>
-            <div className="flex justify-center gap-2">
-              <p>To</p>
-              <input className="rounded-md text-gray-500 p-1" type="date" />
-            </div>
-            <BackspaceIcon className="w-10 h-10" />
-            <CsvButton />
-            <CloseButton />
-          </>
-        )}
+        {toggles.tableModule && <TableOptions />}
       </div>
       <div className="flex-1 relative">
         <DeckGL
@@ -191,16 +183,16 @@ export default function MapModule() {
             />
           </Map>
         </DeckGL>
-        {/* Floating Component */}
+        {/* Microinteractive Components */}
         {hoverInfo && <HoverInfo hoverInfo={hoverInfo} />}
-        {toggles.atonSummary && <AtonSummary />}
-        {toggles.tableModule && <TableModule />}
-        {toggles.tableToggelBtn && (
-          <AtonSummaryToggleBtn
-            onClick={() => setToggles({ ...toggles, atonSummary: true })}
-          />
+        {toggles.atonSummary && (
+          <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
+            <AtonSummary />
+            {toggles.messageCountOverview && <MessageCountOverview />}
+          </div>
         )}
-        {toggles.messageCountOverview && <MessageCountOverview />}
+        {toggles.tableModule && <TableModule />}
+        {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
         {toggles.legend && <Legend />}
       </div>
     </div>

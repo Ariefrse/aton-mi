@@ -10,6 +10,7 @@ import {
   Legend,
 } from "chart.js";
 import { Fragment } from "react/jsx-runtime";
+import { useAtonStore } from "../store/store";
 
 // Register Chart.js components
 ChartJS.register(
@@ -114,10 +115,15 @@ const data = [
 ];
 
 const MessageCountOverview = () => {
+  const { toggles, setToggles } = useAtonStore()
+
   return (
-    <div className="bg-gray-700 z-10 absolute top-2 left-2 p-4 rounded-lg">
+    <div className="bg-gray-700 z-10 p-4 rounded-lg h-full">
       <div className="vessel-info-title">
-        <h4 className="text-lg font-bold">Message 6, 8, 21 Counting...</h4>
+        <div className="flex justify-between">
+          <h4 className="text-lg font-bold">Message 6, 8, 21 Counting...</h4>
+          <button onClick={() => setToggles({...toggles, messageCountOverview: false})}>X</button>
+        </div>
 
         {data.map((section, index) => (
           <Fragment key={index}>

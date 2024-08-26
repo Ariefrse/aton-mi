@@ -1,15 +1,20 @@
 import { FC } from "react";
 import { HiAdjustments } from "react-icons/hi";
+import { useAtonStore } from "../store/store";
 
-type AtonSummaryToggleBtnProps = {
-  onClick?: () => void;
-};
+const AtonSummaryToggleBtn = () => {
+  const { toggles, setToggles } = useAtonStore();
 
-const AtonSummaryToggleBtn: FC<AtonSummaryToggleBtnProps> = ({ onClick }) => {
   return (
     <button
       className="bg-red-900 absolute top-4 left-4 items-center border-2 rounded-full p-1"
-      onClick={onClick}
+      onClick={() =>
+        setToggles({
+          ...toggles,
+          atonSummary: true,
+          atonSummaryToggleBtn: false,
+        })
+      }
     >
       <HiAdjustments fontSize={25} />
     </button>
