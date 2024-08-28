@@ -20,7 +20,7 @@ const AtonSummary = () => {
   return (
     <aside className="relative min-w-max bg-gray-800 z-10 text-white p-10 rounded-lg shadow-lg max-w-xs">
       <IoMdClose
-        className="absolute top-2 right-2"
+        className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
         fontSize={24}
         onClick={() =>
           setToggles({

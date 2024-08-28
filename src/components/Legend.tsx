@@ -1,6 +1,6 @@
 import { IoMdCheckmarkCircle, IoMdClose } from "react-icons/io";
 import { useAtonStore } from "../store/store";
-import { AtonType, Status } from "../declarations/dtos/dtos";
+import { AtonType, Status } from "../declarations/types/types";
 
 const Legend = () => {
   const legendItems = [
@@ -31,11 +31,11 @@ const Legend = () => {
     <div className=" absolute bottom-2 right-2">
       <div className="relative">
         <IoMdClose
-          fontSize={25}
+          className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
+          fontSize={24}
           onClick={() =>
             setToggles({ ...toggles, legend: false, legendToggleBtn: true })
           }
-          className="absolute top-2 right-2"
         />
         <div className="bg-gray-800 text-white p-4 rounded-md">
           <p className="text-lg font-bold leading-none mb-4">

@@ -126,7 +126,7 @@ const MessageCountOverview = () => {
           <div className="flex justify-between">
             <h4 className="text-lg font-bold">Message 6, 8, 21 Counting...</h4>
             <IoMdClose
-              className="absolute top-1 right-2"
+              className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
               fontSize={24}
               onClick={() =>
                 setToggles({ ...toggles, messageCountOverview: false })
