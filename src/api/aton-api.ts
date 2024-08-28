@@ -10,7 +10,7 @@ function useWebSocket() {
   const {
     setAtonMsgCount,
     setAtonStatsData,
-    setAtonInitialCount,
+    setAtonInitialData: setAtonInitialCount,
     setAllAtonData,
   } = useAtonStore();
 

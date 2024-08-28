@@ -3,7 +3,7 @@ import { useAtonStore } from "../store/store";
 import { IoMdClose } from "react-icons/io";
 
 const AtonSummary = () => {
-  const { setSelectedAton, toggles, setToggles } = useAtonStore();
+  const { toggles, setToggles } = useAtonStore();
 
   const atonSummaryInfoData = {
     atonType: ["Buoy", "Lighthouse", "Beacon"],

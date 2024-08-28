@@ -7,7 +7,6 @@ import AtonSummary from "../components/AtonSummary";
 import { CiViewTable } from "react-icons/ci";
 import { RiRefreshLine } from "react-icons/ri";
 import { LayersList } from "@deck.gl/core";
-import { AtonType } from "../declarations/dtos/dtos";
 import HoverInfo from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
@@ -15,19 +14,21 @@ import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-import { allAtonData, Aton } from "../dummy-data/all-aton";
+
+type HoverInfo = {
+  name: string;
+  mmsi: number | null;
+  lant
+};
 
 export default function MapModule() {
-  const { toggles, setToggles, tableOptions, setTableOptions, setAllAtonData } =
+  const { toggles, setToggles, atonInitialData, setAtonInitialData } =
     useAtonStore();
 
   // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState({
-    name: "",
-    mmsi: null,
-  });
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>();
   const [initialViewState, setInitialViewState] = useState({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -36,23 +37,13 @@ export default function MapModule() {
     bearing: 0,
   });
 
-  const [atonData, setAtonData] = useState<
-    {
-      mmsi: number;
-      name: string;
-      type: AtonType;
-      longitude: number;
-      latitude: number;
-    }[]
-  >([]);
-
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await fetch("http://localhost:3000/initial-aton-load");
         await response.json().then((data) => {
-          setAtonData(data);
-          console.log(atonData)
+          setAtonInitialData(data);
+          console.log(atonInitialData);
         });
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
@@ -63,7 +54,7 @@ export default function MapModule() {
   }, []);
 
   useEffect(() => {
-    atonData?.map((aton) => {
+    atonInitialData?.map((aton) => {
       const newLayer = new ScatterplotLayer({
         id: `${aton?.mmsi}`,
         data: [

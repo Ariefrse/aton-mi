@@ -1,4 +1,5 @@
-import { AtonDataResDto } from "../declarations/dtos/dtos";
+
+import { AtonDataDetails } from "../declarations/types/types";
 import { allAtonData } from "../dummy-data/all-aton";
 
 export default function TableModule() {
@@ -32,7 +33,7 @@ export default function TableModule() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {allAtonData.map((atonData: AtonDataResDto) => (
+                {allAtonData.map((atonData: AtonDataDetails) => (
                   <tr key={atonData.mmsi}>
                     {headers.map((header) => (
                       <td

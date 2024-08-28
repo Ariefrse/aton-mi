@@ -1,12 +1,7 @@
 import { create } from "zustand";
-import {
-  AllAtonResDto,
-  AtonInitialCountResDto,
-  AtonMsgCountResDto,
-  AtonStatsResDto,
-  AtonType,
-} from "../declarations/dtos/dtos";
+import { AtonDataDetails, AtonInitialData } from "../declarations/types/types";
 
+/** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
   legend: boolean;
   legendToggleBtn: boolean;
@@ -18,38 +13,27 @@ type Toggles = {
   messageCountOverview: boolean;
 };
 
-type TableOptions = {
+type TableFilterOptions = {
   fromDate: string
   toDate: string;
-  sortBy: string;
-  sortOrder: "asc" | "desc";
 };
 
 type AtonStoreState = {
-  atonMsgCount: AtonMsgCountResDto | null;
-  atonStats: AtonStatsResDto[] | null;
-  allAton: AllAtonResDto[] | null;
-  atonInitialCount: AtonInitialCountResDto | null;
-  selectedAtonType: AtonType | null;
+  atonInitialData: AtonInitialData[] | null;
+  atonDetailedData: AtonDataDetails[] | null;
 
   toggles: Toggles;
-  tableOptions: TableOptions;
+  tableOptions: TableFilterOptions;
 
-  setAtonMsgCount: (data: AtonMsgCountResDto) => void;
-  setAtonStatsData: (data: AtonStatsResDto[]) => void;
-  setAllAtonData: (data: AllAtonResDto[]) => void;
-  setAtonInitialCount: (data: AtonInitialCountResDto) => void;
-  setSelectedAton: (selectedAton: AtonType) => void;
+  setAtonInitialData: (data: AtonInitialData[]) => void;
+  setAtonDetailedData: (data: AtonDataDetails[]) => void;
   setToggles: (modal: Toggles) => void;
-  setTableOptions: (options: TableOptions) => void;
+  setTableOptions: (options: TableFilterOptions) => void;
 };
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
-  atonMsgCount: null,
-  atonStats: [],
-  allAton: null,
-  atonInitialCount: null,
-  selectedAtonType: null,
+  atonInitialData: [],
+  atonDetailedData: [],
   toggles: {
     legend: false,
     legendToggleBtn: true,
@@ -67,11 +51,8 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     sortOrder: "asc",
   },
 
-  setAtonMsgCount: (data) => set({ atonMsgCount: data }),
-  setAtonStatsData: (data) => set({ atonStats: data }),
-  setAllAtonData: (data) => set({ allAton: data }),
-  setAtonInitialCount: (data) => set({ atonInitialCount: data }),
-  setSelectedAton: (selectedAton) => set({ selectedAtonType: selectedAton }),
+  setAtonInitialData: (data) => set({ atonInitialData: data }),
+  setAtonDetailedData: (data) => set({ atonDetailedData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableOptions: (options) => set({ tableOptions: options }),
 }));
