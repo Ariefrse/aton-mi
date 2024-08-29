@@ -106,7 +106,7 @@ export type AtonInitialData = {
   longitude: number
 }
 
-export type AtonDataDetails = {
+export type AtonDetailedData = {
   mmsi: number
   type: AtonType
   name: string
@@ -115,3 +115,5 @@ export type AtonDataDetails = {
   al_name?: string
   data: AtonData[]
 }
+
+export type AtonDataForTable = Omit<AtonDetailedData, 'data'> & AtonData

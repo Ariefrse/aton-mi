@@ -218,3 +218,19 @@ export const allAtonData: Aton[] = [
     ]
   }
 ]
+
+function transformAtonArray(atonArray: Aton[]): AtonData[] {
+  return atonArray.flatMap(aton =>
+    aton.data.map(data => ({
+      ...data,             // Spread all properties from AtonData inside data[]
+      mmsi: aton.mmsi,     // Add or override properties from Aton
+      type: aton.type,
+      name: aton.name,
+      al_mmsi: aton.al_mmsi,
+      al_type: aton.al_type,
+      al_name: aton.al_name
+    }))
+  );
+}
+
+console.log(transformAtonArray(allAtonData))

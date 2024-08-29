@@ -14,12 +14,7 @@ import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-
-type HoverInfo = {
-  name: string;
-  mmsi: number | null;
-  lant
-};
+import { AtonInitialData } from "../declarations/types/types";
 
 export default function MapModule() {
   const { toggles, setToggles, atonInitialData, setAtonInitialData } =
@@ -28,7 +23,7 @@ export default function MapModule() {
   // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>();
+  const [hoverInfo, setHoverInfo] = useState({});
   const [initialViewState, setInitialViewState] = useState({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -41,10 +36,38 @@ export default function MapModule() {
     async function fetchData() {
       try {
         const response = await fetch("http://localhost:3000/initial-aton-load");
-        await response.json().then((data) => {
-          setAtonInitialData(data);
-          console.log(atonInitialData);
+        const data: AtonInitialData[] = await response.json();
+        setAtonInitialData(data);
+
+        const newLayers = data.map((aton) => {
+          return new ScatterplotLayer({
+            id: `${aton?.mmsi}`,
+            data: [
+              {
+                position: [aton?.longitude, aton?.latitude],
+                atonname: aton?.name,
+                latitude: aton?.latitude,
+                longitude: aton?.longitude,
+                structure: aton?.type,
+              },
+            ],
+            getRadius: 5000,
+            getFillColor: [255, 0, 0],
+            pickable: true,
+            onHover: (info) => {
+              if (info.object) {
+                setHoverInfo({
+                  latitude: aton.latitude,
+                  longitude: aton.longitude,
+                });
+              } else setHoverInfo({});
+            },
+          });
         });
+
+        setLayers((prevLayers) =>
+          prevLayers ? [...prevLayers, ...newLayers] : newLayers
+        );
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
       }
@@ -53,38 +76,17 @@ export default function MapModule() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    atonInitialData?.map((aton) => {
-      const newLayer = new ScatterplotLayer({
-        id: `${aton?.mmsi}`,
-        data: [
-          {
-            position: [aton?.longitude, aton?.latitude],
-            atonname: aton?.name,
-            latitude: aton?.latitude,
-            longitude: aton?.longitude,
-            structure: aton?.type,
-          },
-        ],
-        getRadius: 5000,
-        getFillColor: [255, 0, 0],
-        pickable: true,
-
-        onHover: (info) => {
-          if (info.object) {
-            setHoverInfo({
-              name: info.object.name,
-              mmsi: info.object.mmsi,
-            });
-          } else setHoverInfo(null);
-        },
-      });
-
-      setLayers((prevLayers) =>
-        prevLayers ? [...prevLayers, newLayer] : [newLayer]
-      );
+  const toggleTableModule = () => {
+    setToggles({
+      ...toggles,
+      tableModule: !toggles.tableModule,
+      legendToggleBtn: false,
+      legend: false,
+      messageCountOverview: false,
+      atonSummary: false,
+      atonSummaryToggleBtn: false,
     });
-  }, []);
+  };
 
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
@@ -100,13 +102,7 @@ export default function MapModule() {
               <CiViewTable
                 fontSize={30}
                 className="text-blue-400 hover:cursor-pointer"
-                onClick={() =>
-                  setToggles({
-                    ...toggles,
-                    tableModule: !toggles.tableModule,
-                    atonSummaryToggleBtn: false,
-                  })
-                }
+                onClick={toggleTableModule}
               />
             </div>
           </>
