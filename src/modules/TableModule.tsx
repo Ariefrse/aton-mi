@@ -1,23 +1,26 @@
 
-import { AtonDataForTable, AtonDetailedData } from "../declarations/types/types";
+import { AtonDataForTable, AtonData } from "../declarations/types/types";
 import { allAtonData } from "../dummy-data/all-aton";
+import { useAtonStore } from "../store/store";
 
 export default function TableModule() {
+  const {  } = useAtonStore()
+
   const headers = Object.keys(allAtonData[0]);
 
-  function transformAtonArray(atonArray: AtonDetailedData[]): AtonDataForTable[] {
-    return atonArray.flatMap((aton) =>
-      aton.data.map((data) => ({
-        ...data,
-        mmsi: aton.mmsi,
-        type: aton.type,
-        name: aton.name,
-        al_mmsi: aton.al_mmsi,
-        al_type: aton.al_type,
-        al_name: aton.al_name,
-      }))
-    );
-  }
+  // function transformAtonArray(atonArray: AtonDetailedData[]): AtonDataForTable[] {
+  //   return atonArray.flatMap((aton) =>
+  //     aton.data.map((data) => ({
+  //       mmsi: aton.mmsi,
+  //       type: aton.type,
+  //       name: aton.name,
+  //       al_mmsi: aton.al_mmsi,
+  //       al_type: aton.al_type,
+  //       al_name: aton.al_name,
+  //       ...data,
+  //     }))
+  //   );
+  // }
 
   return (
     <div className="relative h-screen">
@@ -45,7 +48,7 @@ export default function TableModule() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {allAtonData.map((atonData: AtonDetailedData) => (
+                {allAtonData.map((atonData: AtonData) => (
                   <tr key={atonData.mmsi}>
                     {headers.map((header) => (
                       <td

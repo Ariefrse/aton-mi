@@ -14,11 +14,10 @@ import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-import { AtonInitialData } from "../declarations/types/types";
+import { AtonData, MessageType21, MessageType6 } from "../declarations/types/types";
 
 export default function MapModule() {
-  const { toggles, setToggles, atonInitialData, setAtonInitialData } =
-    useAtonStore();
+  const { toggles, setToggles, atonData, setAtonData } = useAtonStore();
 
   // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
@@ -35,30 +34,90 @@ export default function MapModule() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:3000/initial-aton-load");
-        const data: AtonInitialData[] = await response.json();
-        setAtonInitialData(data);
+        const atonMetaDataFetch = await fetch(
+          "http://localhost:3000/api/initial-aton-load"
+        );
+        const atonMetaData: AtonData[] = await atonMetaDataFetch.json()
 
-        const newLayers = data.map((aton) => {
+        // Fetch message 21 only for mmsi in atonList table
+        const message21Fetch = await fetch(
+          "http://localhost:3000/api/ais-messages",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messageType: "pnav.ais_type21",
+              mmsi: atonMetaData?.map((aton) => aton.mmsi).toString(),
+              startTs: "2024-08-30 04:00:47", // TODO: This should read from user filter
+              endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+            }),
+          }
+        );
+
+        const message6Fetch = await fetch(
+          "http://localhost:3000/api/ais-messages",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messageType: "pnav.ais_type6_533",
+              mmsi: atonMetaData?.map((aton) => aton.mmsi).toString(),
+              startTs: "2024-08-29 04:35:47", // TODO: This should read from user filter
+              endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+            }),
+          }
+        );
+
+        const message21Data: MessageType21[] = await message21Fetch.json();
+        const message6Data: MessageType6[] = await message6Fetch.json();
+
+        const atonDataMap = atonMetaData.map((aton) => ({
+          ...aton,
+          message21: [] as MessageType21[],
+          message6: [] as MessageType6[],
+        }));
+
+        console.log('jjj', atonDataMap)
+
+        message21Data.forEach((message) => {
+          const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
+          if (aton) aton.message21.push(message);
+        });
+
+        message6Data.forEach((message) => {
+          const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
+          if (aton) aton.message6.push(message);
+        });
+
+        setAtonData(atonDataMap)
+
+        const newLayers = atonDataMap?.map((aton) => {
+          const longitude = aton?.message21[0].longitude;
+          const latitude = aton?.message21[0].latitude;
+
           return new ScatterplotLayer({
             id: `${aton?.mmsi}`,
             data: [
               {
-                position: [aton?.longitude, aton?.latitude],
+                position: [longitude, latitude],
                 atonname: aton?.name,
-                latitude: aton?.latitude,
-                longitude: aton?.longitude,
+                longitude,
+                latitude,
                 structure: aton?.type,
               },
             ],
-            getRadius: 5000,
+            getRadius: 800,
             getFillColor: [255, 0, 0],
             pickable: true,
             onHover: (info) => {
               if (info.object) {
                 setHoverInfo({
-                  latitude: aton.latitude,
-                  longitude: aton.longitude,
+                  latitude,
+                  longitude,
                 });
               } else setHoverInfo({});
             },
