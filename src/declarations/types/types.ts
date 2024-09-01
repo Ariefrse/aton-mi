@@ -30,8 +30,8 @@ export type MessageType6 = {
   packageType: string;
   packageID: number;
   packageCh: string;
-  messageType: number;
-  messageTypeDesc: string;
+  // messageType: number;
+  // messageTypeDesc: string;
   repeat: number;
   mmsi: number;
   seqno: number;
@@ -68,12 +68,11 @@ export type MessageType6 = {
 export type MessageType21 = {
   packageType: string;
   packageCh: PackageCh;
-  messageType: number;
-  messageTypeDesc: string;
+  // messageType: number; 
+  // messageTypeDesc: string;
   repeat: number;
   mmsi: number;
   aidType: number;
-  aidTypeDesc: string;
   aidName: string;
   positionAccuracy: number;
   longitude: number;
@@ -93,12 +92,35 @@ export type MessageType21 = {
 };
 
 export type AtonData = {
-  mmsi: number
-  type: AtonType
-  name: string
-  al_mmsi?: number
-  al_type?: string
-  al_name?: string
+  al_name: string;
+  al_mmsi: number;
+  al_region: string;
+  al_type: string;
+  ts: string;
+  mmsi: number;
+  minTemp: number;
+  maxTemp: number;
+  minBattAton: number;
+  maxBattAton: number;
+  meanBattAton: number;
+  medianBattAton: number;
+  stddevBattAton: number;
+  skewBattAton: number;
+  kurtBattAton: number;
+  minBattLant: number;
+  maxBattLant: number;
+  meanBattLant: number;
+  medianBattLant: number;
+  stddevBattLant: number;
+  skewBattLant: number;
+  kurtBattLant: number;
+  off_pos: string;
+  msg6Count: number;
+  siteTx: string;
+  rownum: number;
+  at_ts: string;
+  lastseen: string;
+  last_maintain: string;
   message6: MessageType6[]
   message21: MessageType21[]
 }

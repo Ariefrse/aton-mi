@@ -1,5 +1,5 @@
 
-type HoverInfoProps = {
+export type HoverInfoProps = {
   latitude: number;
   longitude: number;
   lantBatt: number;

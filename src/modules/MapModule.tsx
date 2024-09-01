@@ -1,20 +1,24 @@
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef, NavigationControl } from "react-map-gl";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
 import AtonSummary from "../components/AtonSummary";
 import { CiViewTable } from "react-icons/ci";
 import { RiRefreshLine } from "react-icons/ri";
-import { LayersList } from "@deck.gl/core";
-import HoverInfo from "../components/HoverInfo";
+import { LayersList, PickingInfo } from "@deck.gl/core";
+import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-import { AtonData, MessageType21, MessageType6 } from "../declarations/types/types";
+import {
+  AtonData,
+  MessageType21,
+  MessageType6,
+} from "../declarations/types/types";
 
 export default function MapModule() {
   const { toggles, setToggles, atonData, setAtonData } = useAtonStore();
@@ -22,7 +26,7 @@ export default function MapModule() {
   // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState({});
+  const [hoverInfo, setHoverInfo] = useState<HoverInfoProps>();
   const [initialViewState, setInitialViewState] = useState({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -35,8 +39,8 @@ export default function MapModule() {
     async function fetchData() {
       try {
         const atonMetaDataFetch = await fetch(
-          "http://localhost:3000/api/initial-aton-load"
-        );
+          "http://localhost:3000/api/aton-statistics"
+        )
         const atonMetaData: AtonData[] = await atonMetaDataFetch.json()
 
         // Fetch message 21 only for mmsi in atonList table
@@ -49,12 +53,15 @@ export default function MapModule() {
             },
             body: JSON.stringify({
               messageType: "pnav.ais_type21",
-              mmsi: atonMetaData?.map((aton) => aton.mmsi).toString(),
+              mmsi: atonMetaData?.map((aton) => aton.al_mmsi),
               startTs: "2024-08-30 04:00:47", // TODO: This should read from user filter
-              endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+              endTs: "2024-08-31 04:35:47", // TODO: This should read from user filter
             }),
           }
         );
+
+        const message21Data: MessageType21[] = await message21Fetch.json();
+        console.log("message21Data", message21Data);
 
         const message6Fetch = await fetch(
           "http://localhost:3000/api/ais-messages",
@@ -65,15 +72,15 @@ export default function MapModule() {
             },
             body: JSON.stringify({
               messageType: "pnav.ais_type6_533",
-              mmsi: atonMetaData?.map((aton) => aton.mmsi).toString(),
-              startTs: "2024-08-29 04:35:47", // TODO: This should read from user filter
-              endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+              mmsi: atonMetaData?.map((aton) => aton.al_mmsi),
+              startTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+              endTs: "2024-08-31 04:35:47", // TODO: This should read from user filter
             }),
           }
         );
 
-        const message21Data: MessageType21[] = await message21Fetch.json();
         const message6Data: MessageType6[] = await message6Fetch.json();
+        console.log("message6Data", message6Data);
 
         const atonDataMap = atonMetaData.map((aton) => ({
           ...aton,
@@ -81,19 +88,18 @@ export default function MapModule() {
           message6: [] as MessageType6[],
         }));
 
-        console.log('jjj', atonDataMap)
-
         message21Data.forEach((message) => {
-          const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
+          const aton = atonDataMap.find((a) => a.al_mmsi === message.mmsi);
           if (aton) aton.message21.push(message);
         });
 
         message6Data.forEach((message) => {
-          const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
+          const aton = atonDataMap.find((a) => a.al_mmsi === message.mmsi);
           if (aton) aton.message6.push(message);
         });
 
-        setAtonData(atonDataMap)
+        setAtonData(atonDataMap);
+        console.log("jjj", atonData ?? 'kkk');
 
         const newLayers = atonDataMap?.map((aton) => {
           const longitude = aton?.message21[0].longitude;
@@ -104,23 +110,29 @@ export default function MapModule() {
             data: [
               {
                 position: [longitude, latitude],
-                atonname: aton?.name,
+                atonname: aton?.al_name,
                 longitude,
                 latitude,
-                structure: aton?.type,
+                structure: aton?.al_type,
               },
             ],
-            getRadius: 800,
+            getRadius: 5000,
             getFillColor: [255, 0, 0],
             pickable: true,
-            onHover: (info) => {
-              if (info.object) {
-                setHoverInfo({
-                  latitude,
-                  longitude,
-                });
-              } else setHoverInfo({});
-            },
+            onHover: useCallback(
+              (info: PickingInfo) => {
+                if (info.object) {
+                  setHoverInfo({
+                    longitude,
+                    latitude,
+                    lantBatt: aton?.message6[0].volt_int,
+                    x: info.x,
+                    y: info.y,
+                  });
+                } else setHoverInfo(undefined);
+              },
+              [setHoverInfo]
+            ),
           });
         });
 

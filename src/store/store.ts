@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AtonData, AtonStatus, AtonType } from "../declarations/types/types";
+import { AtonData, AtonStatsReportData, AtonStatus, AtonType } from "../declarations/types/types";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
