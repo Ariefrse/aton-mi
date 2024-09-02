@@ -96,6 +96,7 @@ export type AtonStore = {
   mmsi?: number
   type?: AtonType
   name?: string
+  region?: string
   al_mmsi?: number
   al_type?: string
   al_name?: string

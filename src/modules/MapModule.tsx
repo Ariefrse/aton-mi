@@ -40,8 +40,7 @@ export default function MapModule() {
       try {
         console.log("Fetching AtoN metadata...");
         const atonMetaDataFetch = await fetch(
-          // "http://localhost:3000/api/aton-list"
-          "10.10.20.200:8020/aton/lists"
+          "http://localhost:3000/aton/list"
         );
         const atonMetaData: AtonStore[] =
           await atonMetaDataFetch.json();
