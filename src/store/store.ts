@@ -3,6 +3,7 @@ import { AtonData, AtonStatus, AtonType } from "../declarations/types/types";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
+  hoverInfo: boolean
   legend: boolean;
   legendToggleBtn: boolean;
   atonSummaryToggleBtn: boolean;
@@ -39,6 +40,7 @@ type AtonStoreState = {
 export const useAtonStore = create<AtonStoreState>((set) => ({
   atonData: [],
   toggles: {
+    hoverInfo: false,
     legend: false,
     legendToggleBtn: true,
     atonSummaryToggleBtn: true,

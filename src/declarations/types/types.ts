@@ -26,7 +26,7 @@ export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
 export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
 export type MessageType = keyof typeof AIS_MESSAGE_TYPES
 
-export type MessageType6 = {
+export type Msg6 = {
   packageType: string;
   packageID: number;
   packageCh: string;
@@ -65,7 +65,7 @@ export type MessageType6 = {
   buoy_solarcharging: number;
 };
 
-export type MessageType21 = {
+export type Msg21 = {
   packageType: string;
   packageCh: PackageCh;
   messageType: number;
@@ -99,6 +99,6 @@ export type AtonData = {
   al_mmsi?: number
   al_type?: string
   al_name?: string
-  message6?: MessageType6[]
-  message21?: MessageType21[]
+  msg6?: Partial<Msg6>[]
+  msg21?: Partial<Msg21>[]
 }

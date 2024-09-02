@@ -1,8 +1,8 @@
 
 type HoverInfoProps = {
-  latitude: number;
-  longitude: number;
-  lantBatt: number;
+  mmsi: number;
+  name: string;
+  // lantBatt: number;
   x: number;
   y: number;
 };
@@ -18,11 +18,11 @@ function HoverInfo({ hoverInfo }: { hoverInfo: HoverInfoProps }) {
       }}
     >
       <div>
-        <strong>Latitude:</strong> {hoverInfo.latitude}
+        <p className="font-bold">{hoverInfo.name}</p>
         <br />
-        <strong>Longitude:</strong> {hoverInfo.longitude}
+        <p>{hoverInfo.mmsi}</p>
         <br />
-        <strong>Lant Battery:</strong> {hoverInfo.lantBatt}
+        {/* <strong>Lant Battery:</strong> {hoverInfo.lantBatt} */}
         <br />
       </div>
     </div>

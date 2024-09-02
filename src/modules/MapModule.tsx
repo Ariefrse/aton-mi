@@ -16,8 +16,8 @@ import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
 import {
   AtonData,
-  MessageType21,
-  MessageType6,
+  Msg21,
+  Msg6,
 } from "../declarations/types/types";
 
 export default function MapModule() {
@@ -42,15 +42,16 @@ export default function MapModule() {
         const atonMetaDataFetch = await fetch(
           "http://localhost:3000/api/aton-list"
         );
-        const atonMetaData: Partial<AtonData[]> =
+        const atonMetaData: AtonData[] =
           await atonMetaDataFetch.json();
 
         console.log("AtoN metadata fetched:", atonMetaData);
 
-        let message21Data: MessageType21[] = [];
+        type Msg21MapData = Pick<Msg21, 'mmsi' | 'longitude' | 'latitude'>;
+        let msg21Data: Msg21MapData[] = [];
         try {
           console.log("Fetching MessageType21 data...");
-          const message21Fetch = await fetch(
+          const msg21Fetch = await fetch(
             "http://localhost:3000/api/ais-messages",
             {
               method: "POST",
@@ -63,89 +64,53 @@ export default function MapModule() {
               }),
             }
           );
-          message21Data = await message21Fetch.json();
-          console.log("MessageType21 data fetched:", message21Data);
+          msg21Data = await msg21Fetch.json();
+          console.log("MessageType21 data fetched:", msg21Data);
         } catch (error) {
           console.error("Error fetching Msg21 data:", error);
         }
 
-        let message6Data: MessageType6[] = [];
-        try {
-          console.log("Fetching MessageType6 data...");
-          const message6Fetch = await fetch(
-            "http://localhost:3000/api/ais-messages",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                messageType: "pnav.ais_type6_533",
-                mmsi: atonMetaData?.map((aton) => aton?.mmsi).toString(),
-                startTs: "2024-08-29 04:35:47", // TODO: This should read from user filter
-                endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
-              }),
-            }
-          );
-          message6Data = await message6Fetch.json();
-          console.log("MessageType6 data fetched:", message6Data);
-        } catch (error) {
-          console.error("Error fetching Msg6 data:", error);
-        }
+        // let msg6Data: Msg6[] = []; // TODO: To enable when confirmed with team
+        // try {
+        //   console.log("Fetching MessageType6 data...");
+        //   const msg6Fetch = await fetch(
+        //     "http://localhost:3000/api/ais-messages",
+        //     {
+        //       method: "POST",
+        //       headers: { "Content-Type": "application/json" },
+        //       body: JSON.stringify({
+        //         messageType: "pnav.ais_type6_533",
+        //         mmsi: atonMetaData?.map((aton) => aton?.mmsi).toString(),
+        //         startTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+        //         endTs: "2024-08-31 04:35:47", // TODO: This should read from user filter
+        //       }),
+        //     }
+        //   );
+        //   msg6Data = await msg6Fetch.json();
+        //   console.log("MessageType6 data fetched:", msg6Data);
+        // } catch (error) {
+        //   console.error("Error fetching Msg6 data:", error);
+        // }
 
         const atonDataMap = atonMetaData.map((aton) => ({
           ...aton,
-          message21: [] as MessageType21[],
-          message6: [] as MessageType6[],
+          msg21: [] as Msg21MapData[],
+          // msg6: [] as Msg6[],
         }));
 
         console.log("Mapping AtoN data with fetched messages...");
-        message21Data.forEach((message) => {
+        msg21Data.forEach((message) => {
           const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
-          if (aton) aton.message21.push(message);
+          if (aton) aton.msg21.push(message);
         });
 
-        message6Data.forEach((message) => {
-          const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
-          if (aton) aton.message6.push(message);
-        });
+        // msg6Data.forEach((message) => {
+        //   const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
+        //   if (aton) aton.msg6.push(message);
+        // });
 
         console.log("Final AtoN data map:", atonDataMap);
         setAtonData(atonDataMap);
-
-        const newLayers = atonData?.map((aton) => {
-          if (!aton?.message21) return;
-          const longitude = aton?.message21[0]?.longitude;
-          const latitude = aton?.message21[0]?.latitude;
-
-          return new ScatterplotLayer({
-            id: `${aton?.mmsi}`,
-            data: [
-              {
-                position: [longitude, latitude],
-                atonname: aton?.name,
-                structure: aton?.type,
-              },
-            ],
-            getRadius: 5000,
-            getPosition: (d) => d.position,
-            getFillColor: [255, 0, 0],
-            pickable: true,
-            onHover: (info) => {
-              if (info.object) {
-                setHoverInfo({
-                  latitude,
-                  longitude,
-                  lantBatt: aton?.mmsi,
-                  x: info.x,
-                  y: info.y,
-                });
-              } else setHoverInfo({});
-            },
-          });
-        });
-
-        setLayers((prevLayers) =>
-          prevLayers ? [...prevLayers, ...newLayers] : newLayers
-        );
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
       }
@@ -153,6 +118,54 @@ export default function MapModule() {
 
     fetchData()
   }, []);
+
+  useEffect(() => {
+    const newLayers = atonData
+      ?.map((aton, index) => {
+        if (!aton?.msg21) return null;
+
+        const long = aton?.msg21[0]?.longitude;
+        const lat = aton?.msg21[0]?.latitude;
+
+        const layerId = `scatterplot-layer-${aton.mmsi}-${index}`;
+
+        return new ScatterplotLayer({
+          id: layerId,
+          data: [
+            {
+              position: [long, lat],
+              name: aton?.al_name ?? aton?.name,
+              mmsi: aton?.al_mmsi ?? aton?.mmsi,
+              type: aton?.al_type ?? aton?.type,
+              msg21: aton?.msg21,
+              msg6: aton?.msg6,
+            },
+          ],
+          getRadius: 800,
+          getPosition: (d) => d.position,
+          getFillColor: [255, 0, 0],
+          pickable: true,
+          onHover: (info) => {
+            console.log('info', info)
+            if (info.object) {
+              setHoverInfo({
+                name: info?.object?.name,
+                mmsi: info?.object?.mmsi,
+                x: info.x,
+                y: info.y,
+              });
+            } else {
+              setHoverInfo({});
+            }
+          },
+        });
+      })
+      .filter((layer) => layer !== null);
+
+    setLayers(newLayers);
+  }, [atonData]);
+
+
 
   const toggleTableModule = () => {
     setToggles({
