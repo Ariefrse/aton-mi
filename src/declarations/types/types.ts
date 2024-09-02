@@ -92,7 +92,7 @@ export type Msg21 = {
   assigned: number;
 };
 
-export type AtonData = {
+export type AtonStore = {
   mmsi?: number
   type?: AtonType
   name?: string

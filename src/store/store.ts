@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AtonData, AtonStatus, AtonType } from "../declarations/types/types";
+import { AtonStore, AtonStatus, AtonType } from "../declarations/types/types";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -27,12 +27,12 @@ type TableFilterOptions = {
 };
 
 type AtonStoreState = {
-  atonData?: AtonData[]
+  atonData?: AtonStore[]
 
   toggles: Toggles;
   tableOptions: TableFilterOptions;
 
-  setAtonData: (data: AtonData[]) => void;
+  setAtonData: (data: AtonStore[]) => void;
   setToggles: (modal: Toggles) => void;
   setTableOptions: (options: TableFilterOptions) => void;
 };

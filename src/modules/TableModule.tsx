@@ -1,5 +1,5 @@
 
-import { AtonDataForTable, AtonData } from "../declarations/types/types";
+import { AtonDataForTable, AtonStore } from "../declarations/types/types";
 import { allAtonData } from "../dummy-data/all-aton";
 import { useAtonStore } from "../store/store";
 
@@ -48,7 +48,7 @@ export default function TableModule() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {allAtonData.map((atonData: AtonData) => (
+                {allAtonData.map((atonData: AtonStore) => (
                   <tr key={atonData.mmsi}>
                     {headers.map((header) => (
                       <td

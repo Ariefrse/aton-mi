@@ -1,61 +1,48 @@
-import { useEffect, useState, useCallback } from "react";
-import { AtonMsgCountResDto, AtonInitialCountResDto, AtonStatsResDto, AllAtonResDto, AtonWsPayload } from "../declarations/dtos/dtos";
-import { useAtonStore } from "../store/store";
+import { AtonType, Msg21, Msg6 } from "../declarations/types/types";
 
-const WS_ENDPOINT = import.meta.env.VITE_WS_ENDPOINT;
-
-// TODO: Still issues with this hook.
-function useWebSocket() {
-  const [ws, setWs] = useState<WebSocket | null>(null);
-  const {
-    setAtonMsgCount,
-    setAtonStatsData,
-    setAtonInitialData: setAtonInitialCount,
-    setAllAtonData,
-  } = useAtonStore();
-
-  useEffect(() => {
-    const initWs = new WebSocket(WS_ENDPOINT);
-
-    initWs.onopen = () => {
-      setWs(initWs);
-      console.log("WebSocket connected");
-    };
-
-    initWs.onmessage = (event) => {
-      if (event instanceof MessageEvent) {
-        const data = JSON.parse(event.data);
-
-        if (data.payload === "getatonmessagecount")
-          setAtonMsgCount(data as AtonMsgCountResDto);
-        if (data.payload === "getatoninitialcount")
-          setAtonInitialCount(data as AtonInitialCountResDto);
-        if (data.payload === "getatonstatistics")
-          setAtonStatsData([data] as AtonStatsResDto[]);
-        if (data.payload === "getallaton")
-          setAllAtonData([data] as AllAtonResDto[]);
-      }
-    };
-
-    initWs.onclose = () => {
-      setWs(null);
-      console.log("WebSocket closed");
-    };
-
-    initWs.onerror = () => console.error("WebSocket error");
-
-    return () => initWs.close();
-  }, []);
-
-  const sendMsg = useCallback((payload: AtonWsPayload) => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(payload);
-    } else {
-      console.error("WebSocket is not connected or not ready");
-    }
-  }, [ws]);
-
-  return sendMsg;
+export async function fetchAtonList() {
+  try {
+    const response = await fetch('10.10.20.200:8020/aton/lists');
+    const atonList = await response.json() as Aton[]
+    return atonList;
+  } catch (error) {
+    console.error('Failed to fetch aton list :', error)
+  }
 }
 
-export default useWebSocket;
+type Aton = {
+  name: string
+  region: string
+  mmsi: number
+  type: AtonType
+}
+
+export async function fetchAton(mmsi: number) {
+  try {
+    const response = await fetch(`10.10.20.200:8020/aton/${mmsi}`);
+    const aton = await response.json() as Aton
+    return aton
+  } catch (error) {
+    console.error('Failed to fetch aton :', error)
+  }
+}
+
+export async function fetchMessage21(mmsi: number) {
+  try {
+    const response = await fetch(`10.10.20.200:8020/aton/msg21/${mmsi}`);
+    const message21 = await response.json() as Msg21[]
+    return message21
+  } catch (error) {
+    console.error('Failed to fetch message21 :', error)
+  }
+}
+
+export async function fetchMessage6(mmsi: number) {
+  try {
+    const response = await fetch(`10.10.20.200:8020/aton/msg6/${mmsi}`);
+    const message6 = await response.json() as Msg6[]
+    return message6
+  } catch (error) {
+    console.error('Failed to fetch message21 :', error)
+  }
+}

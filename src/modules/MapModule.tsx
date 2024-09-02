@@ -15,7 +15,7 @@ import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
 import {
-  AtonData,
+  AtonStore,
   Msg21,
   Msg6,
 } from "../declarations/types/types";
@@ -40,9 +40,10 @@ export default function MapModule() {
       try {
         console.log("Fetching AtoN metadata...");
         const atonMetaDataFetch = await fetch(
-          "http://localhost:3000/api/aton-list"
+          // "http://localhost:3000/api/aton-list"
+          "10.10.20.200:8020/aton/lists"
         );
-        const atonMetaData: AtonData[] =
+        const atonMetaData: AtonStore[] =
           await atonMetaDataFetch.json();
 
         console.log("AtoN metadata fetched:", atonMetaData);
@@ -50,22 +51,23 @@ export default function MapModule() {
         type Msg21MapData = Pick<Msg21, 'mmsi' | 'longitude' | 'latitude'>;
         let msg21Data: Msg21MapData[] = [];
         try {
-          console.log("Fetching MessageType21 data...");
-          const msg21Fetch = await fetch(
-            "http://localhost:3000/api/ais-messages",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                messageType: "pnav.ais_type21",
-                mmsi: atonMetaData?.map((aton) => aton?.mmsi).toString(),
-                startTs: "2024-08-30 04:00:47", // TODO: This should read from user filter
-                endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
-              }),
-            }
-          );
-          msg21Data = await msg21Fetch.json();
-          console.log("MessageType21 data fetched:", msg21Data);
+          // console.log("Fetching MessageType21 data...");
+          // const msg21Fetch = await fetch(
+          //   "http://localhost:3000/api/ais-messages",
+          //   {
+          //     method: "POST",
+          //     headers: { "Content-Type": "application/json" },
+          //     body: JSON.stringify({
+          //       messageType: "pnav.ais_type21",
+          //       mmsi: atonMetaData?.map((aton) => aton?.mmsi).toString(),
+          //       startTs: "2024-08-30 04:00:47", // TODO: This should read from user filter
+          //       endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+          //     }),
+          //   }
+          // );
+          // msg21Data = await msg21Fetch.json();
+          // console.log("MessageType21 data fetched:", msg21Data);
+
         } catch (error) {
           console.error("Error fetching Msg21 data:", error);
         }
