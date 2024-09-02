@@ -93,12 +93,12 @@ export type MessageType21 = {
 };
 
 export type AtonData = {
-  mmsi: number
-  type: AtonType
-  name: string
+  mmsi?: number
+  type?: AtonType
+  name?: string
   al_mmsi?: number
   al_type?: string
   al_name?: string
-  message6: MessageType6[]
-  message21: MessageType21[]
+  message6?: MessageType6[]
+  message21?: MessageType21[]
 }

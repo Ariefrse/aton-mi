@@ -14,7 +14,11 @@ import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-import { AtonData, MessageType21, MessageType6 } from "../declarations/types/types";
+import {
+  AtonData,
+  MessageType21,
+  MessageType6,
+} from "../declarations/types/types";
 
 export default function MapModule() {
   const { toggles, setToggles, atonData, setAtonData } = useAtonStore();
@@ -32,48 +36,60 @@ export default function MapModule() {
   });
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(){
       try {
+        console.log("Fetching AtoN metadata...");
         const atonMetaDataFetch = await fetch(
-          "http://localhost:3000/api/initial-aton-load"
+          "http://localhost:3000/api/aton-list"
         );
-        const atonMetaData: AtonData[] = await atonMetaDataFetch.json()
+        const atonMetaData: Partial<AtonData[]> =
+          await atonMetaDataFetch.json();
 
-        // Fetch message 21 only for mmsi in atonList table
-        const message21Fetch = await fetch(
-          "http://localhost:3000/api/ais-messages",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              messageType: "pnav.ais_type21",
-              mmsi: atonMetaData?.map((aton) => aton.mmsi).toString(),
-              startTs: "2024-08-30 04:00:47", // TODO: This should read from user filter
-              endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
-            }),
-          }
-        );
+        console.log("AtoN metadata fetched:", atonMetaData);
 
-        const message6Fetch = await fetch(
-          "http://localhost:3000/api/ais-messages",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              messageType: "pnav.ais_type6_533",
-              mmsi: atonMetaData?.map((aton) => aton.mmsi).toString(),
-              startTs: "2024-08-29 04:35:47", // TODO: This should read from user filter
-              endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
-            }),
-          }
-        );
+        let message21Data: MessageType21[] = [];
+        try {
+          console.log("Fetching MessageType21 data...");
+          const message21Fetch = await fetch(
+            "http://localhost:3000/api/ais-messages",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                messageType: "pnav.ais_type21",
+                mmsi: atonMetaData?.map((aton) => aton?.mmsi).toString(),
+                startTs: "2024-08-30 04:00:47", // TODO: This should read from user filter
+                endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+              }),
+            }
+          );
+          message21Data = await message21Fetch.json();
+          console.log("MessageType21 data fetched:", message21Data);
+        } catch (error) {
+          console.error("Error fetching Msg21 data:", error);
+        }
 
-        const message21Data: MessageType21[] = await message21Fetch.json();
-        const message6Data: MessageType6[] = await message6Fetch.json();
+        let message6Data: MessageType6[] = [];
+        try {
+          console.log("Fetching MessageType6 data...");
+          const message6Fetch = await fetch(
+            "http://localhost:3000/api/ais-messages",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                messageType: "pnav.ais_type6_533",
+                mmsi: atonMetaData?.map((aton) => aton?.mmsi).toString(),
+                startTs: "2024-08-29 04:35:47", // TODO: This should read from user filter
+                endTs: "2024-08-30 04:35:47", // TODO: This should read from user filter
+              }),
+            }
+          );
+          message6Data = await message6Fetch.json();
+          console.log("MessageType6 data fetched:", message6Data);
+        } catch (error) {
+          console.error("Error fetching Msg6 data:", error);
+        }
 
         const atonDataMap = atonMetaData.map((aton) => ({
           ...aton,
@@ -81,8 +97,7 @@ export default function MapModule() {
           message6: [] as MessageType6[],
         }));
 
-        console.log('jjj', atonDataMap)
-
+        console.log("Mapping AtoN data with fetched messages...");
         message21Data.forEach((message) => {
           const aton = atonDataMap.find((a) => a.mmsi === message.mmsi);
           if (aton) aton.message21.push(message);
@@ -93,11 +108,13 @@ export default function MapModule() {
           if (aton) aton.message6.push(message);
         });
 
-        setAtonData(atonDataMap)
+        console.log("Final AtoN data map:", atonDataMap);
+        setAtonData(atonDataMap);
 
-        const newLayers = atonDataMap?.map((aton) => {
-          const longitude = aton?.message21[0].longitude;
-          const latitude = aton?.message21[0].latitude;
+        const newLayers = atonData?.map((aton) => {
+          if (!aton?.message21) return;
+          const longitude = aton?.message21[0]?.longitude;
+          const latitude = aton?.message21[0]?.latitude;
 
           return new ScatterplotLayer({
             id: `${aton?.mmsi}`,
@@ -105,12 +122,11 @@ export default function MapModule() {
               {
                 position: [longitude, latitude],
                 atonname: aton?.name,
-                longitude,
-                latitude,
                 structure: aton?.type,
               },
             ],
-            getRadius: 800,
+            getRadius: 5000,
+            getPosition: (d) => d.position,
             getFillColor: [255, 0, 0],
             pickable: true,
             onHover: (info) => {
@@ -118,6 +134,9 @@ export default function MapModule() {
                 setHoverInfo({
                   latitude,
                   longitude,
+                  lantBatt: aton?.mmsi,
+                  x: info.x,
+                  y: info.y,
                 });
               } else setHoverInfo({});
             },
@@ -130,9 +149,9 @@ export default function MapModule() {
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
       }
-    }
+    };
 
-    fetchData();
+    fetchData()
   }, []);
 
   const toggleTableModule = () => {
