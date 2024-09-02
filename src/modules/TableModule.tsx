@@ -1,69 +1,117 @@
-
 import { useEffect, useState } from "react";
-import { AtonStatistics, AtonStore } from "../declarations/types/types";
-import { allAtonData } from "../dummy-data/all-aton";
+import { AtonStatistics } from "../declarations/types/types";
 import { fetchAtonStats } from "../api/aton-api";
+import { ColumnDefinition, ReactTabulator } from "react-tabulator";
+import { useAtonStore } from "../store/store";
 
 export default function TableModule() {
-  const [tableData, setTableData ] = useState<AtonStatistics[]>()
+  const [tableData, setTableData] = useState<AtonStatistics[]>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async () => {
       try {
         const data = await fetchAtonStats();
-        setTableData(data)
+        setTableData(data);
       } catch (error) {
-        console.error('Error fetching table data', error)
+        console.error("Error fetching table data", error);
       }
-    }
-  }, [])
+    };
+  }, []);
 
-  if (!tableData) return
-  const headers = Object.keys(tableData[0]);
+  const getFormatter = (condition: (value: number | string) => boolean) => {
+    const color = "rgba(29, 78, 216, 1)";
+    return (cell: any) => {
+      const value = cell.getValue();
+      const isNumber = typeof value === "number";
+      const shouldColor = isNumber && condition(value);
+      cell.getElement().style.backgroundColor = shouldColor ? color : "";
+      return value;
+    };
+  };
+
+  const columns: ColumnDefinition[] = [
+    { title: "No", field: "no", formatter: "rownum" },
+    { title: "Site Name", field: "al_name", headerFilter: "input", width: 100 },
+    { title: "MMSI", field: "mmsi", headerFilter: "input", width: 100 },
+    { title: "Structure", field: "al_type", headerFilter: "input", width: 100 },
+    { title: "Region", field: "al_region", headerFilter: "input", width: 120 },
+    { title: "Min. Temp.", field: "minTemp" },
+    { title: "Max. Temp.", field: "maxTemp" },
+    {
+      title: "Min Batt ATON",
+      field: "minBattAton",
+      formatter: getFormatter(
+        (value) => typeof value === "number" && value < 12.0
+      ),
+    },
+    {
+      title: "Max Batt ATON",
+      field: "maxBattAton",
+      formatter: getFormatter(
+        (value) => typeof value === "number" && value > 15.0
+      ),
+    },
+    { title: "Avg BattATON", field: "meanBattAton" },
+    { title: "Stddev Batt ATON", field: "stddevBattAton" },
+    { title: "Skew Batt ATON", field: "skewBattAton" },
+    { title: "Kurt Batt ATON", field: "kurtBattAton" },
+    {
+      title: "Min Batt Lantern",
+      field: "minBattLant",
+      formatter: getFormatter(
+        (value) => typeof value === "number" && value < 12.0
+      ),
+    },
+    {
+      title: "Max Batt Lantern",
+      field: "maxBattLant",
+      formatter: getFormatter(
+        (value) => typeof value === "number" && value > 15.0
+      ),
+    },
+    { title: "Avg. Batt Lantern", field: "meanBattLant" },
+    { title: "Stddev Batt Lantern", field: "stddevBattLant" },
+    { title: "Skew Batt Lantern", field: "skewBattLant" },
+    { title: "Kurt Batt Lantern", field: "kurtBattLant" },
+    {
+      title: "off Position",
+      field: "off_pos",
+      headerFilter: "input",
+      formatter: getFormatter((value) => value === "NG"),
+    },
+    {
+      title: "Message 6 Counting",
+      field: "msg6Count",
+      formatter: getFormatter(
+        (value) => typeof value === "number" && value <= 0
+      ),
+    },
+    {
+      title: "Site with Message 6",
+      field: "siteTx",
+      headerFilter: "input",
+      formatter: getFormatter((value) => value === "NG"),
+    },
+    { title: "Last Seen (Second)", field: "at_ts" },
+    { title: "Last Maintain", field: "last_maintain" },
+  ];
 
   return (
-    <div className="relative h-screen">
-      <div className="absolute inset-0 flex justify-center items-center">
-        <div className="relative w-full h-full bg-gray-900 bg-opacity-50 shadow-lg rounded-lg overflow-hidden">
-          <div className="overflow-x-auto overflow-y-auto h-[98%] w-[98%] m-auto">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-gray-50">
-                <tr>
-                  {headers.map((header) => (
-                    <th
-                      key={header}
-                      scope="col"
-                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                    >
-                      {header.charAt(0).toUpperCase() + header.slice(1)}
-                    </th>
-                  ))}
-                  <th
-                    scope="col"
-                    className="relative py-3.5 pl-3 pr-4 sm:pr-6"
-                  >
-                    <span className="sr-only">Edit</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {tableData.map((atonData: AtonStatistics) => (
-                  <tr key={atonData.mmsi}>
-                    {headers.map((header) => (
-                      <td
-                        key={header}
-                        className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-6"
-                      >
-                        {atonData[header as keyof AtonStatistics]}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <div className="z-50 absolute top-10 left-10 m-auto bg-gray-600 rounded-md bg-opacity-90">
+      <ReactTabulator
+        columns={columns}
+        data={tableData}
+        options={{
+          height: "500px",
+          layout: "fitColumns",
+          pagination: "local",
+          paginationSize: 10,
+          movableColumns: true,
+          movableRows: true,
+        }}
+      />
     </div>
   );
 }
