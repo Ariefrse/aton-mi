@@ -1,26 +1,25 @@
 
-import { AtonDataForTable, AtonStore } from "../declarations/types/types";
+import { useEffect, useState } from "react";
+import { AtonStatistics, AtonStore } from "../declarations/types/types";
 import { allAtonData } from "../dummy-data/all-aton";
-import { useAtonStore } from "../store/store";
+import { fetchAtonStats } from "../api/aton-api";
 
 export default function TableModule() {
-  const {  } = useAtonStore()
+  const [tableData, setTableData ] = useState<AtonStatistics[]>()
 
-  const headers = Object.keys(allAtonData[0]);
+  useEffect(() => {
+    async () => {
+      try {
+        const data = await fetchAtonStats();
+        setTableData(data)
+      } catch (error) {
+        console.error('Error fetching table data', error)
+      }
+    }
+  }, [])
 
-  // function transformAtonArray(atonArray: AtonDetailedData[]): AtonDataForTable[] {
-  //   return atonArray.flatMap((aton) =>
-  //     aton.data.map((data) => ({
-  //       mmsi: aton.mmsi,
-  //       type: aton.type,
-  //       name: aton.name,
-  //       al_mmsi: aton.al_mmsi,
-  //       al_type: aton.al_type,
-  //       al_name: aton.al_name,
-  //       ...data,
-  //     }))
-  //   );
-  // }
+  if (!tableData) return
+  const headers = Object.keys(tableData[0]);
 
   return (
     <div className="relative h-screen">
@@ -48,24 +47,16 @@ export default function TableModule() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {allAtonData.map((atonData: AtonStore) => (
+                {tableData.map((atonData: AtonStatistics) => (
                   <tr key={atonData.mmsi}>
                     {headers.map((header) => (
                       <td
                         key={header}
                         className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-6"
                       >
-                        {atonData[header]}
+                        {atonData[header as keyof AtonStatistics]}
                       </td>
                     ))}
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <a
-                        href="#"
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit<span className="sr-only">, {atonData.name}</span>
-                      </a>
-                    </td>
                   </tr>
                 ))}
               </tbody>
