@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { AtonDetailedData, AtonInitialData } from "../declarations/types/types";
+import { AtonData, AtonStatus, AtonType } from "../declarations/types/types";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
+  hoverInfo: boolean
   legend: boolean;
   legendToggleBtn: boolean;
   atonSummaryToggleBtn: boolean;
@@ -13,28 +14,33 @@ type Toggles = {
   messageCountOverview: boolean;
 };
 
+export type GlobalAtonFilterOptions = {
+  structure: AtonType
+  condition: AtonStatus | 'All'
+  regions: 'North' | 'South' | 'East' | 'West' | 'Borneo'
+  atonPropertyToFilter: 'No Message 21' | 'No Message 6' | 'Light Error' | 'Low Batt AtoN' | 'Low Batt Lantern' | 'Bad LDR' | 'Off Position'
+}
+
 type TableFilterOptions = {
   fromDate: string
   toDate: string;
 };
 
 type AtonStoreState = {
-  atonInitialData: AtonInitialData[] | null;
-  atonDetailedData: AtonDetailedData[] | null;
+  atonData?: AtonData[]
 
   toggles: Toggles;
   tableOptions: TableFilterOptions;
 
-  setAtonInitialData: (data: AtonInitialData[]) => void;
-  setAtonDetailedData: (data: AtonDetailedData[]) => void;
+  setAtonData: (data: AtonData[]) => void;
   setToggles: (modal: Toggles) => void;
   setTableOptions: (options: TableFilterOptions) => void;
 };
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
-  atonInitialData: [],
-  atonDetailedData: [],
+  atonData: [],
   toggles: {
+    hoverInfo: false,
     legend: false,
     legendToggleBtn: true,
     atonSummaryToggleBtn: true,
@@ -51,8 +57,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     sortOrder: "asc",
   },
 
-  setAtonInitialData: (data) => set({ atonInitialData: data }),
-  setAtonDetailedData: (data) => set({ atonDetailedData: data }),
+  setAtonData: (data) => set({ atonData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableOptions: (options) => set({ tableOptions: options }),
 }));

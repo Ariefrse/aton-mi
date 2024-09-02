@@ -232,5 +232,3 @@ function transformAtonArray(atonArray: Aton[]): AtonData[] {
     }))
   );
 }
-
-console.log(transformAtonArray(allAtonData))

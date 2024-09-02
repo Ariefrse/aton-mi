@@ -1,6 +1,6 @@
 import { IoMdCheckmarkCircle, IoMdClose } from "react-icons/io";
 import { useAtonStore } from "../store/store";
-import { Status } from "../declarations/types/types";
+import { AtonStatus } from "../declarations/types/types";
 
 const Legend = () => {
   const LEGEND_ITEMS = [
@@ -12,7 +12,7 @@ const Legend = () => {
     { color: "red", device: "Lighthouse", status: "NG" },
   ];
 
-  function mapColor(device: string, status: Status) {
+  function mapColor(device: string, status: AtonStatus) {
     switch (device) {
       case "Beacon":
         return status === "Good" ? "text-green-500" : "text-yellow-500";
