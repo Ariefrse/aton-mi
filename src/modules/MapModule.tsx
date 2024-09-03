@@ -17,6 +17,7 @@ import LegendToggleBtn from "../components/LegendToggleBtn";
 import { AtonType } from "../declarations/types/types";
 import { fetchAtonList } from "../api/aton-api";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
+import ClickOutside from "../components/ClickOutside";
 
 type MapAtonResDto = {
   last_BattAton: number;
@@ -82,10 +83,12 @@ export default function MapModule() {
           onClick: (info) => {
             if (info.object) {
               setToggles({ ...toggles, radialMenu: true });
-              setRadialMenuData({ position: { 
-                x: info.object.position[0], 
-                y: info.object.position[1]
-              } });
+              setRadialMenuData({
+                position: {
+                  x: info.object.position[0],
+                  y: info.object.position[1],
+                },
+              });
             } else {
               setRadialMenuData(null);
               setToggles({ ...toggles, radialMenu: false });

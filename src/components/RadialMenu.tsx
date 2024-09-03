@@ -2,6 +2,7 @@ import { Menu, MenuItem } from "@spaceymonk/react-radial-menu";
 import { BiMessageAltDetail } from "react-icons/bi";
 import { BsFileBarGraph } from "react-icons/bs";
 import { useAtonStore } from "../store/store";
+import ClickOutside from "./ClickOutside";
 
 export type RadialMenuProps = null | {
   position: {
@@ -29,26 +30,32 @@ function RadialMenu(props: RadialMenuProps) {
   if (!props) return null;
 
   return (
-    <Menu
-      centerX={props.position.x}
-      centerY={props.position.y}
-      innerRadius={75}
-      outerRadius={150}
-      animation={["fade", "scale"]}
-      animationTimeout={150}
-      drawBackground
-      show={toggles.radialMenu}
+    <ClickOutside
+      onClickOutside={() => {
+        setToggles({ ...toggles, radialMenu: false });
+      }}
     >
-      {menuItems.map((item) => (
-        <MenuItem
-          key={item.title}
-          onItemClick={() => item.onClick}
-          data={item.title}
-        >
-          {item.icon}
-        </MenuItem>
-      ))}
-    </Menu>
+      <Menu
+        centerX={props.position.x}
+        centerY={props.position.y}
+        innerRadius={10}
+        outerRadius={40}
+        animation={["fade", "scale"]}
+        animationTimeout={150}
+        drawBackground
+        show={toggles.radialMenu}
+      >
+        {menuItems.map((item) => (
+          <MenuItem
+            key={item.title}
+            onItemClick={() => item.onClick}
+            data={item.title}
+          >
+            {item.icon}
+          </MenuItem>
+        ))}
+      </Menu>
+    </ClickOutside>
   );
 }
 
