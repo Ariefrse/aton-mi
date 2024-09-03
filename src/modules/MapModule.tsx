@@ -44,6 +44,7 @@ export default function MapModule() {
     pitch: 0,
     bearing: 0,
   });
+  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/satellite-v9"); 
 
   useEffect(() => {
     async function fetchData() {
@@ -109,13 +110,19 @@ export default function MapModule() {
     });
   };
 
+  const handleMapStyleChange = (event) => {
+    const newStyle = event.target.value;
+    console.log("Changing map style to:", newStyle); // Debugging log
+    setMapStyle(newStyle);
+  };
+
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
       <div className="mb-4 flex justify-between items-center">
         {toggles.tableModule === true ? null : (
           <>
-            <h1 className="text-2xl font-bold">AtoN</h1>
-            <div className="flex gap-6 mr-8">
+            <h1 className="text-xl ">AtoN</h1>
+            <div className="flex gap-6 mr-6">
               <RiRefreshLine
                 fontSize={25}
                 className="text-blue-400 hover:cursor-pointer"
@@ -125,6 +132,18 @@ export default function MapModule() {
                 className="text-blue-400 hover:cursor-pointer"
                 onClick={toggleTableModule}
               />
+               <select
+                value={mapStyle}
+                onChange={handleMapStyleChange}
+                className="bg-gray-700 text-white p-2 rounded"
+              >
+                <option value="mapbox://styles/mapbox/satellite-v9">Satellite</option>
+                <option value="mapbox://styles/mapbox/streets-v11">Streets</option>
+                <option value="mapbox://styles/mapbox/outdoors-v11">Outdoors</option>
+                <option value="mapbox://styles/mapbox/light-v10">Light</option>
+                <option value="mapbox://styles/mapbox/dark-v10">Dark</option>
+              </select>
+            
             </div>
           </>
         )}
@@ -140,7 +159,7 @@ export default function MapModule() {
           <Map
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-            mapStyle="mapbox://styles/mapbox/satellite-v9"
+            mapStyle={mapStyle} 
             style={{
               zIndex: 0,
             }}
