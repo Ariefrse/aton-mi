@@ -28,7 +28,7 @@ const Legend = () => {
   const { toggles, setToggles } = useAtonStore();
 
   return (
-    <div className=" absolute bottom-2 right-2">
+    <div className=" absolute rounded-lg bg-gray-800 opacity-70 bottom-2 right-2">
       <div className="relative">
         <IoMdClose
           className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
@@ -47,8 +47,8 @@ const Legend = () => {
               className="px-2 flex gap-2 items-center text-gray-400 my-2 rounded-full"
             >
               <IoMdCheckmarkCircle
-                fontSize={20}
-                className={mapColor(item.device, item.status)}
+                fontSize={8}
+                className={mapColor(item.device, item.status as Status)}
               />{" "}
               {item.device + " - " + item.status}
             </p>

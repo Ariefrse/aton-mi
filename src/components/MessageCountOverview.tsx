@@ -25,6 +25,8 @@ ChartJS.register(
   Legend
 );
 
+
+
 // Data for each section
 const data = [
   {
@@ -119,19 +121,29 @@ const data = [
 const MessageCountOverview = () => {
   const { toggles, setToggles } = useAtonStore();
 
+  
+
   return (
-    <div className="relative">
-      <div className="bg-gray-700 z-10 p-4 rounded-lg h-full">
-        <div className="vessel-info-title">
-          <div className="flex justify-between">
-            <h4 className="text-lg font-bold">Message 6, 8, 21 Counting...</h4>
+   <div className=" bg-gray-700 opacity-80 z-0 p-4 rounded-lg h-full">
+      
             <IoMdClose
-              className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
+              className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-400" // Updated duration
               fontSize={24}
               onClick={() =>
-                setToggles({ ...toggles, messageCountOverview: false })
+                setToggles({
+                  ...toggles,
+                  messageCountOverview: false,
+                  atonSummaryToggleBtn: true, // Added this line
+                })
               }
             />
+            <div className="bg-gray-700 opacity-80 z-10 p-4 rounded-lg h-full">
+        <div className="vessel-info-title">
+          <div className="flex justify-between">
+          
+            <h2 className="mt-6 text-lg font-bold">Message 6, 8, 21 Counting...</h2>
+            <hr className="my-2 border-gray-600" />
+          </div>
           </div>
           {data.map((section, index) => (
             <Fragment key={index}>
@@ -145,7 +157,8 @@ const MessageCountOverview = () => {
           ))}
         </div>
       </div>
-    </div>
+   
+    
   );
 };
 
