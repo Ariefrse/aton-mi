@@ -11,12 +11,10 @@
 */
 import { AIS_MESSAGE_TYPES } from "../constants/constants";
 
-// Deck.GL Layer Types
 export type { Layer, LayersList } from "@deck.gl/core";
 export type { LineLayer, ScatterplotLayerProps } from '@deck.gl/layers';
 export type { HeatmapLayer, HexagonLayerProps } from '@deck.gl/aggregation-layers';
 
-// Others
 export type ShipTypeColorMap = { [key: number]: string; };
 
 export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse'
@@ -92,13 +90,45 @@ export type Msg21 = {
   assigned: number;
 };
 
-export type AtonData = {
-  mmsi?: number
-  type?: AtonType
-  name?: string
-  al_mmsi?: number
-  al_type?: string
-  al_name?: string
+export type AtonStore = {
+  last_BattAton: number;
+  latitude: number;
+  longitude: number;
+  meanBattAton: number;
+  mmsi: number;
+  name: string;
+  region: string;
+  ts: string;
   msg6?: Partial<Msg6>[]
   msg21?: Partial<Msg21>[]
 }
+
+export type AtonStatistics = {
+  ts: string;
+  mmsi: number;
+  minTemp: number;
+  maxTemp: number;
+  minBattAton: number;
+  maxBattAton: number;
+  meanBattAton: number;
+  medianBattAton: number;
+  stddevBattAton: number;
+  skewBattAton: number;
+  kurtBattAton: number;
+  minBattLant: number;
+  maxBattLant: number;
+  meanBattLant: number;
+  medianBattLant: number;
+  stddevBattLant: number;
+  skewBattLant: number;
+  kurtBattLant: number;
+  off_pos: number;
+  msg6: number;
+  rownum: number;
+  at_ts: string;
+  al_name: string;
+  al_mmsi: number;
+  al_region: string;
+  al_type: string;
+  lastseen: number;
+};

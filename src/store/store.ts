@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AtonData, AtonStatus, AtonType } from "../declarations/types/types";
+import { AtonStore, AtonStatus, AtonType } from "../declarations/types/types";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -14,6 +14,14 @@ type Toggles = {
   messageCountOverview: boolean;
 };
 
+type ViewState = {
+  longitude: number,
+  latitude: number,
+  zoom: number,
+  pitch: number,
+  bearing: number,
+}
+
 export type GlobalAtonFilterOptions = {
   structure: AtonType
   condition: AtonStatus | 'All'
@@ -27,17 +35,26 @@ type TableFilterOptions = {
 };
 
 type AtonStoreState = {
-  atonData?: AtonData[]
+  atonData?: AtonStore[]
+  viewState?: ViewState
 
   toggles: Toggles;
   tableOptions: TableFilterOptions;
 
-  setAtonData: (data: AtonData[]) => void;
+  setViewState: (data: ViewState) => void;
+  setAtonData: (data: AtonStore[]) => void;
   setToggles: (modal: Toggles) => void;
   setTableOptions: (options: TableFilterOptions) => void;
 };
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
+  viewState: {
+    longitude: 101.5466,
+    latitude: 3.0891,
+    zoom: 13,
+    pitch: 0,
+    bearing: 0,
+  },
   atonData: [],
   toggles: {
     hoverInfo: false,
@@ -57,6 +74,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     sortOrder: "asc",
   },
 
+  setViewState: (data) => set({ viewState: data }),
   setAtonData: (data) => set({ atonData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableOptions: (options) => set({ tableOptions: options }),
