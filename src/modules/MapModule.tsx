@@ -6,7 +6,7 @@ import Legend from "../components/Legend";
 import AtonSummary from "../components/AtonSummary";
 import { CiViewTable } from "react-icons/ci";
 import { RiRefreshLine } from "react-icons/ri";
-import { LayersList } from "@deck.gl/core";
+import { LayersList, MapViewState } from "@deck.gl/core";
 import HoverInfo from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
@@ -29,6 +29,14 @@ type MapAtonResDto = {
   type: AtonType;
 };
 
+type HoverInfo = {
+  name: string
+  mmsi: number
+  lantBatt: number
+  x: number
+  y: number
+}
+
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
 
@@ -36,8 +44,8 @@ export default function MapModule() {
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState({});
-  const [initialViewState, setInitialViewState] = useState({
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
+  const [initialViewState, setInitialViewState] = useState<MapViewState>({
     longitude: 101.5466,
     latitude: 3.0891,
     zoom: 13,
@@ -70,6 +78,7 @@ export default function MapModule() {
               position: [aton?.longitude, aton?.latitude],
               name: aton?.name,
               mmsi: aton?.mmsi,
+              battAton: aton?.last_BattAton,
               type: aton?.type,
             },
           ],
@@ -80,14 +89,17 @@ export default function MapModule() {
           onHover: (info) => {
             console.log("info", info);
             if (info.object) {
+              setToggles({...toggles, hoverInfo: true });
               setHoverInfo({
                 name: info?.object?.name,
                 mmsi: info?.object?.mmsi,
+                lantBatt: info?.object?.battAton,
                 x: info.x,
                 y: info.y,
               });
             } else {
-              setHoverInfo({});
+              setHoverInfo(null);
+              setToggles({...toggles, hoverInfo: false})
             }
           },
         });
@@ -154,7 +166,7 @@ export default function MapModule() {
           </Map>
         </DeckGL>
         {/* Microinteractive Components */}
-        {hoverInfo && <HoverInfo hoverInfo={hoverInfo} />}
+        {toggles.hoverInfo && <HoverInfo hoverInfo={hoverInfo!} />}
         {toggles.atonSummary && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummary />

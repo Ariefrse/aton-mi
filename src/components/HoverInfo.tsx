@@ -1,13 +1,12 @@
-
 type HoverInfoProps = {
   mmsi: number;
   name: string;
-  // lantBatt: number;
+  lantBatt: number;
   x: number;
   y: number;
 };
 
-function HoverInfo({ hoverInfo }: { hoverInfo: HoverInfoProps }) {
+function HoverInfo({ hoverInfo }: Readonly<{ hoverInfo: HoverInfoProps }>) {
   return (
     <div
       className="absolute bg-gray-700 p-2 rounded"
@@ -17,14 +16,13 @@ function HoverInfo({ hoverInfo }: { hoverInfo: HoverInfoProps }) {
         pointerEvents: "none",
       }}
     >
-      <div>
-        <p className="font-bold">{hoverInfo.name}</p>
-        <br />
-        <p>{hoverInfo.mmsi}</p>
-        <br />
-        {/* <strong>Lant Battery:</strong> {hoverInfo.lantBatt} */}
-        <br />
-      </div>
+      <div className="text-sm"></div>
+      <p className="font-bold">{hoverInfo.name}</p>
+      <p>{hoverInfo.mmsi}</p>
+      <p>
+        <strong>Lant Battery:</strong>
+        {hoverInfo.lantBatt.toFixed(2)}
+      </p>
     </div>
   );
 }
