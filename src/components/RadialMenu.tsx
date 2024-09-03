@@ -1,3 +1,4 @@
+import { Menu, MenuItem } from "@spaceymonk/react-radial-menu";
 import { BiMessageAltDetail } from "react-icons/bi";
 import { BsFileBarGraph } from "react-icons/bs";
 import { useAtonStore } from "../store/store";
@@ -25,17 +26,29 @@ function RadialMenu(props: RadialMenuProps) {
     },
   ];
 
+  if (!props) return null;
+
   return (
-    <div
-      className="absolute bg-gray-700 p-2 rounded"
-      style={{
-        left: props?.position?.x! + 10,
-        top: props?.position?.y! + 10,
-        pointerEvents: "none",
-      }}
+    <Menu
+      centerX={props.position.x}
+      centerY={props.position.y}
+      innerRadius={75}
+      outerRadius={150}
+      animation={["fade", "scale"]}
+      animationTimeout={150}
+      drawBackground
+      show={toggles.radialMenu}
     >
-      <p>Radial menu to be .... </p>
-    </div>
+      {menuItems.map((item) => (
+        <MenuItem
+          key={item.title}
+          onItemClick={() => item.onClick}
+          data={item.title}
+        >
+          {item.icon}
+        </MenuItem>
+      ))}
+    </Menu>
   );
 }
 

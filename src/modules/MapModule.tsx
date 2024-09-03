@@ -82,7 +82,10 @@ export default function MapModule() {
           onClick: (info) => {
             if (info.object) {
               setToggles({ ...toggles, radialMenu: true });
-              setRadialMenuData({ position: { x: info.x, y: info.y } });
+              setRadialMenuData({ position: { 
+                x: info.object.position[0], 
+                y: info.object.position[1]
+              } });
             } else {
               setRadialMenuData(null);
               setToggles({ ...toggles, radialMenu: false });
