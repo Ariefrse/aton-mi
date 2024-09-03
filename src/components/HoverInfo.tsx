@@ -1,4 +1,4 @@
-type HoverInfoProps = {
+export type HoverInfoProps = null | {
   mmsi: number;
   name: string;
   lantBatt: number;
@@ -6,22 +6,22 @@ type HoverInfoProps = {
   y: number;
 };
 
-function HoverInfo({ hoverInfo }: Readonly<{ hoverInfo: HoverInfoProps }>) {
+function HoverInfo(props: HoverInfoProps) {
+  if (!props) return
   return (
     <div
       className="absolute bg-gray-700 p-2 rounded"
       style={{
-        left: hoverInfo.x + 10,
-        top: hoverInfo.y + 10,
+        left: props.x + 10,
+        top: props.y + 10,
         pointerEvents: "none",
       }}
     >
-      <div className="text-sm"></div>
-      <p className="font-bold">{hoverInfo.name}</p>
-      <p>{hoverInfo.mmsi}</p>
+      <p className="font-bold">{props.name}</p>
+      <p>{props.mmsi}</p>
       <p>
         <strong>Lant Battery:</strong>
-        {hoverInfo.lantBatt.toFixed(2)}
+        {props?.lantBatt?.toFixed(2)}
       </p>
     </div>
   );

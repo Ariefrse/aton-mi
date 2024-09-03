@@ -7,7 +7,7 @@ import AtonSummary from "../components/AtonSummary";
 import { CiViewTable } from "react-icons/ci";
 import { RiRefreshLine } from "react-icons/ri";
 import { LayersList, MapViewState } from "@deck.gl/core";
-import HoverInfo from "../components/HoverInfo";
+import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
@@ -16,6 +16,7 @@ import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
 import { AtonType } from "../declarations/types/types";
 import { fetchAtonList } from "../api/aton-api";
+import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 
 type MapAtonResDto = {
   last_BattAton: number;
@@ -29,14 +30,6 @@ type MapAtonResDto = {
   type: AtonType;
 };
 
-type HoverInfo = {
-  name: string
-  mmsi: number
-  lantBatt: number
-  x: number
-  y: number
-}
-
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
 
@@ -44,7 +37,8 @@ export default function MapModule() {
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
+  const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
+  const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
   const [initialViewState, setInitialViewState] = useState<MapViewState>({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -56,7 +50,7 @@ export default function MapModule() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetchAtonList() as MapAtonResDto[]
+        const res = (await fetchAtonList()) as MapAtonResDto[];
         setMapAton(res);
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
@@ -86,11 +80,20 @@ export default function MapModule() {
           getPosition: (d) => d.position,
           getFillColor: [255, 0, 0],
           pickable: true,
-          onHover: (info) => {
-            console.log("info", info);
+          onClick: (info) => {
             if (info.object) {
-              setToggles({...toggles, hoverInfo: true });
-              setHoverInfo({
+              setToggles({ ...toggles, radialMenu: true });
+              setRadialMenuData({ position: { x: info.x, y: info.y } });
+            } else {
+              setRadialMenuData(null);
+              setToggles({ ...toggles, radialMenu: false });
+            }
+          },
+          onHover: (info) => {
+            console.log("states", toggles.radialMenu);
+            if (info.object) {
+              setToggles({ ...toggles, hoverInfo: true });
+              setHoverInfoData({
                 name: info?.object?.name,
                 mmsi: info?.object?.mmsi,
                 lantBatt: info?.object?.battAton,
@@ -98,8 +101,8 @@ export default function MapModule() {
                 y: info.y,
               });
             } else {
-              setHoverInfo(null);
-              setToggles({...toggles, hoverInfo: false})
+              setHoverInfoData(null);
+              setToggles({ ...toggles, hoverInfo: false });
             }
           },
         });
@@ -166,7 +169,8 @@ export default function MapModule() {
           </Map>
         </DeckGL>
         {/* Microinteractive Components */}
-        {toggles.hoverInfo && <HoverInfo hoverInfo={hoverInfo!} />}
+        {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
+        {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
         {toggles.atonSummary && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummary />
