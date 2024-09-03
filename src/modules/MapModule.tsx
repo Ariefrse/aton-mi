@@ -33,7 +33,6 @@ type MapAtonResDto = {
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
 
-  // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
@@ -90,7 +89,6 @@ export default function MapModule() {
             }
           },
           onHover: (info) => {
-            console.log("states", toggles.radialMenu);
             if (info.object) {
               setToggles({ ...toggles, hoverInfo: true });
               setHoverInfoData({
@@ -111,6 +109,28 @@ export default function MapModule() {
 
     setLayers(newLayers);
   }, [mapAton]);
+
+  useEffect(() => {
+    const handleRightClick = (event: MouseEvent) => {
+      event.preventDefault(); // Prevent the default context menu
+      const { clientX: x, clientY: y } = event;
+
+      setRadialMenuData({ position: { x, y } });
+      setToggles({ ...toggles, radialMenu: true });
+    };
+
+    const mapElement = mapRef.current?.getMap().getCanvas();
+
+    if (mapElement) {
+      mapElement.addEventListener("contextmenu", handleRightClick);
+    }
+
+    return () => {
+      if (mapElement) {
+        mapElement.removeEventListener("contextmenu", handleRightClick);
+      }
+    };
+  }, [mapRef, toggles, setToggles]);
 
   const toggleTableModule = () => {
     setToggles({
