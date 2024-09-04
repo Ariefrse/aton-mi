@@ -6,8 +6,8 @@ import Legend from "../components/Legend";
 import AtonSummary from "../components/AtonSummary";
 import { CiViewTable } from "react-icons/ci";
 import { RiRefreshLine } from "react-icons/ri";
-import { LayersList } from "@deck.gl/core";
-import HoverInfo from "../components/HoverInfo";
+import { LayersList, MapViewState } from "@deck.gl/core";
+import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
@@ -16,6 +16,7 @@ import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
 import { AtonType } from "../declarations/types/types";
 import { fetchAtonList } from "../api/aton-api";
+import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 
 type MapAtonResDto = {
   last_BattAton: number;
@@ -46,13 +47,15 @@ type ClickInfoType = {
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
 
-  // In-Map Components
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [hoverInfo, setHoverInfo] = useState<HoverInfoType>({});
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
   const [initialViewState, setInitialViewState] = useState({
+  const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
+  const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
+  const [initialViewState, setInitialViewState] = useState<MapViewState>({
     longitude: 101.5466,
     latitude: 3.0891,
     zoom: 13,
@@ -64,7 +67,7 @@ export default function MapModule() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetchAtonList() as MapAtonResDto[]
+        const res = (await fetchAtonList()) as MapAtonResDto[];
         setMapAton(res);
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
@@ -86,6 +89,7 @@ export default function MapModule() {
               position: [aton?.longitude, aton?.latitude],
               name: aton?.name,
               mmsi: aton?.mmsi,
+              battAton: aton?.last_BattAton,
               type: aton?.type,
             },
           ],
@@ -93,17 +97,32 @@ export default function MapModule() {
           getPosition: (d) => d.position,
           getFillColor: [255, 0, 0],
           pickable: true,
+          onClick: (info) => {
+            if (info.object) {
+              setToggles({ ...toggles, radialMenu: true });
+              setRadialMenuData({ position: { 
+                x: info.object.position[0], 
+                y: info.object.position[1]
+              } });
+            } else {
+              setRadialMenuData(null);
+              setToggles({ ...toggles, radialMenu: false });
+            }
+          },
           onHover: (info) => {
             
             if (info.object) {
-              setHoverInfo({
+              setToggles({ ...toggles, hoverInfo: true });
+              setHoverInfoData({
                 name: info?.object?.name,
                 mmsi: info?.object?.mmsi,
+                lantBatt: info?.object?.battAton,
                 x: info.x,
                 y: info.y,
               });
             } else {
-              setHoverInfo({});
+              setHoverInfoData(null);
+              setToggles({ ...toggles, hoverInfo: false });
             }
           },
           onClick: (info) => { // New onClick handler
@@ -119,6 +138,28 @@ export default function MapModule() {
 
     setLayers(newLayers);
   }, [mapAton]);
+
+  useEffect(() => {
+    const handleRightClick = (event: MouseEvent) => {
+      event.preventDefault(); // Prevent the default context menu
+      const { clientX: x, clientY: y } = event;
+
+      setRadialMenuData({ position: { x, y } });
+      setToggles({ ...toggles, radialMenu: true });
+    };
+
+    const mapElement = mapRef.current?.getMap().getCanvas();
+
+    if (mapElement) {
+      mapElement.addEventListener("contextmenu", handleRightClick);
+    }
+
+    return () => {
+      if (mapElement) {
+        mapElement.removeEventListener("contextmenu", handleRightClick);
+      }
+    };
+  }, [mapRef, toggles, setToggles]);
 
   const toggleTableModule = () => {
     setToggles({
@@ -205,6 +246,8 @@ export default function MapModule() {
             <p>Longitude: {clickInfo?.position?.[0]}</p>
           </div>
         )}
+        {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
+        {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
         {toggles.atonSummary && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummary />
