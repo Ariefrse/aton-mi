@@ -16,7 +16,7 @@ const AtonSummaryToggleBtn = () => {
         })
       }
     >
-      <HiAdjustments fontSize={25} />
+      <HiAdjustments fontSize={10} />
     </button>
   );
 };

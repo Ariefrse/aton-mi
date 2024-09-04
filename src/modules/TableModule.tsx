@@ -1,117 +1,124 @@
-import { useEffect, useState } from "react";
-import { AtonStatistics } from "../declarations/types/types";
-import { fetchAtonStats } from "../api/aton-api";
-import { ColumnDefinition, ReactTabulator } from "react-tabulator";
-import { useAtonStore } from "../store/store";
 
-export default function TableModule() {
-  const [tableData, setTableData] = useState<AtonStatistics[]>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
 
-  useEffect(() => {
-    async () => {
-      try {
-        const data = await fetchAtonStats();
-        setTableData(data);
-      } catch (error) {
-        console.error("Error fetching table data", error);
-      }
-    };
-  }, []);
 
-  const getFormatter = (condition: (value: number | string) => boolean) => {
-    const color = "rgba(29, 78, 216, 1)";
-    return (cell: any) => {
-      const value = cell.getValue();
-      const isNumber = typeof value === "number";
-      const shouldColor = isNumber && condition(value);
-      cell.getElement().style.backgroundColor = shouldColor ? color : "";
-      return value;
-    };
-  };
+// Define the data type for each row
+interface RowData {
+  id: number;
+  sitename: string;
+  mmsi: number;
+  structure: string;
+  region: string;
+  minLatAton: string;
+  avgLatAton: string;
+  minBattAton: number;
+  maxBattAton: number;
+  minTemp: number;
+  maxTemp: number;
+  meanBattAton: number;
+  stddevBattAton: number;
+  skewBattAton: number;
+  kurtBattAton: number;
+  minBattLant: number;
+  maxBattLant: number;
+  meanBattLant: number;
+  stddevBattLant: number;
+  skewBattLant: number;
+  kurtBattLant: number;
+  off_pos: string;
+  msg6Count: number;
+  siteTx: string;
+  at_ts: string;
+  last_maintain: string;
+}
 
-  const columns: ColumnDefinition[] = [
-    { title: "No", field: "no", formatter: "rownum" },
-    { title: "Site Name", field: "al_name", headerFilter: "input", width: 100 },
-    { title: "MMSI", field: "mmsi", headerFilter: "input", width: 100 },
-    { title: "Structure", field: "al_type", headerFilter: "input", width: 100 },
-    { title: "Region", field: "al_region", headerFilter: "input", width: 120 },
-    { title: "Min. Temp.", field: "minTemp" },
-    { title: "Max. Temp.", field: "maxTemp" },
-    {
-      title: "Min Batt ATON",
-      field: "minBattAton",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value < 12.0
-      ),
-    },
-    {
-      title: "Max Batt ATON",
-      field: "maxBattAton",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value > 15.0
-      ),
-    },
-    { title: "Avg BattATON", field: "meanBattAton" },
-    { title: "Stddev Batt ATON", field: "stddevBattAton" },
-    { title: "Skew Batt ATON", field: "skewBattAton" },
-    { title: "Kurt Batt ATON", field: "kurtBattAton" },
-    {
-      title: "Min Batt Lantern",
-      field: "minBattLant",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value < 12.0
-      ),
-    },
-    {
-      title: "Max Batt Lantern",
-      field: "maxBattLant",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value > 15.0
-      ),
-    },
-    { title: "Avg. Batt Lantern", field: "meanBattLant" },
-    { title: "Stddev Batt Lantern", field: "stddevBattLant" },
-    { title: "Skew Batt Lantern", field: "skewBattLant" },
-    { title: "Kurt Batt Lantern", field: "kurtBattLant" },
-    {
-      title: "off Position",
-      field: "off_pos",
-      headerFilter: "input",
-      formatter: getFormatter((value) => value === "NG"),
-    },
-    {
-      title: "Message 6 Counting",
-      field: "msg6Count",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value <= 0
-      ),
-    },
-    {
-      title: "Site with Message 6",
-      field: "siteTx",
-      headerFilter: "input",
-      formatter: getFormatter((value) => value === "NG"),
-    },
-    { title: "Last Seen (Second)", field: "at_ts" },
-    { title: "Last Maintain", field: "last_maintain" },
-  ];
+const columns: GridColDef[] = [
+  { field: 'sitename', headerName: 'Sitename', width: 150 },
+  { field: 'mmsi', headerName: 'MMSI', width: 130 },
+  { field: 'structure', headerName: 'Structure', width: 130 },
+  { field: 'region', headerName: 'Region', width: 130 },
+  { field: 'minLatAton', headerName: 'Min Lat Aton', width: 150 },
+  { field: 'avgLatAton', headerName: 'Avg Lat Aton', width: 150 },
+  { field: 'minBattAton', headerName: 'Min Batt Aton', width: 150 },
+  { field: 'maxBattAton', headerName: 'Max Batt Aton', width: 150 },
+  { field: 'minTemp', headerName: 'Min Temp', width: 150 },
+  { field: 'maxTemp', headerName: 'Max Temp', width: 150 },
+  { field: 'meanBattAton', headerName: 'Mean Batt Aton', width: 150 },
+  { field: 'stddevBattAton', headerName: 'Std Dev Batt Aton', width: 150 },
+  { field: 'skewBattAton', headerName: 'Skew Batt Aton', width: 150 },
+  { field: 'kurtBattAton', headerName: 'Kurt Batt Aton', width: 150 },
+  { field: 'minBattLant', headerName: 'Min Batt Lant', width: 150 },
+  { field: 'maxBattLant', headerName: 'Max Batt Lant', width: 150 },
+  { field: 'meanBattLant', headerName: 'Mean Batt Lant', width: 150 },
+  { field: 'stddevBattLant', headerName: 'Std Dev Batt Lant', width: 150 },
+  { field: 'skewBattLant', headerName: 'Skew Batt Lant', width: 150 },
+  { field: 'kurtBattLant', headerName: 'Kurt Batt Lant', width: 150 },
+  { field: 'off_pos', headerName: 'Off Pos', width: 150 },
+  { field: 'msg6Count', headerName: 'Msg 6 Count', width: 150 },
+  { field: 'siteTx', headerName: 'Site Tx', width: 150 },
+  { field: 'at_ts', headerName: 'Timestamp', width: 150 },
+  { field: 'last_maintain', headerName: 'Last Maintain', width: 150 },
+];
 
+// Example data
+const rows: RowData[] = [
+  {
+    id: 1,
+    sitename: 'KP NO 2',
+    mmsi: 995330042,
+    structure: 'Beacon',
+    region: 'Wilayah Timur Tambahan',
+    minLatAton: '',
+    avgLatAton: '',
+    minBattAton: 12.8,
+    maxBattAton: 13.7,
+    minTemp: 0,
+    maxTemp: 0,
+    meanBattAton: 12.91,
+    stddevBattAton: 0.17,
+    skewBattAton: 2.22,
+    kurtBattAton: 9.05,
+    minBattLant: 12.85,
+    maxBattLant: 14,
+    meanBattLant: 13.06,
+    stddevBattLant: 0.21,
+    skewBattLant: 1.97,
+    kurtBattLant: 8.25,
+    off_pos: 'OK',
+    msg6Count: 2456,
+    siteTx: 'OK',
+    at_ts: '2024-09-03 10:45:02',
+    last_maintain: ''
+  },
+  // Add more rows as needed...
+];
+
+export default function DataTable() {
   return (
-    <div className="z-50 absolute top-10 left-10 m-auto bg-gray-600 rounded-md bg-opacity-90">
-      <ReactTabulator
-        columns={columns}
-        data={tableData}
-        options={{
-          height: "500px",
-          layout: "fitColumns",
-          pagination: "local",
-          paginationSize: 10,
-          movableColumns: true,
-          movableRows: true,
-        }}
-      />
+
+    <div className = 'bg-gray-500 z-50'>
+    <div className='bg-gray-500 z-50' style={{ height: 'auto', width: '100%' }}>
+      <DataGrid rows={rows} columns={columns} pageSize={20} checkboxSelection
+      sx={{
+        '& .MuiDataGrid-root': {
+          backgroundColor: '#2A2F38', // Background color of the table
+        },
+        '& .MuiDataGrid-cell': {
+          backgroundColor: '#2A2F38',
+          color: '#ffffff', // Text color of the cells
+        },
+        '& .MuiDataGrid-columnHeaders': {
+          backgroundColor: '#4A90E2', // Background color of the header
+          color: '#ffffff', // Text color of the header
+        },
+        '& .MuiDataGrid-footerContainer': {
+          backgroundColor: '#2A2F38', // Background color of the footer
+          color: '#ffffff', 
+          textColor: '#ffffff',// Text color of the footer
+        },}} />
+    </div>
     </div>
   );
 }

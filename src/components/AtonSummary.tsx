@@ -18,7 +18,7 @@ const AtonSummary = () => {
   };
 
   return (
-    <aside className="relative min-w-max bg-gray-800 z-10 text-white p-10 rounded-lg shadow-lg max-w-xs">
+    <aside className="relative min-w-max bg-gray-700 opacity-80 z-10 text-white p-10 rounded-lg shadow-lg max-w-xs">
       <IoMdClose
         className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
         fontSize={24}
@@ -32,15 +32,15 @@ const AtonSummary = () => {
       />
       <div className="flex gap-10 justify-between items-center mb-4">
         <div className="w-auto">
-          <h2 className="text-xl font-bold whitespace-nowrap">
+          <h2 className="text-xl font whitespace-nowrap">
             AtoN Summary
-            <span className="text-sm text-gray-400 pl-2 whitespace-nowrap">
+            <span className="text-md pl-2 whitespace-nowrap">
               (23/07/2024)
             </span>
           </h2>
         </div>
       </div>
-      <hr className="my-2 border-gray-600" />
+      <hr className="my-2 border-gray-100" />
       <p className="my-2">Structure</p>
       {atonSummaryInfoData.atonType.map((struct, index) => (
         <div key={index + 1} className="flex items-center mb-2">
@@ -68,7 +68,7 @@ const AtonSummary = () => {
           </Fragment>
         ))}
         <button
-          className="absolute bottom-2 right-2 bg-red-600 rounded-full w-10 h-10"
+          className="absolute bottom-2 right-2 bg-gray-100 rounded-md w-6 h-6"
           onClick={() =>
             setToggles({
               ...toggles,

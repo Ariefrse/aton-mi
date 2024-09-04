@@ -30,12 +30,29 @@ type MapAtonResDto = {
   type: AtonType;
 };
 
+type HoverInfoType = {
+  name?: string;
+  mmsi?: number;
+  x?: number;
+  y?: number;
+};
+
+type ClickInfoType = {
+  name?: string;
+  mmsi?: number;
+  type?: AtonType;
+  position?: [number, number];
+};
+
 export default function MapModule() {
   const { toggles, setToggles, atonData } = useAtonStore();
 
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
+  const [hoverInfo, setHoverInfo] = useState<HoverInfoType>({});
+  const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
+  const [initialViewState, setInitialViewState] = useState({
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
   const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
   const [initialViewState, setInitialViewState] = useState<MapViewState>({
@@ -45,6 +62,7 @@ export default function MapModule() {
     pitch: 0,
     bearing: 0,
   });
+  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/satellite-v9"); 
 
   useEffect(() => {
     async function fetchData() {
@@ -92,6 +110,7 @@ export default function MapModule() {
             }
           },
           onHover: (info) => {
+            
             if (info.object) {
               setToggles({ ...toggles, hoverInfo: true });
               setHoverInfoData({
@@ -104,6 +123,13 @@ export default function MapModule() {
             } else {
               setHoverInfoData(null);
               setToggles({ ...toggles, hoverInfo: false });
+            }
+          },
+          onClick: (info) => { // New onClick handler
+            if (info.object) {
+              setClickInfo(info.object);
+            } else {
+              setClickInfo(null);
             }
           },
         });
@@ -148,13 +174,19 @@ export default function MapModule() {
     });
   };
 
+  const handleMapStyleChange = (event) => {
+    const newStyle = event.target.value;
+    console.log("Changing map style to:", newStyle); // Debugging log
+    setMapStyle(newStyle);
+  };
+
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
       <div className="mb-4 flex justify-between items-center">
         {toggles.tableModule === true ? null : (
           <>
-            <h1 className="text-2xl font-bold">AtoN</h1>
-            <div className="flex gap-6 mr-8">
+            <h1 className="text-xl ">AtoN</h1>
+            <div className="flex gap-6 mr-6">
               <RiRefreshLine
                 fontSize={25}
                 className="text-blue-400 hover:cursor-pointer"
@@ -164,6 +196,18 @@ export default function MapModule() {
                 className="text-blue-400 hover:cursor-pointer"
                 onClick={toggleTableModule}
               />
+               <select
+                value={mapStyle}
+                onChange={handleMapStyleChange}
+                className="bg-gray-700 text-white p-2 rounded"
+              >
+                <option value="mapbox://styles/mapbox/satellite-v9">Satellite</option>
+                <option value="mapbox://styles/mapbox/streets-v11">Streets</option>
+                <option value="mapbox://styles/mapbox/outdoors-v11">Outdoors</option>
+                <option value="mapbox://styles/mapbox/light-v10">Light</option>
+                <option value="mapbox://styles/mapbox/dark-v10">Dark</option>
+              </select>
+            
             </div>
           </>
         )}
@@ -179,7 +223,7 @@ export default function MapModule() {
           <Map
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-            mapStyle="mapbox://styles/mapbox/satellite-v9"
+            mapStyle={mapStyle} 
             style={{
               zIndex: 0,
             }}
@@ -193,6 +237,16 @@ export default function MapModule() {
           </Map>
         </DeckGL>
         {/* Microinteractive Components */}
+        {hoverInfo && <HoverInfo hoverInfo={hoverInfo} />}
+        {clickInfo && (
+          <div className="absolute top-2 right-2 bg-gray-800 opacity-70 text-white p-4 rounded-md shadow-lg">
+            <h2 className="text-lg font-bold">{clickInfo.name}</h2>
+            <p>MMSI: {clickInfo.mmsi}</p>
+            <p>Type: {clickInfo.type}</p>
+            <p>Latitude: {clickInfo?.position?.[1]}</p>
+            <p>Longitude: {clickInfo?.position?.[0]}</p>
+          </div>
+        )}
         {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
         {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
         {toggles.atonSummary && (
