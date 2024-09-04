@@ -26,6 +26,9 @@ importers:
       '@heroicons/react':
         specifier: ^2.1.5
         version: 2.1.5(react@18.3.1)
+      '@spaceymonk/react-radial-menu':
+        specifier: ^2.0.6
+        version: 2.0.6(react@18.3.1)
       '@types/mapbox-gl':
         specifier: ^3.4.0
         version: 3.4.0
@@ -866,6 +869,11 @@ packages:
 
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
+
+  '@spaceymonk/react-radial-menu@2.0.6':
+    resolution: {integrity: sha512-FV8onNQWpGDMmr3v/Xq4ac0q0GMtwmJ1JMTQTYXFqWG7CySIp1bOV/OuZUH3H35XbJzvnKstnva8g7/ilnsHJA==}
+    peerDependencies:
+      react: '>=16.8.0 <=18.2.0'
 
   '@swc/helpers@0.5.12':
     resolution: {integrity: sha512-KMZNXiGibsW9kvZAO1Pam2JPTDBm+KSHMMHWdsyI/1DbIZjT2A6Gy3hblVXUMEDvUAKq+e0vL0X0o54owWji7g==}
@@ -3854,6 +3862,10 @@ snapshots:
   '@sinonjs/fake-timers@10.3.0':
     dependencies:
       '@sinonjs/commons': 3.0.1
+
+  '@spaceymonk/react-radial-menu@2.0.6(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
 
   '@swc/helpers@0.5.12':
     dependencies:

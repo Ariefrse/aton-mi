@@ -17,6 +17,7 @@
     "@deck.gl/react": "^9.0.26",
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
+    "@spaceymonk/react-radial-menu": "^2.0.6",
     "@types/mapbox-gl": "^3.4.0",
     "chart.js": "^4.4.3",
     "dotenv": "^16.4.5",

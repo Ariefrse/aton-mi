@@ -5,10 +5,8 @@ import { useAtonStore } from "../store/store";
 import ClickOutside from "./ClickOutside";
 
 export type RadialMenuProps = null | {
-  position: {
-    x: number;
-    y: number;
-  };
+  mmsi: number;
+  position: [x: number, y: number]
 };
 
 function RadialMenu(props: RadialMenuProps) {
@@ -36,8 +34,8 @@ function RadialMenu(props: RadialMenuProps) {
       }}
     >
       <Menu
-        centerX={props.position.x}
-        centerY={props.position.y}
+        centerX={props.position[0]}
+        centerY={props.position[1]}
         innerRadius={10}
         outerRadius={40}
         animation={["fade", "scale"]}

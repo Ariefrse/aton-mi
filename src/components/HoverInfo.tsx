@@ -7,7 +7,7 @@ export type HoverInfoProps = null | {
 };
 
 function HoverInfo(props: HoverInfoProps) {
-  if (!props) return
+  if (!props) return;
   return (
     <div
       className="absolute bg-gray-700 p-2 rounded"

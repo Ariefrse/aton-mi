@@ -1053,7 +1053,7 @@ function setFocusVessel(targetVessel){
         child = elem.children[2]
         child.classList.add('focus-bottom-right')
         child = elem.children[3]
-        child.classList.add('focus-bottom-left') 
+        child.classList.add('focus-bottom-left')
 }
 
 function toggleRadicalMenu(e) {

@@ -17,7 +17,6 @@ import LegendToggleBtn from "../components/LegendToggleBtn";
 import { AtonType } from "../declarations/types/types";
 import { fetchAtonList } from "../api/aton-api";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
-import ClickOutside from "../components/ClickOutside";
 
 type MapAtonResDto = {
   last_BattAton: number;
@@ -32,7 +31,7 @@ type MapAtonResDto = {
 };
 
 export default function MapModule() {
-  const { toggles, setToggles } = useAtonStore();
+  const { toggles, setToggles, atonData } = useAtonStore();
 
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
@@ -69,7 +68,7 @@ export default function MapModule() {
           id: layerId,
           data: [
             {
-              position: [aton?.longitude, aton?.latitude],
+              coordinate: [aton?.longitude, aton?.latitude],
               name: aton?.name,
               mmsi: aton?.mmsi,
               battAton: aton?.last_BattAton,
@@ -77,17 +76,15 @@ export default function MapModule() {
             },
           ],
           getRadius: 800,
-          getPosition: (d) => d.position,
+          getPosition: (d) => d.coordinate,
           getFillColor: [255, 0, 0],
           pickable: true,
           onClick: (info) => {
             if (info.object) {
               setToggles({ ...toggles, radialMenu: true });
               setRadialMenuData({
-                position: {
-                  x: info.object.position[0],
-                  y: info.object.position[1],
-                },
+                mmsi: info.object.mmsi,
+                position: [info.x, info.y],
               });
             } else {
               setRadialMenuData(null);
@@ -118,10 +115,11 @@ export default function MapModule() {
 
   useEffect(() => {
     const handleRightClick = (event: MouseEvent) => {
-      event.preventDefault(); // Prevent the default context menu
+      event.preventDefault();
+      // event.stopPropagation();
       const { clientX: x, clientY: y } = event;
 
-      setRadialMenuData({ position: { x, y } });
+      setRadialMenuData({ mmsi: 0, position: [x, y] });
       setToggles({ ...toggles, radialMenu: true });
     };
 
