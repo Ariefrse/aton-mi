@@ -91,24 +91,39 @@ export default function MapModule() {
               mmsi: aton?.mmsi,
               battAton: aton?.last_BattAton,
               type: aton?.type,
+              region: aton?.region,
             },
           ],
           getRadius: 800,
           getPosition: (d) => d.coordinate,
           getFillColor: [255, 0, 0],
           pickable: true,
+
           onClick: (info) => {
             if (info.object) {
-              setToggles({ ...toggles, radialMenu: true });
-              setRadialMenuData({
+              setClickInfo({
+                name: info.object.name,
+                region: info.object.region,
                 mmsi: info.object.mmsi,
-                position: [info.x, info.y],
+                type: info.object.type,
+                position: [info.object.coordinate[0], info.object.coordinate[1]],
               });
             } else {
-              setRadialMenuData(null);
-              setToggles({ ...toggles, radialMenu: false });
+              setClickInfo(null);
             }
           },
+          // onClick: (info) => {
+          //   if (info.object) {
+          //     setToggles({ ...toggles, radialMenu: true });
+          //     // setRadialMenuData({
+          //     //   mmsi: info.object.mmsi,
+          //     //   position: [info.x, info.y],
+          //     // });
+          //   } else {
+          //     // setRadialMenuData(null);
+          //     setToggles({ ...toggles, radialMenu: false });
+          //   }
+          // },
           onHover: (info) => {
             if (info.object) {
               setToggles({ ...toggles, hoverInfo: true });
@@ -238,10 +253,11 @@ export default function MapModule() {
         {clickInfo && (
           <div className="absolute top-2 right-2 bg-gray-800 opacity-70 text-white p-4 rounded-md shadow-lg">
             <h2 className="text-lg font-bold">{clickInfo.name}</h2>
+            <p>Region: {clickInfo.region}</p>
             <p>MMSI: {clickInfo.mmsi}</p>
             <p>Type: {clickInfo.type}</p>
-            <p>Latitude: {clickInfo?.position?.[1]}</p>
-            <p>Longitude: {clickInfo?.position?.[0]}</p>
+            <p>Latitude: {clickInfo.position?.[1]}</p>
+            <p>Longitude: {clickInfo.position?.[0]}</p>
           </div>
         )}
         {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
