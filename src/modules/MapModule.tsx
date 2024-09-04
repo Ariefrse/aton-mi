@@ -29,6 +29,20 @@ type MapAtonResDto = {
   type: AtonType;
 };
 
+type HoverInfoType = {
+  name?: string;
+  mmsi?: number;
+  x?: number;
+  y?: number;
+};
+
+type ClickInfoType = {
+  name?: string;
+  mmsi?: number;
+  type?: AtonType;
+  position?: [number, number];
+};
+
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
 
@@ -36,7 +50,8 @@ export default function MapModule() {
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState({});
+  const [hoverInfo, setHoverInfo] = useState<HoverInfoType>({});
+  const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
   const [initialViewState, setInitialViewState] = useState({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -79,7 +94,7 @@ export default function MapModule() {
           getFillColor: [255, 0, 0],
           pickable: true,
           onHover: (info) => {
-            console.log("info", info);
+            
             if (info.object) {
               setHoverInfo({
                 name: info?.object?.name,
@@ -89,6 +104,13 @@ export default function MapModule() {
               });
             } else {
               setHoverInfo({});
+            }
+          },
+          onClick: (info) => { // New onClick handler
+            if (info.object) {
+              setClickInfo(info.object);
+            } else {
+              setClickInfo(null);
             }
           },
         });
@@ -174,6 +196,15 @@ export default function MapModule() {
         </DeckGL>
         {/* Microinteractive Components */}
         {hoverInfo && <HoverInfo hoverInfo={hoverInfo} />}
+        {clickInfo && (
+          <div className="absolute top-2 right-2 bg-gray-800 opacity-70 text-white p-4 rounded-md shadow-lg">
+            <h2 className="text-lg font-bold">{clickInfo.name}</h2>
+            <p>MMSI: {clickInfo.mmsi}</p>
+            <p>Type: {clickInfo.type}</p>
+            <p>Latitude: {clickInfo?.position?.[1]}</p>
+            <p>Longitude: {clickInfo?.position?.[0]}</p>
+          </div>
+        )}
         {toggles.atonSummary && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummary />

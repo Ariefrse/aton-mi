@@ -28,7 +28,7 @@ const Legend = () => {
   const { toggles, setToggles } = useAtonStore();
 
   return (
-    <div className=" absolute rounded-lg bg-gray-800 opacity-70 bottom-2 right-2">
+    <div className=" absolute rounded-lg bg-gray-600 opacity-80 bottom-2 right-2">
       <div className="relative">
         <IoMdClose
           className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
@@ -37,9 +37,9 @@ const Legend = () => {
             setToggles({ ...toggles, legend: false, legendToggleBtn: true })
           }
         />
-        <div className="bg-gray-800 text-white p-4 rounded-md">
+        <div className="bg-gray-600 text-white p-4 rounded-md">
           <p className="text-lg font-bold leading-none mb-4">
-            Legend <br /> <span className="text-base text-gray-400">AtoN</span>
+            Legend <br /> <span className="text-base text-white">AtoN</span>
           </p>
           {LEGEND_ITEMS.map((item, index) => (
             <p
