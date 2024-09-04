@@ -45,14 +45,12 @@ type ClickInfoType = {
 };
 
 export default function MapModule() {
-  const { toggles, setToggles, atonData } = useAtonStore();
+  const { toggles, setToggles } = useAtonStore();
 
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState<HoverInfoType>({});
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
-  const [initialViewState, setInitialViewState] = useState({
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
   const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
   const [initialViewState, setInitialViewState] = useState<MapViewState>({
@@ -62,7 +60,9 @@ export default function MapModule() {
     pitch: 0,
     bearing: 0,
   });
-  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/satellite-v9"); 
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/mapbox/satellite-v9"
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -110,7 +110,6 @@ export default function MapModule() {
             }
           },
           onHover: (info) => {
-            
             if (info.object) {
               setToggles({ ...toggles, hoverInfo: true });
               setHoverInfoData({
@@ -123,13 +122,6 @@ export default function MapModule() {
             } else {
               setHoverInfoData(null);
               setToggles({ ...toggles, hoverInfo: false });
-            }
-          },
-          onClick: (info) => { // New onClick handler
-            if (info.object) {
-              setClickInfo(info.object);
-            } else {
-              setClickInfo(null);
             }
           },
         });
@@ -196,18 +188,23 @@ export default function MapModule() {
                 className="text-blue-400 hover:cursor-pointer"
                 onClick={toggleTableModule}
               />
-               <select
+              <select
                 value={mapStyle}
                 onChange={handleMapStyleChange}
                 className="bg-gray-700 text-white p-2 rounded"
               >
-                <option value="mapbox://styles/mapbox/satellite-v9">Satellite</option>
-                <option value="mapbox://styles/mapbox/streets-v11">Streets</option>
-                <option value="mapbox://styles/mapbox/outdoors-v11">Outdoors</option>
+                <option value="mapbox://styles/mapbox/satellite-v9">
+                  Satellite
+                </option>
+                <option value="mapbox://styles/mapbox/streets-v11">
+                  Streets
+                </option>
+                <option value="mapbox://styles/mapbox/outdoors-v11">
+                  Outdoors
+                </option>
                 <option value="mapbox://styles/mapbox/light-v10">Light</option>
                 <option value="mapbox://styles/mapbox/dark-v10">Dark</option>
               </select>
-            
             </div>
           </>
         )}
@@ -223,7 +220,7 @@ export default function MapModule() {
           <Map
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-            mapStyle={mapStyle} 
+            mapStyle={mapStyle}
             style={{
               zIndex: 0,
             }}
@@ -237,7 +234,7 @@ export default function MapModule() {
           </Map>
         </DeckGL>
         {/* Microinteractive Components */}
-        {hoverInfo && <HoverInfo hoverInfo={hoverInfo} />}
+        {hoverInfoData && <HoverInfo {...hoverInfoData} />}
         {clickInfo && (
           <div className="absolute top-2 right-2 bg-gray-800 opacity-70 text-white p-4 rounded-md shadow-lg">
             <h2 className="text-lg font-bold">{clickInfo.name}</h2>
