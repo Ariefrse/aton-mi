@@ -26,16 +26,13 @@ type ClickInfoType = {
   position: [number, number];
 };
 
-type MapStyles = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
+type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
 
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
-
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
-  const [mapStyle, setMapStyle] = useState<MapStyles>(
-    "mapbox://styles/mapbox/satellite-v9"
-  );
+  const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
@@ -58,7 +55,9 @@ export default function MapModule() {
       }
     }
 
-    fetchMapAtonData();
+    if (!mapAton) {
+      fetchMapAtonData();
+    }
   }, []);
 
   useEffect(() => {

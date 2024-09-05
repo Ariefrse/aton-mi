@@ -6,7 +6,7 @@ import { fetchAtonStats } from "../api/aton-api";
 import { useAtonStore } from "../store/store";
 import { ATON_STATS } from "../dummy-data/aton-stats";
 
-interface RowData {
+type RowData = {
   id: number;
   sitename: string;
   mmsi: number;

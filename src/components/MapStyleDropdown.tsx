@@ -1,8 +1,9 @@
+import { FormEvent } from "react";
 import { MAP_STYLES } from "../declarations/constants/constants";
 
 type MapStyleDropdownProps = {
   mapStyle: string;
-  handleMapStyleChange: (e: React.FormEvent<HTMLSelectElement>) => void;
+  handleMapStyleChange: (e: FormEvent<HTMLSelectElement>) => void;
 };
 
 function MapStyleDropdown({
