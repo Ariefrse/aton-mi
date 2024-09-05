@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
 import AtonSummary from "../components/AtonSummary";
-import { LayersList, MapViewState, ViewStateChangeParameters } from "@deck.gl/core";
+import { LayersList, MapViewState } from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
@@ -174,7 +174,7 @@ export default function MapModule() {
       <div className="flex-1 relative">
         <DeckGL
           initialViewState={mapViewState}
-          onViewStateChange={({ viewState }) => setMapViewState(viewState)}
+          // onViewStateChange={({ viewState }) => setMapViewState(viewState)}
           controller={true}
           layers={layers}
         >
