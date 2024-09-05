@@ -87,6 +87,12 @@ export default function MapModule() {
                 mmsi: info.object.mmsi,
                 position: [info.x, info.y],
               });
+              setClickInfo({
+                name: info.object.name,
+                mmsi: info.object.mmsi,
+                type: info.object.type,
+                position: [info.x, info.y],
+              })  ;
             } else {
               setRadialMenuData(null);
               setToggles({ ...toggles, radialMenu: false });
