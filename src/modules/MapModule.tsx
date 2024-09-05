@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
 import AtonSummary from "../components/AtonSummary";
-import { LayersList, MapViewState } from "@deck.gl/core";
+import { LayersList, MapViewState, ViewStateChangeParameters } from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
@@ -37,7 +37,7 @@ export default function MapModule() {
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
   const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
-  const [initialViewState, setInitialViewState] = useState<MapViewState>({
+  const [mapViewState, setMapViewState] = useState<MapViewState>({
     longitude: 101.5466,
     latitude: 3.0891,
     zoom: 13,
@@ -173,8 +173,8 @@ export default function MapModule() {
       </div>
       <div className="flex-1 relative">
         <DeckGL
-          initialViewState={initialViewState}
-          onViewStateChange={({ viewState }) => setInitialViewState(viewState)}
+          initialViewState={mapViewState}
+          onViewStateChange={({ viewState }) => setMapViewState(viewState)}
           controller={true}
           layers={layers}
         >
