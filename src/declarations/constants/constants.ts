@@ -93,3 +93,11 @@ export const EPFD = {
   14: 'Reserved 6',
   15: 'Internal GNSS',
 }
+
+export const MAP_STYLES = {
+  satellite: "mapbox://styles/mapbox/satellite-v9",
+  streets: "mapbox://styles/mapbox/streets-v11",
+  outdoors: "mapbox://styles/mapbox/outdoors-v11",
+  light: "mapbox://styles/mapbox/light-v10",
+  dark: "mapbox://styles/mapbox/dark-v10",
+} as const;

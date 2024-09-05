@@ -4,8 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
 import AtonSummary from "../components/AtonSummary";
-import { CiViewTable } from "react-icons/ci";
-import { RiRefreshLine } from "react-icons/ri";
 import { LayersList, MapViewState } from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
@@ -18,7 +16,8 @@ import { AtonType, MapAtonResDto } from "../declarations/types/types";
 import { fetchAtonList } from "../api/aton-api";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 import TableBtn from "../components/TableBtn";
-import TableRefreshBtn from "../components/TableRefreshBtn";
+import MapStyleDropdown from "../components/MapStyleDropdown";
+import { MAP_STYLES } from "../declarations/constants/constants";
 
 type ClickInfoType = {
   name?: string;
@@ -27,11 +26,16 @@ type ClickInfoType = {
   position: [number, number];
 };
 
+type MapStyles = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
+
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
 
   const mapRef = useRef<MapRef | null>(null);
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
+  const [mapStyle, setMapStyle] = useState<MapStyles>(
+    "mapbox://styles/mapbox/satellite-v9"
+  );
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
@@ -43,9 +47,6 @@ export default function MapModule() {
     pitch: 0,
     bearing: 0,
   });
-  const [mapStyle, setMapStyle] = useState(
-    "mapbox://styles/mapbox/satellite-v9"
-  );
 
   useEffect(() => {
     async function fetchMapAtonData() {
@@ -161,24 +162,11 @@ export default function MapModule() {
             <h1 className="text-xl ">AtoN</h1>
             <div className="flex gap-6 mr-6">
               {/* <TableRefreshBtn onClick={() => handleTableDataRefresh()}/> */}
-              <TableBtn onClick={() => setToggles({...toggles, tableModule: true})} />
-              <select
-                value={mapStyle}
-                onChange={handleMapStyleChange}
-                className="bg-gray-700 text-white p-2 rounded"
-              >
-                <option value="mapbox://styles/mapbox/satellite-v9">
-                  Satellite
-                </option>
-                <option value="mapbox://styles/mapbox/streets-v11">
-                  Streets
-                </option>
-                <option value="mapbox://styles/mapbox/outdoors-v11">
-                  Outdoors
-                </option>
-                <option value="mapbox://styles/mapbox/light-v10">Light</option>
-                <option value="mapbox://styles/mapbox/dark-v10">Dark</option>
-              </select>
+              <TableBtn onClick={() => toggleTableModule()} />
+              <MapStyleDropdown
+                mapStyle={mapStyle}
+                handleMapStyleChange={handleMapStyleChange}
+              />
             </div>
           </>
         )}
