@@ -2,8 +2,7 @@ export type HoverInfoProps = null | {
   mmsi: number;
   name: string;
   lantBatt: number;
-  x: number;
-  y: number;
+  position: [x:number, y:number]
 };
 
 function HoverInfo(props: HoverInfoProps) {
@@ -12,8 +11,8 @@ function HoverInfo(props: HoverInfoProps) {
     <div
       className="absolute bg-gray-700 p-2 rounded"
       style={{
-        left: props.x + 10,
-        top: props.y + 10,
+        left: props.position[0] + 10,
+        top: props.position[1] + 10,
         pointerEvents: "none",
       }}
     >

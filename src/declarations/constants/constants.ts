@@ -51,7 +51,7 @@ export const AID_TYPE = {
   12: 'Beacon Cardinal W',
   13: 'Beacon Port hand',
   14: 'Beacon Startboard hand',
-  15: 'Beacon Preferred Channel', 
+  15: 'Beacon Preferred Channel',
   16: 'Beacon Preferred Channel starboard hand',
   17: 'Beacon Isolated danger',
   18: 'Beacon Safe Water',

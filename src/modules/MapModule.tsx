@@ -14,34 +14,17 @@ import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-import { AtonType } from "../declarations/types/types";
+import { AtonType, MapAtonResDto } from "../declarations/types/types";
 import { fetchAtonList } from "../api/aton-api";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
-
-type MapAtonResDto = {
-  last_BattAton: number;
-  latitude: number;
-  longitude: number;
-  meanBattAton: number;
-  mmsi: number;
-  name: string;
-  region: string;
-  ts: string;
-  type: AtonType;
-};
-
-type HoverInfoType = {
-  name?: string;
-  mmsi?: number;
-  x?: number;
-  y?: number;
-};
+import TableBtn from "../components/TableBtn";
+import TableRefreshBtn from "../components/TableRefreshBtn";
 
 type ClickInfoType = {
   name?: string;
   mmsi?: number;
   type?: AtonType;
-  position?: [number, number];
+  position: [number, number];
 };
 
 export default function MapModule() {
@@ -65,16 +48,16 @@ export default function MapModule() {
   );
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchMapAtonData() {
       try {
-        const res = (await fetchAtonList()) as MapAtonResDto[];
-        setMapAton(res);
+        const mapAtonFetchRes = await fetchAtonList();
+        setMapAton(mapAtonFetchRes);
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
       }
     }
 
-    fetchData();
+    fetchMapAtonData();
   }, []);
 
   useEffect(() => {
@@ -116,8 +99,7 @@ export default function MapModule() {
                 name: info?.object?.name,
                 mmsi: info?.object?.mmsi,
                 lantBatt: info?.object?.battAton,
-                x: info.x,
-                y: info.y,
+                position: [info.x, info.y],
               });
             } else {
               setHoverInfoData(null);
@@ -166,9 +148,8 @@ export default function MapModule() {
     });
   };
 
-  const handleMapStyleChange = (event) => {
+  const handleMapStyleChange = (event: any) => {
     const newStyle = event.target.value;
-    console.log("Changing map style to:", newStyle); // Debugging log
     setMapStyle(newStyle);
   };
 
@@ -179,15 +160,8 @@ export default function MapModule() {
           <>
             <h1 className="text-xl ">AtoN</h1>
             <div className="flex gap-6 mr-6">
-              <RiRefreshLine
-                fontSize={25}
-                className="text-blue-400 hover:cursor-pointer"
-              />
-              <CiViewTable
-                fontSize={30}
-                className="text-blue-400 hover:cursor-pointer"
-                onClick={toggleTableModule}
-              />
+              {/* <TableRefreshBtn onClick={() => handleTableDataRefresh()}/> */}
+              <TableBtn onClick={() => setToggles({...toggles, tableModule: true})} />
               <select
                 value={mapStyle}
                 onChange={handleMapStyleChange}
@@ -240,10 +214,11 @@ export default function MapModule() {
             <h2 className="text-lg font-bold">{clickInfo.name}</h2>
             <p>MMSI: {clickInfo.mmsi}</p>
             <p>Type: {clickInfo.type}</p>
-            <p>Latitude: {clickInfo?.position?.[1]}</p>
-            <p>Longitude: {clickInfo?.position?.[0]}</p>
+            <p>Latitude: {clickInfo?.position[0]}</p>
+            <p>Longitude: {clickInfo?.position?.[1]}</p>
           </div>
         )}
+        ``
         {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
         {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
         {toggles.atonSummary && (

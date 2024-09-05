@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AtonStore, AtonStatus, AtonType } from "../declarations/types/types";
+import { AtonStore, AtonStatus, AtonType, AtonStatistics } from "../declarations/types/types";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -39,6 +39,7 @@ type TableFilterOptions = {
 
 type AtonStoreState = {
   atonData?: AtonStore[]
+  atonStatsData?: AtonStatistics[]
   viewState?: ViewState
 
   toggles: Toggles;
@@ -46,6 +47,7 @@ type AtonStoreState = {
 
   setViewState: (data: ViewState) => void;
   setAtonData: (data: AtonStore[]) => void;
+  setAtonStatsData: (data: AtonStatistics[]) => void;
   setToggles: (modal: Toggles) => void;
   setTableOptions: (options: TableFilterOptions) => void;
 };
@@ -59,6 +61,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     bearing: 0,
   },
   atonData: [],
+  atonStatsData: [],
   toggles: {
     radialMenu: false,
     hoverInfo: false,
@@ -82,6 +85,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
 
   setViewState: (data) => set({ viewState: data }),
   setAtonData: (data) => set({ atonData: data }),
+  setAtonStatsData: (data) => set({ atonStatsData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableOptions: (options) => set({ tableOptions: options }),
 }));

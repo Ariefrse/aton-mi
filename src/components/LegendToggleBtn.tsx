@@ -15,7 +15,7 @@ const LegendToggleBtn = () => {
         })
       }
     >
-      <IoHelpBuoy fontSize={10} />
+      <IoHelpBuoy fontSize={25} />
     </button>
   );
 };

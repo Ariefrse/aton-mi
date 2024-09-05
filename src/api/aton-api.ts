@@ -1,4 +1,4 @@
-import { AtonStatistics, AtonStore, AtonType, Msg21, Msg6 } from "../declarations/types/types";
+import { AtonStatistics, AtonType, MapAtonResDto, Msg21, Msg6 } from "../declarations/types/types";
 
 type Aton = {
   name: string
@@ -7,14 +7,14 @@ type Aton = {
   type: AtonType
 }
 
-export async function fetchAtonList<T>(type?: AtonType) {
+export async function fetchAtonList(type?: AtonType) {
   try {
     if (type === undefined) type == ''
     // const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists/${type}`);
     // const res = await fetch(`http://localhost:3000/aton/cloud/lists/${type}`);
     const res = await fetch(`http://localhost:3000/atonForMap`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const atonList = await res.json() as T;
+    const atonList = await res.json() as MapAtonResDto[]
     return atonList;
   } catch (error) {
     console.error('Failed to fetch aton list:', error);
@@ -45,9 +45,9 @@ export async function fetchMessage21(mmsi: number) {
 
 export async function fetchMessage6(mmsi: number) {
   try {
-    const response = await fetch(`http://10.10.20.200:8020/aton/msg6/${mmsi}`);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const message6 = await response.json() as Msg6[];
+    const res = await fetch(`http://10.10.20.200:8020/aton/msg6/${mmsi}`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const message6 = await res.json() as Msg6[];
     return message6;
   } catch (error) {
     console.error('Failed to fetch message6:', error);
@@ -56,9 +56,9 @@ export async function fetchMessage6(mmsi: number) {
 
 export async function fetchAtonStats() {
   try {
-    const response = await fetch('http://localhost:3000/report-stats')
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const stats = await response.json() as AtonStatistics[]
+    const res = await fetch('http://localhost:3000/report-stats')
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const stats = await res.json() as AtonStatistics[]
     return stats
   } catch (error) {
     console.error('Failed to fetch')

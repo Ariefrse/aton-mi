@@ -132,3 +132,15 @@ export type AtonStatistics = {
   al_type: string;
   lastseen: number;
 };
+
+export type MapAtonResDto = {
+  last_BattAton: number;
+  latitude: number;
+  longitude: number;
+  meanBattAton: number;
+  mmsi: number;
+  name: string;
+  region: string;
+  ts: string;
+  type: AtonType;
+};
