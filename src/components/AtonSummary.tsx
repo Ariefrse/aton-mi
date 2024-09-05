@@ -1,9 +1,23 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react"; // Added useState import
 import { useAtonStore } from "../store/store";
 import { IoMdClose } from "react-icons/io";
+import { AtonType } from "../declarations/types/types";
 
-const AtonSummary = () => {
+type AtonSummaryProps = {
+  onAtonTypeChange: (type: AtonType) => void;
+};
+
+const AtonSummary = ({ onAtonTypeChange }: AtonSummaryProps) => {
   const { toggles, setToggles } = useAtonStore();
+  const [selectedTypes, setSelectedTypes] = useState<AtonType[]>([]);
+
+  const handleCheckboxChange = (type: AtonType) => {
+    const updatedTypes = selectedTypes.includes(type)
+      ? selectedTypes.filter((t) => t !== type)
+      : [...selectedTypes, type];
+    setSelectedTypes(updatedTypes);
+    onAtonTypeChange(type);
+  };
 
   const atonSummaryInfoData = {
     atonType: ["Buoy", "Lighthouse", "Beacon"],
@@ -44,7 +58,13 @@ const AtonSummary = () => {
       <p className="my-2">Structure</p>
       {atonSummaryInfoData.atonType.map((struct, index) => (
         <div key={index + 1} className="flex items-center mb-2">
-          <input type="checkbox" name={struct} id={struct} />
+          <input
+            type="checkbox"
+            name={struct}
+            id={struct}
+            onChange={() => handleCheckboxChange(struct.toLowerCase() as AtonType)}
+            checked={selectedTypes.includes(struct.toLowerCase() as AtonType)}
+          />
           <label className="ml-2">{struct}</label>
         </div>
       ))}
@@ -55,7 +75,7 @@ const AtonSummary = () => {
             <div className="flex gap-4">
               <p
                 className="flex-1 whitespace-nowrap"
-                onClick={() => setSelectedAton("Buoy")}
+                onClick={() => handleCheckboxChange(info.title.toLowerCase() as AtonType)}
               >
                 {info.title}
               </p>

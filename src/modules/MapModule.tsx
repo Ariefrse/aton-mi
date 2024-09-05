@@ -63,6 +63,14 @@ export default function MapModule() {
   const [mapStyle, setMapStyle] = useState(
     "mapbox://styles/mapbox/satellite-v9"
   );
+  const [selectedAtonTypes, setSelectedAtonTypes] = useState<AtonType[]>([]);
+  const handleAtonTypeChange = (type: AtonType) => {
+    setSelectedAtonTypes((prevTypes) =>
+      prevTypes.includes(type)
+        ? prevTypes.filter((t) => t !== type)
+        : [...prevTypes, type]
+    );
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -79,6 +87,7 @@ export default function MapModule() {
 
   useEffect(() => {
     const newLayers = mapAton
+      ?.filter((aton) => selectedAtonTypes.includes(aton.type))
       ?.map((aton, index) => {
         const layerId = `scatterplot-layer-${aton?.mmsi}-${index}`;
 
@@ -144,7 +153,7 @@ export default function MapModule() {
       .filter((layer) => layer !== null);
 
     setLayers(newLayers);
-  }, [mapAton]);
+  }, [mapAton, selectedAtonTypes]);
 
   useEffect(() => {
     const handleRightClick = (event: MouseEvent) => {
@@ -206,7 +215,7 @@ export default function MapModule() {
               <select
                 value={mapStyle}
                 onChange={handleMapStyleChange}
-                className="bg-gray-700 text-white p-2 rounded"
+                className="bg-gray-800 text-white p-2 rounded"
               >
                 <option value="mapbox://styles/mapbox/satellite-v9">
                   Satellite
@@ -223,7 +232,9 @@ export default function MapModule() {
             </div>
           </>
         )}
+        
         {toggles.tableModule && <TableOptions />}
+        
       </div>
       <div className="flex-1 relative">
         <DeckGL
@@ -250,8 +261,9 @@ export default function MapModule() {
         </DeckGL>
         {/* Microinteractive Components */}
         {hoverInfoData && <HoverInfo {...hoverInfoData} />}
+        <AtonSummary onAtonTypeChange={handleAtonTypeChange} />
         {clickInfo && (
-          <div className="absolute top-2 right-2 bg-gray-800 opacity-70 text-white p-4 rounded-md shadow-lg">
+          <div className="absolute top-2 right-2 bg-gray-800 opacity-90 text-white p-4 rounded-md shadow-lg">
             <h2 className="text-lg font-bold">{clickInfo.name}</h2>
             <p>Region: {clickInfo.region}</p>
             <p>MMSI: {clickInfo.mmsi}</p>

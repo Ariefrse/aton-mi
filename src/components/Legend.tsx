@@ -28,7 +28,7 @@ const Legend = () => {
   const { toggles, setToggles } = useAtonStore();
 
   return (
-    <div className=" absolute rounded-lg bg-gray-600 opacity-80 bottom-2 right-2">
+    <div className=" absolute rounded-lg bg-gray-800 opacity-90 bottom-2 right-2">
       <div className="relative">
         <IoMdClose
           className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
