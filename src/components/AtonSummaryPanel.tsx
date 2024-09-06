@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
 
@@ -16,6 +16,11 @@ export default function AtonSummaryPanel() {
     setExpandedSection(expandedSection === section ? null : section)
   }
 
+  useEffect(() => {
+    // Fetch endpoint
+    // Read data dari endpoint 
+    setStructure(//masukkn dlm ni)
+  }, [])
 
 
   const renderExpandableSection = (title: string, content: React.ReactNode) => (

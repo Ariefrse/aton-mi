@@ -192,6 +192,9 @@ export default function MapModule() {
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
             mapStyle={mapStyle}
+            onZoomEnd={() => {
+
+            }}
             style={{
               zIndex: 0,
             }}
