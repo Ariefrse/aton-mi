@@ -140,13 +140,13 @@ export default function MapModule() {
     };
   }, [mapRef, toggles, setToggles]);
 
-  const toggleTableModule = () => {
+  const handleTableModuleToggle = () => {
     setToggles({
       ...toggles,
       tableModule: !toggles.tableModule,
       legendToggleBtn: false,
       legend: false,
-      messageCountOverview: false,
+      atonMessageCountOverview: false,
       atonSummaryPanel: false,
       atonSummaryToggleBtn: false,
     });
@@ -171,7 +171,7 @@ export default function MapModule() {
             <h1 className="text-xl ">AtoN</h1>
             <div className="flex gap-6 mr-6">
               {/* <TableRefreshBtn onClick={() => handleTableDataRefresh()}/> */}
-              <TableBtn onClick={() => toggleTableModule()} />
+              <TableBtn onClick={() => handleTableModuleToggle()} />
               <MapStyleDropdown
                 mapStyle={mapStyle}
                 handleMapStyleChange={handleMapStyleChange}
