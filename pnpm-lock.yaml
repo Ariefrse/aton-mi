@@ -17,6 +17,9 @@ importers:
       '@deck.gl/layers':
         specifier: ^9.0.26
         version: 9.0.27(@deck.gl/core@9.0.27)(@loaders.gl/core@4.2.2)(@luma.gl/core@9.0.23)(@luma.gl/engine@9.0.23(@luma.gl/core@9.0.23))
+      '@deck.gl/mapbox':
+        specifier: ^9.0.29
+        version: 9.0.29(@deck.gl/core@9.0.27)(@luma.gl/core@9.0.23)
       '@deck.gl/react':
         specifier: ^9.0.27
         version: 9.0.27(@deck.gl/core@9.0.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -390,6 +393,12 @@ packages:
       '@loaders.gl/core': ^4.2.0
       '@luma.gl/core': ^9.0.0
       '@luma.gl/engine': ^9.0.0
+
+  '@deck.gl/mapbox@9.0.29':
+    resolution: {integrity: sha512-3zmixpGMf7BxqgU3cE5h3jYe6l1KR4edSNYdauRh+m0fUIQ4ZciD/2QOLBfOf6YJY7FVeC2mEgKo2+XTmiAl1Q==}
+    peerDependencies:
+      '@deck.gl/core': ^9.0.0
+      '@luma.gl/core': ~9.0.0
 
   '@deck.gl/react@9.0.27':
     resolution: {integrity: sha512-CdbPZJECoNF/MlS2UEBzUFRik+2cUjBzfFFgDZjUZtf7lg1DKauEzRsIFnIe0qrbHo7Kb9byO1S5noiwe0q79A==}
@@ -811,6 +820,9 @@ packages:
 
   '@luma.gl/constants@9.0.23':
     resolution: {integrity: sha512-s/ZhIyEQMisXYj8HCMywcSyem5b8XbVzGPeiftG0k52Nm8+I6Z7cSrF8B88B7GoHVJylwaKyPMXGSXy19STz4w==}
+
+  '@luma.gl/constants@9.0.27':
+    resolution: {integrity: sha512-NBkMim3u0xt4UDe4e69L6E/pq5XNxfX60GrggJDzfilVRfIbx5XwKhBXTyNjjtNEk4oc6uYLHWd/05jGRHcfLg==}
 
   '@luma.gl/core@9.0.23':
     resolution: {integrity: sha512-7ZU5lKaIfpkqIIL/fF4vLqfeAo1VyFCdHz9MdcKmKFKig7QE6B97BygiVUOwRgOCgrxIpdMZS16JeKIiZFVdwQ==}
@@ -5193,6 +5205,13 @@ snapshots:
       '@math.gl/web-mercator': 4.0.1
       earcut: 2.2.4
 
+  '@deck.gl/mapbox@9.0.29(@deck.gl/core@9.0.27)(@luma.gl/core@9.0.23)':
+    dependencies:
+      '@deck.gl/core': 9.0.27
+      '@luma.gl/constants': 9.0.27
+      '@luma.gl/core': 9.0.23
+      '@math.gl/web-mercator': 4.0.1
+
   '@deck.gl/react@9.0.27(@deck.gl/core@9.0.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@deck.gl/core': 9.0.27
@@ -5698,6 +5717,8 @@ snapshots:
       '@loaders.gl/core': 4.2.2
 
   '@luma.gl/constants@9.0.23': {}
+
+  '@luma.gl/constants@9.0.27': {}
 
   '@luma.gl/core@9.0.23':
     dependencies:

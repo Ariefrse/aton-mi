@@ -4,7 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
 import AtonSummary from "../components/AtonSummary";
-import { LayersList, MapViewState } from "@deck.gl/core";
+import {
+  LayersList,
+  MapViewState,
+  ViewStateChangeParameters,
+} from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
 import MessageCountOverview from "../components/MessageCountOverview";
@@ -18,6 +22,7 @@ import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 import TableBtn from "../components/TableBtn";
 import MapStyleDropdown from "../components/MapStyleDropdown";
 import { MAP_STYLES } from "../declarations/constants/constants";
+import AtonInfo, { AtonInfoProps } from "../components/AtonInfo";
 
 type ClickInfoType = {
   name?: string;
@@ -34,9 +39,10 @@ export default function MapModule() {
   const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
+  const [atonInfoData, setAtonInfoData] = useState<AtonInfoProps | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
   const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
+  const [radius, setRadius] = useState(800);
   const [mapViewState, setMapViewState] = useState<MapViewState>({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -55,7 +61,7 @@ export default function MapModule() {
       }
     }
 
-    if (!mapAton) {
+    if (!mapAton || mapAton.length === 0) {
       fetchMapAtonData();
     }
   }, []);
@@ -76,7 +82,7 @@ export default function MapModule() {
               type: aton?.type,
             },
           ],
-          getRadius: 800,
+          getRadius: radius,
           getPosition: (d) => d.coordinate,
           getFillColor: [255, 0, 0],
           pickable: true,
@@ -87,12 +93,12 @@ export default function MapModule() {
                 mmsi: info.object.mmsi,
                 position: [info.x, info.y],
               });
-              setClickInfo({
+              setAtonInfoData({
                 name: info.object.name,
                 mmsi: info.object.mmsi,
                 type: info.object.type,
                 position: [info.x, info.y],
-              })  ;
+              });
             } else {
               setRadialMenuData(null);
               setToggles({ ...toggles, radialMenu: false });
@@ -109,7 +115,7 @@ export default function MapModule() {
               });
             } else {
               setHoverInfoData(null);
-              setToggles({ ...toggles, hoverInfo: false });
+              setToggles({ ...toggles, radialMenu: true, hoverInfo: false });
             }
           },
         });
@@ -122,7 +128,6 @@ export default function MapModule() {
   useEffect(() => {
     const handleRightClick = (event: MouseEvent) => {
       event.preventDefault();
-      // event.stopPropagation();
       const { clientX: x, clientY: y } = event;
 
       setRadialMenuData({ mmsi: 0, position: [x, y] });
@@ -159,6 +164,12 @@ export default function MapModule() {
     setMapStyle(newStyle);
   };
 
+  const handleViewStateChange = (params: ViewStateChangeParameters) => {
+    // TODO: Handle dynamic radius value if zoom 
+
+    // 
+  };
+
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
       <div className="mb-4 flex justify-between items-center">
@@ -180,7 +191,7 @@ export default function MapModule() {
       <div className="flex-1 relative">
         <DeckGL
           initialViewState={mapViewState}
-          // onViewStateChange={({ viewState }) => setMapViewState(viewState)}
+          onViewStateChange={(params) => handleViewStateChange(params)}
           controller={true}
           layers={layers}
         >
@@ -191,29 +202,12 @@ export default function MapModule() {
             style={{
               zIndex: 0,
             }}
-          >
-            <NavigationControl
-              visualizePitch
-              position="bottom-right"
-              showCompass
-              showZoom
-            />
-          </Map>
+          />
         </DeckGL>
         {/* Microinteractive Components */}
-        {hoverInfoData && <HoverInfo {...hoverInfoData} />}
-        {clickInfo && (
-          <div className="absolute top-2 right-2 bg-gray-800 opacity-70 text-white p-4 rounded-md shadow-lg">
-            <h2 className="text-lg font-bold">{clickInfo.name}</h2>
-            <p>MMSI: {clickInfo.mmsi}</p>
-            <p>Type: {clickInfo.type}</p>
-            <p>Latitude: {clickInfo?.position[0]}</p>
-            <p>Longitude: {clickInfo?.position?.[1]}</p>
-          </div>
-        )}
-        ``
-        {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
-        {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
+        {toggles.atonInfo && atonInfoData && <AtonInfo {...atonInfoData!} />}
+        {toggles.radialMenu && radialMenuData && <RadialMenu {...radialMenuData!} />}
+        {toggles.hoverInfo && hoverInfoData && <HoverInfo {...hoverInfoData!} />}
         {toggles.atonSummary && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummary />
