@@ -1,6 +1,5 @@
-import { FC } from "react";
-import { HiAdjustments } from "react-icons/hi";
 import { useAtonStore } from "../store/store";
+import { HiAdjustments } from "react-icons/hi";
 
 const AtonSummaryToggleBtn = () => {
   const { toggles, setToggles } = useAtonStore();
@@ -11,8 +10,9 @@ const AtonSummaryToggleBtn = () => {
       onClick={() =>
         setToggles({
           ...toggles,
-          atonSummary: true,
+          atonSummaryPanel: true,
           atonSummaryToggleBtn: false,
+          atonMessageCountOverview: false,
         })
       }
     >
