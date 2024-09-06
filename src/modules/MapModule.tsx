@@ -3,7 +3,7 @@ import Map, { MapRef, NavigationControl } from "react-map-gl";
 import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
-import AtonSummary from "../components/AtonSummary";
+import AtonSummaryPanel from "../components/AtonSummaryPanel";
 import { LayersList, MapViewState } from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
@@ -18,6 +18,7 @@ import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 import TableBtn from "../components/TableBtn";
 import MapStyleDropdown from "../components/MapStyleDropdown";
 import { MAP_STYLES } from "../declarations/constants/constants";
+import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
 
 type ClickInfoType = {
   name?: string;
@@ -149,7 +150,7 @@ export default function MapModule() {
       legendToggleBtn: false,
       legend: false,
       messageCountOverview: false,
-      atonSummary: false,
+      atonSummaryPanel: false,
       atonSummaryToggleBtn: false,
     });
   };
@@ -160,7 +161,7 @@ export default function MapModule() {
   };
 
   return (
-    <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
+    <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-900 text-white flex flex-col rounded-md">
       <div className="mb-4 flex justify-between items-center">
         {toggles.tableModule === true ? null : (
           <>
@@ -214,13 +215,14 @@ export default function MapModule() {
         ``
         {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
         {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
-        {toggles.atonSummary && (
-          <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
-            <AtonSummary />
-            {toggles.messageCountOverview && <MessageCountOverview />}
-          </div>
-        )}
+        {toggles.atonSummaryPanel && (
+  <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
+    <AtonSummaryPanel />
+    {toggles.atonMessageCountOverview && <AtonMessageCountOverview />}
+  </div>
+)}
         {toggles.tableModule && <TableModule />}
+        
         {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
         {toggles.legend && <Legend />}
         {toggles.legendToggleBtn && <LegendToggleBtn />}

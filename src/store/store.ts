@@ -10,6 +10,8 @@ type Toggles = {
   atonInfo: boolean;
   atonSummaryToggleBtn: boolean;
   atonSummary: boolean;
+  atonSummaryPanel: boolean;
+  atonMessageCountOverview: boolean;
   graph: boolean;
   tableModule: boolean;
   tableOptions: boolean;
@@ -70,6 +72,8 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     atonInfo: false,
     atonSummaryToggleBtn: true,
     atonSummary: false,
+    atonSummaryPanel: false,
+    atonMessageCountOverview: false,
     graph: false,
     tableModule: false,
     tableOptions: false,
