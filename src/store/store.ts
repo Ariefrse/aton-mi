@@ -9,14 +9,12 @@ type Toggles = {
   legendToggleBtn: boolean;
   atonInfo: boolean;
   atonSummaryToggleBtn: boolean;
-  atonSummary: boolean;
   atonSummaryPanel: boolean;
   atonMessageCountOverview: boolean;
   graph: boolean;
   tableModule: boolean;
   tableOptions: boolean;
   tableToggelBtn: boolean;
-  messageCountOverview: boolean;
 };
 
 type ViewState = {

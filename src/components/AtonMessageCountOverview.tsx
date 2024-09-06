@@ -94,7 +94,7 @@ const AtonMessageCountOverview = () => {
               onClick={() => {
                 setToggles({
                   ...toggles,
-                  messageCountOverview: false,
+                  atonMessageCountOverview: false,
                  // Added this line
                 });
                 setIsVisible(false); // Update visibility state

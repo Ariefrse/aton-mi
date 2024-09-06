@@ -1,5 +1,5 @@
 import { DeckGL } from "@deck.gl/react";
-import Map, { MapRef, NavigationControl } from "react-map-gl";
+import Map, { MapRef } from "react-map-gl";
 import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
@@ -11,12 +11,11 @@ import {
 } from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
-import MessageCountOverview from "../components/MessageCountOverview";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-import { AtonType, MapAtonResDto } from "../declarations/types/types";
+import { MapAtonResDto } from "../declarations/types/types";
 import { fetchAtonList } from "../api/aton-api";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 import TableBtn from "../components/TableBtn";
@@ -24,13 +23,6 @@ import MapStyleDropdown from "../components/MapStyleDropdown";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import AtonInfo, { AtonInfoProps } from "../components/AtonInfo";
 import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
-
-type ClickInfoType = {
-  name?: string;
-  mmsi?: number;
-  type?: AtonType;
-  position: [number, number];
-};
 
 type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
 
@@ -168,7 +160,7 @@ export default function MapModule() {
   const handleViewStateChange = (params: ViewStateChangeParameters) => {
     // TODO: Handle dynamic radius value if zoom 
 
-    // 
+    // TODO: If interact with map will turn off Radial Menu
   };
 
   return (
@@ -206,9 +198,9 @@ export default function MapModule() {
           />
         </DeckGL>
         {/* Microinteractive Components */}
-        {toggles.atonInfo && atonInfoData && <AtonInfo {...atonInfoData!} />}
-        {toggles.radialMenu && radialMenuData && <RadialMenu {...radialMenuData!} />}
-        {toggles.hoverInfo && hoverInfoData && <HoverInfo {...hoverInfoData!} />}
+        {toggles.atonInfo && atonInfoData && <AtonInfo {...atonInfoData} />}
+        {toggles.radialMenu && radialMenuData && <RadialMenu {...radialMenuData} />}
+        {toggles.hoverInfo && hoverInfoData && <HoverInfo {...hoverInfoData} />}
         {toggles.atonSummaryPanel && (
   <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
     <AtonSummaryPanel />
