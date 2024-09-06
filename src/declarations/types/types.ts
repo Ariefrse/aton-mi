@@ -9,6 +9,7 @@
   - All types from 3rd party libraries should be imported here prefixed with "T"
   - This is to ease refactoring of Types and imports
 */
+import { MapStyle } from "../../modules/MapModule";
 import { AIS_MESSAGE_TYPES } from "../constants/constants";
 
 export type { Layer, LayersList } from "@deck.gl/core";
@@ -144,3 +145,13 @@ export type MapAtonResDto = {
   ts: string;
   type: AtonType;
 };
+
+export type UserSettings = {
+  mapStyle: MapStyle
+  mapViewState: {
+    latitude: number;
+    longitude: number;
+    zoom: number;
+  }
+  // TODO: To add table filter settings
+}
