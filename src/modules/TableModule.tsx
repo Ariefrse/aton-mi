@@ -41,23 +41,23 @@ const handleRenderCell = (params?: GridRenderCellParams) => {
 
 const columns: GridColDef[] = [
   { field: "al_name", headerName: "Sitename", width: 150 },
-  { field: "al_mmsi", headerName: "MMSI", width: 130 },
-  { field: "al_type", headerName: "Structure", width: 130 },
-  { field: "al_region", headerName: "Region", width: 130 },
+  { field: "al_mmsi", headerName: "MMSI", width: 100 },
+  { field: "al_type", headerName: "Structure", width: 100 },
+  { field: "al_region", headerName: "Region", width: 200 },
   {
     field: "minBattAton",
     headerName: "Min Batt Aton",
-    width: 150,
+    width: 120,
     renderCell: (params) => handleRenderCell(params),
   },
   {
     field: "maxBattAton",
     headerName: "Max Batt Aton",
-    width: 150,
+    width: 120,
     renderCell: (params) => handleRenderCell(params),
   },
-  { field: "minTemp", headerName: "Min Temp", width: 150 },
-  { field: "maxTemp", headerName: "Max Temp", width: 150 },
+  { field: "minTemp", headerName: "Min Temp", width: 100 },
+  { field: "maxTemp", headerName: "Max Temp", width: 100 },
   { field: "meanBattAton", headerName: "Mean Batt Aton", width: 150 },
   { field: "stddevBattAton", headerName: "Std Dev Batt Aton", width: 150 },
   { field: "skewBattAton", headerName: "Skew Batt Aton", width: 150 },
@@ -76,22 +76,22 @@ const columns: GridColDef[] = [
   },
   { field: "meanBattLant", headerName: "Mean Batt Lant", width: 150 },
   { field: "stddevBattLant", headerName: "Std Dev Batt Lant", width: 150 },
-  { field: "skewBattLant", headerName: "Skew Batt Lant", width: 150 },
-  { field: "kurtBattLant", headerName: "Kurt Batt Lant", width: 150 },
+  { field: "skewBattLant", headerName: "Skew Batt Lant", width: 120 },
+  { field: "kurtBattLant", headerName: "Kurt Batt Lant", width: 120 },
   {
     field: "off_pos",
     headerName: "Off Pos",
-    width: 150,
+    width: 100,
     renderCell: (params) => handleRenderCell(params),
   },
   {
     field: "msg6",
     headerName: "Msg 6 Count",
-    width: 150,
+    width: 100,
     renderCell: (params) => handleRenderCell(params),
   },
-  { field: "at_ts", headerName: "Timestamp", width: 150 },
-  { field: "lastseen", headerName: "Last Seen", width: 150 },
+  { field: "at_ts", headerName: "Timestamp", width: 200 },
+  { field: "lastseen", headerName: "Last Seen", width: 200 },
 ];
 
 export default function DataTable() {
@@ -117,33 +117,22 @@ export default function DataTable() {
       <DataGrid
         rows={atonStatsData}
         columns={columns}
-        pageSizeOptions={[20]}
+        // pageSizeOptions={[20]}
         disableDensitySelector
         disableRowSelectionOnClick
         disableColumnSelector
+        // filterModel={tableFilterOptions}
         slots={{ toolbar: GridToolbar }}
         slotProps={{
           toolbar: {
             showQuickFilter: true,
           },
         }}
-        className="m-2 opacity-90"
+        className="m-2 opacity-90 bg-white"
         sx={{
-          "& .MuiDataGrid-root": {
-            backgroundColor: "#121213",
-          },
           "& .MuiDataGrid-cell": {
-            backgroundColor: "#01060e",
+            backgroundColor: "#121213",
             color: "#ffffff",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "#4A90E2",
-            color: "#030712",
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#141516",
-            color: "#913838",
-            textColor: "#ffffff",
           },
         }}
       />

@@ -35,7 +35,6 @@ export default function MapModule() {
   const [atonInfoData, setAtonInfoData] = useState<AtonInfoProps | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
   const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
-  const [radius, setRadius] = useState(800);
   const [mapViewState, setMapViewState] = useState<MapViewState>({
     longitude: 101.5466,
     latitude: 3.0891,
@@ -75,7 +74,8 @@ export default function MapModule() {
               type: aton?.type,
             },
           ],
-          getRadius: radius,
+          radiusUnits: "pixels",
+          getRadius: 5,
           getPosition: (d) => d.coordinate,
           getFillColor: [255, 0, 0],
           pickable: true,
@@ -192,12 +192,7 @@ export default function MapModule() {
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
             mapStyle={mapStyle}
-            onZoomEnd={() => {
-
-            }}
-            style={{
-              zIndex: 0,
-            }}
+            attributionControl={false}
           />
         </DeckGL>
         {/* Microinteractive Components */}

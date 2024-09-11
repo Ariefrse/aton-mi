@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { AtonStore, AtonStatus, AtonType, AtonStatistics } from "../declarations/types/types";
+import { GridFilterModel } from "@mui/x-data-grid";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -32,10 +33,7 @@ export type GlobalAtonFilterOptions = {
   atonPropertyToFilter: 'No Message 21' | 'No Message 6' | 'Light Error' | 'Low Batt AtoN' | 'Low Batt Lantern' | 'Bad LDR' | 'Off Position'
 }
 
-type TableFilterOptions = {
-  fromDate: string
-  toDate: string;
-};
+type TableFilterOptions = GridFilterModel | null
 
 type AtonStoreState = {
   atonData?: AtonStore[]
@@ -43,13 +41,13 @@ type AtonStoreState = {
   viewState?: ViewState
 
   toggles: Toggles;
-  tableOptions: TableFilterOptions;
+  tableFilterOptions: TableFilterOptions;
 
   setViewState: (data: ViewState) => void;
   setAtonData: (data: AtonStore[]) => void;
   setAtonStatsData: (data: AtonStatistics[]) => void;
   setToggles: (modal: Toggles) => void;
-  setTableOptions: (options: TableFilterOptions) => void;
+  setTableFilterOptions: (options: TableFilterOptions) => void;
 };
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
@@ -78,16 +76,11 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     tableToggelBtn: true,
     messageCountOverview: false,
   },
-  tableOptions: {
-    fromDate: '',
-    toDate: '',
-    sortBy: "timestamp",
-    sortOrder: "asc",
-  },
+  tableFilterOptions: null,
 
   setViewState: (data) => set({ viewState: data }),
   setAtonData: (data) => set({ atonData: data }),
   setAtonStatsData: (data) => set({ atonStatsData: data }),
   setToggles: (toggles) => set({ toggles }),
-  setTableOptions: (options) => set({ tableOptions: options }),
+  setTableFilterOptions: (options) => set({ tableFilterOptions: options }),
 }));

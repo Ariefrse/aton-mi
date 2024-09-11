@@ -7,12 +7,11 @@ type Aton = {
   type: AtonType
 }
 
-export async function fetchAtonList(type?: AtonType) {
+export async function fetchAtonList() {
   try {
-    if (type === undefined) type == ''
-    // const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists/${type}`);
+    const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists`);
     // const res = await fetch(`http://localhost:3000/aton/cloud/lists/${type}`);
-    const res = await fetch(`http://localhost:3000/atonForMap`);
+    // const res = await fetch(`http://localhost:3000/atonForMap`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const atonList = await res.json() as MapAtonResDto[]
     return atonList;
