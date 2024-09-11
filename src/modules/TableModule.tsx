@@ -12,19 +12,19 @@ import { Box } from "@mui/material";
 const handleRenderCell = (params?: GridRenderCellParams) => {
   if (!params) return null;
   const { field, value } = params;
-  let bgColor = ""
+  let bgColor = "";
 
   // RULES & CONDITIONS //TODO: Need to confirm with Mai
-   if (
-     (field === "minBattAton" && value < 13.0) ||
-     (field === "maxBattAton" && value < 12.0) ||
-     (field === "minBattLant" && value < 12.0) ||
-     (field === "maxBattLant" && value > 15.0) ||
-     (field === "off_pos" && value === "OK") ||
-     (field === "msg6" && value <= 0)
-   ) {
-     bgColor = "rgba(29, 78, 216, 1)";
-   }
+  if (
+    (field === "minBattAton" && value < 13.0) ||
+    (field === "maxBattAton" && value < 12.0) ||
+    (field === "minBattLant" && value < 12.0) ||
+    (field === "maxBattLant" && value > 15.0) ||
+    (field === "off_pos" && value === "OK") ||
+    (field === "msg6" && value <= 0)
+  ) {
+    bgColor = "rgba(29, 78, 216, 1)";
+  }
 
   return (
     <Box
@@ -48,14 +48,12 @@ const columns: GridColDef[] = [
     field: "minBattAton",
     headerName: "Min Batt Aton",
     width: 150,
-    cellClassName: "min-batt-aton",
     renderCell: (params) => handleRenderCell(params),
   },
   {
     field: "maxBattAton",
     headerName: "Max Batt Aton",
     width: 150,
-    cellClassName: "max-batt-aton",
     renderCell: (params) => handleRenderCell(params),
   },
   { field: "minTemp", headerName: "Min Temp", width: 150 },
@@ -68,14 +66,12 @@ const columns: GridColDef[] = [
     field: "minBattLant",
     headerName: "Min Batt Lant",
     width: 150,
-    cellClassName: "min-batt-lant",
     renderCell: (params) => handleRenderCell(params),
   },
   {
     field: "maxBattLant",
     headerName: "Max Batt Lant",
     width: 150,
-    cellClassName: "max-batt-lant",
     renderCell: (params) => handleRenderCell(params),
   },
   { field: "meanBattLant", headerName: "Mean Batt Lant", width: 150 },
@@ -86,14 +82,12 @@ const columns: GridColDef[] = [
     field: "off_pos",
     headerName: "Off Pos",
     width: 150,
-    cellClassName: "off-pos",
     renderCell: (params) => handleRenderCell(params),
   },
   {
     field: "msg6",
     headerName: "Msg 6 Count",
     width: 150,
-    cellClassName: "msg6",
     renderCell: (params) => handleRenderCell(params),
   },
   { field: "at_ts", headerName: "Timestamp", width: 150 },
