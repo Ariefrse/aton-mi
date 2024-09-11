@@ -64,6 +64,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   },
   atonData: [],
   atonStatsData: [],
+ 
   toggles: {
     radialMenu: false,
     hoverInfo: false,

@@ -10,9 +10,9 @@ type Aton = {
 export async function fetchAtonList(type?: AtonType) {
   try {
     if (type === undefined) type == ''
-    // const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists/${type}`);
+    const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists`);
     // const res = await fetch(`http://localhost:3000/aton/cloud/lists/${type}`);
-    const res = await fetch(`http://localhost:3000/atonForMap`);
+    // const res = await fetch(`http://localhost:3000/atonForMap`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const atonList = await res.json() as MapAtonResDto[]
     return atonList;
@@ -21,16 +21,16 @@ export async function fetchAtonList(type?: AtonType) {
   }
 }
 
-export async function fetchAton(mmsi: number) {
-  try {
-    const res = await fetch(`http://10.10.20.200:8020/aton/${mmsi}`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const aton = await res.json() as Aton
-    return aton;
-  } catch (error) {
-    console.error('Failed to fetch aton:', error);
-  }
-}
+// export async function fetchAton(mmsi: number) {
+//   try {
+//     const res = await fetch(`http://10.10.20.200:8020/aton/${mmsi}`);
+//     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+//     const aton = await res.json() as Aton
+//     return aton;
+//   } catch (error) {
+//     console.error('Failed to fetch aton:', error);
+//   }
+// }
 
 export async function fetchMessage21(mmsi: number) {
   try {
@@ -60,6 +60,19 @@ export async function fetchAtonStats() {
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const stats = await res.json() as AtonStatistics[]
     return stats
+  } catch (error) {
+    console.error('Failed to fetch')
+  }
+}
+
+export async function fetchAton() {
+  try {
+    const res = await fetch('http://10.10.20.200:8020/aton/cloud/lists')
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const summary = await res.json() as Aton[]
+    console.log(summary.length)
+    return summary
+   
   } catch (error) {
     console.error('Failed to fetch')
   }

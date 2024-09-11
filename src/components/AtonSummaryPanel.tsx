@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
+import { fetchAton } from '../api/aton-api';
+import { Aton } from '../declarations/types/types';
+import axios from 'axios';
+
 
 
 export default function AtonSummaryPanel() {
@@ -10,13 +14,46 @@ export default function AtonSummaryPanel() {
   const [structure, setStructure] = useState(['Beacon', 'Buoy', 'Lighthouse'])
   const [condition, setCondition] = useState('All')
   const [region, setRegion] = useState(['North', 'South', 'East', 'West', 'Borneo'])
-  const [isVisible, setIsVisible] = useState(true); // Add state for visibility
+  const [isVisible, setIsVisible] = useState(true); 
+  const [summaryData, setSummaryData] = useState<Aton[]>([]);
+  const [totalSites, setTotalSites] = useState(0);
+  const [selectedStructure, setSelectedStructure] = useState<string[]>([]); 
 
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section)
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchAton();
+        if (data) {
+            setSummaryData(data as Aton[]);
+            setTotalSites(data.length); 
+            const uniqueTypes = Array.from(new Set(data.map(item => item.type)));
+            setStructure(uniqueTypes);
+          } else {
+            console.error('No data received');
+          }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
 
+    fetchData();
+  }, []);
+
+  const handleStructureChange = (type: string) => {
+    setSelectedStructure(prevSelected =>
+      prevSelected.includes(type)
+        ? prevSelected.filter(item => item !== type)
+        : [...prevSelected, type]
+    );
+  };
+
+  const filteredData = summaryData.filter(item =>
+    selectedStructure.length === 0 || selectedStructure.includes(item.type)
+  );
 
   const renderExpandableSection = (title: string, content: React.ReactNode) => (
     <div>
@@ -61,7 +98,9 @@ export default function AtonSummaryPanel() {
           <div>
             {structure.map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input type="checkbox" id={item} className="rounded bg-gray-700 border-gray-600" />
+                <input type="checkbox" id={item} className="rounded bg-gray-700 border-gray-600"
+                checked={selectedStructure.includes(item)}
+                onChange={() => handleStructureChange(item)} />
                 <label htmlFor={item}>{item}</label>
               </div>
             ))}
@@ -94,7 +133,7 @@ export default function AtonSummaryPanel() {
 
         <div className="flex justify-between items-center">
           <span className="font-medium">Total Sites</span>
-          <span className="font-bold">504</span>
+          <span className="font-bold">{totalSites}</span>
         </div>
 
         <div className="space-y-2">

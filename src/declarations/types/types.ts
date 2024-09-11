@@ -91,16 +91,31 @@ export type Msg21 = {
 };
 
 export type AtonStore = {
+  LDR_OKNG: number;
+  cnt_msg21: number;
+  cnt_msg6: number;
+  health_OKNG: number;
   last_BattAton: number;
+  last_BattLant: number;
+  last_LDR: number;
+  last_Temp: number;
+  last_health: number;
+  last_light: number;
+  last_racon: number;
+  lastseen: string;
   latitude: number;
+  lcl_ts: string;
   longitude: number;
-  meanBattAton: number;
   mmsi: number;
   name: string;
+  off_pos_OKNG: number;
+  opt21_percent: number;
+  opt6_percent: number;
+  racon_OKNG: number;
   region: string;
   ts: string;
-  msg6?: Partial<Msg6>[]
-  msg21?: Partial<Msg21>[]
+  ts_iso: string;
+  type: string;
 }
 
 export type AtonStatistics = {
@@ -143,4 +158,32 @@ export type MapAtonResDto = {
   region: string;
   ts: string;
   type: AtonType;
+};
+
+export type Aton = {
+  LDR_OKNG: number;
+  cnt_msg21: number;
+  cnt_msg6: number;
+  health_OKNG: number;
+  last_BattAton: number;
+  last_BattLant: number;
+  last_LDR: number;
+  last_Temp: number;
+  last_health: number;
+  last_light: number;
+  last_racon: number;
+  lastseen: string;
+  latitude: number;
+  lcl_ts: string;
+  longitude: number;
+  mmsi: number;
+  name: string;
+  off_pos_OKNG: number;
+  opt21_percent: number;
+  opt6_percent: number;
+  racon_OKNG: number;
+  region: string;
+  ts: string;
+  ts_iso: string;
+  type: string;
 };

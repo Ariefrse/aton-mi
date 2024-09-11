@@ -1,13 +1,12 @@
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef, NavigationControl } from "react-map-gl";
 import { useState, useRef, useEffect } from "react";
-import { ScatterplotLayer } from "@deck.gl/layers";
+import { IconLayer, ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
 import AtonSummaryPanel from "../components/AtonSummaryPanel";
 import { LayersList, MapViewState } from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
-import MessageCountOverview from "../components/MessageCountOverview";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import { useAtonStore } from "../store/store";
 import TableOptions from "../components/TableOptions";
@@ -28,6 +27,12 @@ type ClickInfoType = {
 };
 
 type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
+
+const ATON_TYPE_ICONS: { [key in AtonType]: string } = {
+  Buoy: "icon/Rectangle1.svg",
+  Lighthouse: "icon/Rectangle2.svg",
+  Beacon: "icon/Ellipse.svg",
+};
 
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
@@ -64,9 +69,9 @@ export default function MapModule() {
   useEffect(() => {
     const newLayers = mapAton
       ?.map((aton, index) => {
-        const layerId = `scatterplot-layer-${aton?.mmsi}-${index}`;
+        const layerId = `icon-layer-${aton?.mmsi}-${index}`;
 
-        return new ScatterplotLayer({
+        return new IconLayer({
           id: layerId,
           data: [
             {
@@ -75,12 +80,26 @@ export default function MapModule() {
               mmsi: aton?.mmsi,
               battAton: aton?.last_BattAton,
               type: aton?.type,
+             
             },
           ],
-          getRadius: 800,
+          getIcon: (d: { type: AtonType }) => {
+            const iconUrl = ATON_TYPE_ICONS[d.type];
+            return {
+              url: iconUrl,
+              width: 128, // Increase width for better quality
+              height: 128,
+           
+             // Increase height for better quality
+             // Adjust anchor point if necessary
+          };
+        },
+          sizeScale: 1,
           getPosition: (d) => d.coordinate,
-          getFillColor: [255, 0, 0],
-          pickable: true,
+          getSize: 10,
+          getColor: [255, 0, 0],
+          pickable: false,
+          
           onClick: (info) => {
             if (info.object) {
               setToggles({ ...toggles, radialMenu: true });
@@ -118,6 +137,7 @@ export default function MapModule() {
       .filter((layer) => layer !== null);
 
     setLayers(newLayers);
+    console.log(`Number of layers: ${newLayers?.length}`);
   }, [mapAton]);
 
   useEffect(() => {
@@ -204,12 +224,12 @@ export default function MapModule() {
         {/* Microinteractive Components */}
         {hoverInfoData && <HoverInfo {...hoverInfoData} />}
         {clickInfo && (
-          <div className="absolute top-2 right-2 bg-gray-800 opacity-70 text-white p-4 rounded-md shadow-lg">
+          <div className="absolute top-2 right-2 bg-gray-800 text-white p-4 rounded-md shadow-lg ">
             <h2 className="text-lg font-bold">{clickInfo.name}</h2>
             <p>MMSI: {clickInfo.mmsi}</p>
             <p>Type: {clickInfo.type}</p>
-            <p>Latitude: {clickInfo?.position[0]}</p>
-            <p>Longitude: {clickInfo?.position?.[1]}</p>
+            <p>Latitude: {clickInfo?.position[0].toFixed(6)}</p>
+            <p>Longitude: {clickInfo?.position[1].toFixed(6)}</p>
           </div>
         )}
         ``
