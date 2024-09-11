@@ -1,28 +1,62 @@
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridToolbar,
+} from "@mui/x-data-grid";
 import { useEffect } from "react";
 import { fetchAtonStats } from "../api/aton-api";
 import { useAtonStore } from "../store/store";
-import { tableValueFormatter } from "../utils/utils";
+import { Box } from "@mui/material";
+
+const handleRenderCell = (params?: GridRenderCellParams) => {
+  if (!params) return null;
+  const { field, value } = params;
+  let bgColor = ""
+
+  // RULES & CONDITIONS //TODO: Need to confirm with Mai
+   if (
+     (field === "minBattAton" && value < 13.0) ||
+     (field === "maxBattAton" && value < 12.0) ||
+     (field === "minBattLant" && value < 12.0) ||
+     (field === "maxBattLant" && value > 15.0) ||
+     (field === "off_pos" && value === "OK") ||
+     (field === "msg6" && value <= 0)
+   ) {
+     bgColor = "rgba(29, 78, 216, 1)";
+   }
+
+  return (
+    <Box
+      sx={{
+        backgroundColor: bgColor,
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      {value}
+    </Box>
+  );
+};
 
 const columns: GridColDef[] = [
-  { field: "no", headerName: "No", width: 10 },
   { field: "al_name", headerName: "Sitename", width: 150 },
   { field: "al_mmsi", headerName: "MMSI", width: 130 },
   { field: "al_type", headerName: "Structure", width: 130 },
   { field: "al_region", headerName: "Region", width: 130 },
-  // { field: "minLatAton", headerName: "Min Lat Aton", width: 150 },
-  // { field: "avgLatAton", headerName: "Avg Lat Aton", width: 150 },
   {
     field: "minBattAton",
     headerName: "Min Batt Aton",
     width: 150,
-    valueFormatter: tableValueFormatter,
+    cellClassName: "min-batt-aton",
+    renderCell: (params) => handleRenderCell(params),
   },
   {
     field: "maxBattAton",
     headerName: "Max Batt Aton",
     width: 150,
-    valueFormatter: tableValueFormatter,
+    cellClassName: "max-batt-aton",
+    renderCell: (params) => handleRenderCell(params),
   },
   { field: "minTemp", headerName: "Min Temp", width: 150 },
   { field: "maxTemp", headerName: "Max Temp", width: 150 },
@@ -30,8 +64,20 @@ const columns: GridColDef[] = [
   { field: "stddevBattAton", headerName: "Std Dev Batt Aton", width: 150 },
   { field: "skewBattAton", headerName: "Skew Batt Aton", width: 150 },
   { field: "kurtBattAton", headerName: "Kurt Batt Aton", width: 150 },
-  { field: "minBattLant", headerName: "Min Batt Lant", width: 150 },
-  { field: "maxBattLant", headerName: "Max Batt Lant", width: 150 },
+  {
+    field: "minBattLant",
+    headerName: "Min Batt Lant",
+    width: 150,
+    cellClassName: "min-batt-lant",
+    renderCell: (params) => handleRenderCell(params),
+  },
+  {
+    field: "maxBattLant",
+    headerName: "Max Batt Lant",
+    width: 150,
+    cellClassName: "max-batt-lant",
+    renderCell: (params) => handleRenderCell(params),
+  },
   { field: "meanBattLant", headerName: "Mean Batt Lant", width: 150 },
   { field: "stddevBattLant", headerName: "Std Dev Batt Lant", width: 150 },
   { field: "skewBattLant", headerName: "Skew Batt Lant", width: 150 },
@@ -40,15 +86,16 @@ const columns: GridColDef[] = [
     field: "off_pos",
     headerName: "Off Pos",
     width: 150,
-    valueFormatter: tableValueFormatter,
+    cellClassName: "off-pos",
+    renderCell: (params) => handleRenderCell(params),
   },
   {
     field: "msg6",
     headerName: "Msg 6 Count",
     width: 150,
-    valueFormatter: tableValueFormatter,
+    cellClassName: "msg6",
+    renderCell: (params) => handleRenderCell(params),
   },
-  // { field: "siteTx", headerName: "Site Tx", width: 150 },
   { field: "at_ts", headerName: "Timestamp", width: 150 },
   { field: "lastseen", headerName: "Last Seen", width: 150 },
 ];
@@ -62,14 +109,13 @@ export default function DataTable() {
         const fetchAtonStatsData = await fetchAtonStats();
         setAtonStatsData(fetchAtonStatsData!);
       } catch (error) {
-        console.error("mende shiall !!", error);
+        console.error("Error fetching aton stats data :", error);
       }
     }
 
     if (!atonStatsData || atonStatsData.length === 0) {
       fetchData();
     }
-    console.log(atonStatsData);
   }, [atonStatsData, setAtonStatsData]);
 
   return (
