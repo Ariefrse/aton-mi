@@ -16,13 +16,6 @@ export default function AtonSummaryPanel() {
     setExpandedSection(expandedSection === section ? null : section)
   }
 
-  useEffect(() => {
-    // Fetch endpoint
-    // Read data dari endpoint 
-    setStructure(//masukkn dlm ni)
-  }, [])
-
-
   const renderExpandableSection = (title: string, content: React.ReactNode) => (
     <div>
       <button
