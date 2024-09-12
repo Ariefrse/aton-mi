@@ -24,7 +24,7 @@ import { MAP_STYLES } from "../declarations/constants/constants";
 import AtonInfo, { AtonInfoProps } from "../components/AtonInfo";
 import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
 
-type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
+export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
 
 export default function MapModule() {
   const { toggles, setToggles } = useAtonStore();
