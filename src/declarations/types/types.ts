@@ -10,7 +10,7 @@
   - This is to ease refactoring of Types and imports
 */
 import { MapStyle } from "../../modules/MapModule";
-import { AIS_MESSAGE_TYPES } from "../constants/constants";
+import { AIS_MSG_TYPE } from "../constants/constants";
 
 export type { Layer, LayersList } from "@deck.gl/core";
 export type { LineLayer, ScatterplotLayerProps } from '@deck.gl/layers';
@@ -23,7 +23,7 @@ export type AtonStatus = 'Good' | 'Warning' | 'Error'
 export type PackageCh = 'A' | 'B'
 export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
 export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
-export type MessageType = keyof typeof AIS_MESSAGE_TYPES
+export type MessageType = keyof typeof AIS_MSG_TYPE
 
 export type Msg6 = {
   packageType: string;
