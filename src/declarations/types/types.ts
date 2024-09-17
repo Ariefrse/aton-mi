@@ -9,7 +9,7 @@
   - All types from 3rd party libraries should be imported here prefixed with "T"
   - This is to ease refactoring of Types and imports
 */
-import { MapStyle } from "../../modules/MapModule";
+import  mapStyle  from "../../modules/MapModule";
 import { AIS_MSG_TYPE } from "../constants/constants";
 
 export type { Layer, LayersList } from "@deck.gl/core";
@@ -93,6 +93,7 @@ export type Msg21 = {
 
 export type AtonStore = {
   last_BattAton: number;
+  last_BattLant: number;
   latitude: number;
   longitude: number;
   meanBattAton: number;
@@ -134,8 +135,9 @@ export type AtonStatistics = {
   lastseen: number;
 };
 
-export type MapAtonResDto = {
+export type AtonList = {
   last_BattAton: number;
+  last_BattLant: number;
   latitude: number;
   longitude: number;
   meanBattAton: number;
@@ -144,10 +146,13 @@ export type MapAtonResDto = {
   region: string;
   ts: string;
   type: AtonType;
+  health: number;
+  msg6?: Partial<Msg6>[];
+  msg21?: Partial<Msg21>[];
 };
 
 export type UserSettings = {
-  mapStyle: MapStyle
+  mapStyle: typeof mapStyle;
   mapViewState: {
     latitude: number;
     longitude: number;
@@ -155,3 +160,10 @@ export type UserSettings = {
   }
   // TODO: To add table filter settings
 }
+
+export type AtonSummaryItem = {
+  type: string;
+  region: string;
+  health_OKNG: number;
+  count: number;
+};

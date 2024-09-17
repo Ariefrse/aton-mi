@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { AtonStore, AtonStatus, AtonType, AtonStatistics } from "../declarations/types/types";
 import { GridFilterModel } from "@mui/x-data-grid";
+import { fetchAtonCloudList } from '../api/aton-api';
+import { fetchAtonSummary } from '../api/aton-api';
+import { AtonSummaryItem } from '../api/aton-api';
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -48,6 +51,18 @@ type AtonStoreState = {
   setAtonStatsData: (data: AtonStatistics[]) => void;
   setToggles: (modal: Toggles) => void;
   setTableFilterOptions: (options: TableFilterOptions) => void;
+  atonSummary: AtonSummaryItem[] | null; // Updated type
+  fetchAtonSummary: () => Promise<void>;
+  filterState: {
+    selectedStructure: 'All',
+    selectedRegion: 'All',
+    condition: 'All',
+  };
+  setFilterState: (state: Partial<{
+    selectedStructures: AtonType[];
+    selectedRegions: string[];
+    condition: 'All' | 'Good' | 'Not Good';
+  }>) => void;
 };
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
@@ -77,10 +92,27 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     messageCountOverview: false,
   },
   tableFilterOptions: null,
-
+  atonSummary: null, // Initialize atonSummary
+  filterState: {
+    selectedStructure: 'All',
+    selectedRegion: 'All',
+    condition: 'All',
+  },
   setViewState: (data) => set({ viewState: data }),
   setAtonData: (data) => set({ atonData: data }),
   setAtonStatsData: (data) => set({ atonStatsData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableFilterOptions: (options) => set({ tableFilterOptions: options }),
+  setFilterState: (newState) => set((state) => ({
+    filterState: { ...state.filterState, ...newState },
+  })),
+  fetchAtonSummary: async () => {
+    try {
+      const summary = await fetchAtonSummary();
+      set({ atonSummary: summary });
+    } catch (error) {
+      console.error('Error fetching AtoN summary:', error);
+    }
+  },
 }));
+

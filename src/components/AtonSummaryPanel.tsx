@@ -1,19 +1,82 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
-
+import { AtonType } from '../declarations/types/types'
+import { AtonSummaryItem } from '../api/aton-api'
 
 export default function AtonSummaryPanel() {
-  const { toggles, setToggles } = useAtonStore();
+  const { toggles, setToggles, atonSummary, fetchAtonSummary, filterState, setFilterState } = useAtonStore();
   
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
-  const [structure, setStructure] = useState(['Beacon', 'Buoy', 'Lighthouse'])
-  const [condition, setCondition] = useState('All')
-  const [region, setRegion] = useState(['North', 'South', 'East', 'West', 'Borneo'])
-  const [isVisible, setIsVisible] = useState(true); // Add state for visibility
+
+  useEffect(() => {
+    fetchAtonSummary();
+  }, [fetchAtonSummary]);
+
+  const filteredAtonSummary = useMemo(() => {
+    if (!atonSummary) return null;
+
+    return atonSummary.filter(item => {
+      const structureMatch = filterState.selectedStructure === 'All' || filterState.selectedStructure === item.type;
+      const regionMatch = filterState.selectedRegion === 'All' || filterState.selectedRegion === item.region;
+      let conditionMatch = true;
+      if (filterState.condition === 'Good') {
+        conditionMatch = item.health_OKNG === 1;
+      } else if (filterState.condition === 'Not Good') {
+        conditionMatch = item.health_OKNG === 0;
+      }
+      return structureMatch && regionMatch && conditionMatch;
+    });
+  }, [atonSummary, filterState]);
+
+  const summaryData = useMemo(() => {
+    if (!filteredAtonSummary) return null;
+
+    const totalSites = filteredAtonSummary.length;
+    const noMessages21 = filteredAtonSummary.filter(item => item.cnt_msg21 === 0).length;
+    const noMessages6 = filteredAtonSummary.filter(item => item.cnt_msg6 === 0).length;
+    const lightError = filteredAtonSummary.filter(item => item.last_light === 0).length;
+    const lowBattAtoN = filteredAtonSummary.filter(item => item.last_BattAton < 12).length;
+    const lowBattLantern = filteredAtonSummary.filter(item => item.last_BattLant < 12).length;
+    const badLDR = filteredAtonSummary.filter(item => item.LDR_OKNG === 0).length;
+    const offPosition = filteredAtonSummary.filter(item => item.off_pos_OKNG === 1).length;
+
+    return {
+      totalSites,
+      noMessages21,
+      noMessages6,
+      lightError,
+      lowBattAtoN,
+      lowBattLantern,
+      badLDR,
+      offPosition
+    };
+  }, [filteredAtonSummary]);
+
+  const uniqueStructures = useMemo(() => {
+    if (!atonSummary) return [];
+    return ['All', ...Array.from(new Set(atonSummary.map(item => item.type)))];
+  }, [atonSummary]);
+
+  const uniqueRegions = useMemo(() => {
+    if (!atonSummary) return [];
+    return ['All', ...Array.from(new Set(atonSummary.map(item => item.region)))];
+  }, [atonSummary]);
 
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section)
+  }
+
+  const handleStructureChange = (structure: string) => {
+    setFilterState({ selectedStructure: structure });
+  }
+
+  const handleRegionChange = (region: string) => {
+    setFilterState({ selectedRegion: region });
+  }
+
+  const handleConditionChange = (newCondition: 'All' | 'Good' | 'Not Good') => {
+    setFilterState({ condition: newCondition });
   }
 
   const renderExpandableSection = (title: string, content: React.ReactNode) => (
@@ -33,12 +96,12 @@ export default function AtonSummaryPanel() {
         </div>
       )}
     </div>
-  ) 
+  )
 
   return (
     <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">AtoN Summary <span className="text-gray-400 text-sm">(23/07/2024)</span></h2>
+        <h2 className="text-lg font-semibold">AtoN Summary</h2>
         <button
           className="text-gray-400 hover:text-white"
           aria-label="Close"
@@ -56,11 +119,18 @@ export default function AtonSummaryPanel() {
 
       <div className="space-y-4">
         {renderExpandableSection('Structure', (
-          <div>
-            {structure.map((item) => (
+          <div className="space-y-2">
+            {uniqueStructures.map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input type="checkbox" id={item} className="rounded bg-gray-700 border-gray-600" />
-                <label htmlFor={item}>{item}</label>
+                <input 
+                  type="radio" 
+                  id={`structure-${item}`} 
+                  name="structure"
+                  checked={filterState.selectedStructure === item}
+                  onChange={() => handleStructureChange(item)}
+                  className="bg-gray-700 border-gray-600" 
+                />
+                <label htmlFor={`structure-${item}`}>{item}</label>
               </div>
             ))}
           </div>
@@ -68,23 +138,35 @@ export default function AtonSummaryPanel() {
 
         {renderExpandableSection('Condition', (
           <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <input type="radio" id="good" name="condition" className="bg-gray-700 border-gray-600" />
-              <label htmlFor="good">Good</label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <input type="radio" id="notgood" name="condition" className="bg-gray-700 border-gray-600" />
-              <label htmlFor="notgood">Not Good</label>
-            </div>
+            {['All', 'Good', 'Not Good'].map((item) => (
+              <div key={item} className="flex items-center space-x-2">
+                <input 
+                  type="radio" 
+                  id={`condition-${item}`} 
+                  name="condition" 
+                  checked={filterState.condition === item}
+                  onChange={() => handleConditionChange(item as 'All' | 'Good' | 'Not Good')}
+                  className="bg-gray-700 border-gray-600" 
+                />
+                <label htmlFor={`condition-${item}`}>{item}</label>
+              </div>
+            ))}
           </div>
         ))}
 
         {renderExpandableSection('Region', (
-          <div>
-            {region.map((item) => (
+          <div className="space-y-2">
+            {uniqueRegions.map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input type="checkbox" id={item} className="rounded bg-gray-700 border-gray-600" />
-                <label htmlFor={item}>{item}</label>
+                <input 
+                  type="radio" 
+                  id={`region-${item}`} 
+                  name="region"
+                  checked={filterState.selectedRegion === item}
+                  onChange={() => handleRegionChange(item)}
+                  className="bg-gray-700 border-gray-600" 
+                />
+                <label htmlFor={`region-${item}`}>{item}</label>
               </div>
             ))}
           </div>
@@ -92,42 +174,38 @@ export default function AtonSummaryPanel() {
 
         <div className="flex justify-between items-center">
           <span className="font-medium">Total Sites</span>
-          <span className="font-bold">504</span>
+          <span className="font-bold">{summaryData?.totalSites || 'Loading...'}</span>
         </div>
 
         <div className="space-y-2">
-          {[
-            { label: 'No Messages 21', value: 13, percentage: '2.71%' },
-            { label: 'No Messages 6', value: 13, percentage: '2.71%' },
-            { label: 'Light Error', value: 1, percentage: '0.21%' },
-            { label: 'Low Batt AtoN', value: 13, percentage: '2.71%' },
-            { label: 'Low Batt Lantern', value: 50, percentage: '10.42%' },
-            { label: 'Bad LDR', value: 26, percentage: '5.42%' },
-            { label: 'Off Position', value: 7, percentage: '1.46%' },
-          ].map((item) => (
-            <div key={item.label} className="flex justify-between items-center">
-              <span>{item.label}</span>
-              <div className="flex items-center space-x-2">
-                <span className="font-semibold">{item.value}</span>
-                <span className={`text-${item.percentage.startsWith('-') ? 'red' : 'blue'}-400`}>{item.percentage}</span>
-              </div>
-            </div>
-          ))}
+          {summaryData ? (
+            <>
+              <SummaryItem label="No Messages 21" value={summaryData.noMessages21} total={summaryData.totalSites} />
+              <SummaryItem label="No Messages 6" value={summaryData.noMessages6} total={summaryData.totalSites} />
+              <SummaryItem label="Light Error" value={summaryData.lightError} total={summaryData.totalSites} />
+              <SummaryItem label="Low Batt AtoN" value={summaryData.lowBattAtoN} total={summaryData.totalSites} />
+              <SummaryItem label="Low Batt Lantern" value={summaryData.lowBattLantern} total={summaryData.totalSites} />
+              <SummaryItem label="Bad LDR" value={summaryData.badLDR} total={summaryData.totalSites} />
+              <SummaryItem label="Off Position" value={summaryData.offPosition} total={summaryData.totalSites} />
+            </>
+          ) : (
+            <p>Loading summary data...</p>
+          )}
         </div>
       </div>
-
-      <button
-        className="absolute bottom-2 right-2 bg-red-500 rounded-xl w-7 h-7 border-2 border-white hover:bg-red-400 flex items-center justify-center"
-        onClick={() =>
-          setToggles({
-            ...toggles,
-            atonMessageCountOverview: !toggles.atonMessageCountOverview // Toggle the visibility
-          })
-        }
-      >
-        <span className="text-white text-xl">+</span>
-      </button>
     </div>
-    
-  )
+  );
+}
+
+function SummaryItem({ label, value, total }: { label: string; value: number; total: number }) {
+  const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : '0.00';
+  return (
+    <div className="flex justify-between items-center">
+      <span>{label}</span>
+      <div className="flex items-center space-x-2">
+        <span className="font-semibold">{value}</span>
+        <span className={`text-${parseFloat(percentage) > 0 ? 'blue' : 'red'}-400`}>{percentage}%</span>
+      </div>
+    </div>
+  );
 }
