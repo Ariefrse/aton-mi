@@ -1,165 +1,111 @@
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridToolbar,
+} from "@mui/x-data-grid";
+import { useEffect } from "react";
+import { fetchAtonStats } from "../api/aton-api";
+import { useAtonStore } from "../store/store";
+import { Box } from "@mui/material";
 
-export default function TableModule() {
-  const people = [
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-  ];
+const renderCell = (params?: GridRenderCellParams) => {
+  if (!params) return null;
+  const { field, value } = params;
+  let bgColor = "";
+
+  // RULES & CONDITIONS //TODO: Need to confirm with Mai
+  if (
+    (field === "minBattAton" && value < 13.0) ||
+    (field === "maxBattAton" && value < 12.0) ||
+    (field === "minBattLant" && value < 12.0) ||
+    (field === "maxBattLant" && value > 15.0) ||
+    (field === "off_pos" && value === "OK") ||
+    (field === "msg6" && value <= 0)
+  ) {
+    bgColor = "rgba(29, 78, 216, 1)";
+  }
 
   return (
-    <div className="bg-white m-auto h-[98%] w-[98%] px-4 sm:px-6 lg:px-8 z-40 rounded-sm">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">
-            Users
-          </h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all the users in your account including their name, title,
-            email and role.
-          </p>
-        </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <button
-            type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Add user
-          </button>
-        </div>
-      </div>
-      <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle">
-            <table className="min-w-full border-separate border-spacing-0">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
-                  >
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell"
-                  >
-                    Title
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
-                  >
-                    Email
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
-                  >
-                    Role
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
-                  >
-                    <span className="sr-only">Edit</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {people.map((person, personIdx) => (
-                  <tr key={person.email}>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1
-                          ? "border-b border-gray-200"
-                          : "",
-                        "whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8"
-                      )}
-                    >
-                      {person.name}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1
-                          ? "border-b border-gray-200"
-                          : "",
-                        "hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:table-cell"
-                      )}
-                    >
-                      {person.title}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1
-                          ? "border-b border-gray-200"
-                          : "",
-                        "hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell"
-                      )}
-                    >
-                      {person.email}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1
-                          ? "border-b border-gray-200"
-                          : "",
-                        "whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                      )}
-                    >
-                      {person.role}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1
-                          ? "border-b border-gray-200"
-                          : "",
-                        "relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-8 lg:pr-8"
-                      )}
-                    >
-                      <a
-                        href="#"
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit<span className="sr-only">, {person.name}</span>
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <Box
+      sx={{
+        backgroundColor: bgColor,
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      {value}
+    </Box>
+  );
+};
+
+const columns: GridColDef[] = [
+  { field: "al_name", headerName: "Sitename", width: 150 },
+  { field: "al_mmsi", headerName: "MMSI", width: 100 },
+  { field: "al_type", headerName: "Structure", width: 100 },
+  { field: "al_region", headerName: "Region", width: 200 },
+  { field: "minBattAton", headerName: "Min Batt Aton", width: 120, renderCell },
+  { field: "maxBattAton", headerName: "Max Batt Aton", width: 120, renderCell },
+  { field: "minTemp", headerName: "Min Temp", width: 100 },
+  { field: "maxTemp", headerName: "Max Temp", width: 100 },
+  { field: "meanBattAton", headerName: "Mean Batt Aton", width: 150 },
+  { field: "stddevBattAton", headerName: "Std Dev Batt Aton", width: 150 },
+  { field: "skewBattAton", headerName: "Skew Batt Aton", width: 150 },
+  { field: "kurtBattAton", headerName: "Kurt Batt Aton", width: 150 },
+  { field: "minBattLant", headerName: "Min Batt Lant", width: 150, renderCell },
+  { field: "maxBattLant", headerName: "Max Batt Lant", width: 150, renderCell },
+  { field: "meanBattLant", headerName: "Mean Batt Lant", width: 150 },
+  { field: "stddevBattLant", headerName: "Std Dev Batt Lant", width: 150 },
+  { field: "skewBattLant", headerName: "Skew Batt Lant", width: 120 },
+  { field: "kurtBattLant", headerName: "Kurt Batt Lant", width: 120 },
+  { field: "off_pos", headerName: "Off Pos", width: 100, renderCell },
+  { field: "msg6", headerName: "Msg 6 Count", width: 100, renderCell },
+  { field: "at_ts", headerName: "Timestamp", width: 200 },
+  { field: "lastseen", headerName: "Last Seen", width: 200 },
+];
+
+export default function DataTable() {
+  const { atonStatsData, setAtonStatsData } = useAtonStore();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const fetchAtonStatsData = await fetchAtonStats();
+        setAtonStatsData(fetchAtonStatsData!);
+      } catch (error) {
+        console.error("Error fetching aton stats data :", error);
+      }
+    }
+
+    if (!atonStatsData || atonStatsData.length === 0) {
+      fetchData();
+    }
+  }, [atonStatsData, setAtonStatsData]);
+
+  return (
+    <div className="z-50 flex-grow h-[80vh]">
+      <DataGrid
+        rows={atonStatsData}
+        columns={columns}
+        // pageSizeOptions={[20]}
+        disableDensitySelector
+        disableRowSelectionOnClick
+        disableColumnSelector
+        // filterModel={tableFilterOptions}
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
+        className="m-2 opacity-90 bg-white"
+        sx={{
+          "& .MuiDataGrid-cell": {
+            backgroundColor: "#121213",
+            color: "#ffffff",
+          },
+        }}
+      />
     </div>
   );
 }

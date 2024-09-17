@@ -1,200 +1,215 @@
 import { DeckGL } from "@deck.gl/react";
-import Map, { MapRef, NavigationControl } from "react-map-gl";
+import Map, { MapRef } from "react-map-gl";
 import { useState, useRef, useEffect } from "react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
-import Sidebar from "../components/Sidebar";
-import { CiViewTable } from "react-icons/ci";
-import { RiRefreshLine } from "react-icons/ri";
-import { LayersList } from "@deck.gl/core";
+import AtonSummaryPanel from "../components/AtonSummaryPanel";
 import {
-  AllAtonResDto,
-  AtonDataResDto,
-  AtonType,
-} from "../declarations/dtos/dtos";
+  LayersList,
+  MapViewState,
+  ViewStateChangeParameters,
+} from "@deck.gl/core";
+import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
+import TableModule from "./TableModule";
+import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
+import { useAtonStore } from "../store/store";
+import TableOptions from "../components/TableOptions";
+import LegendToggleBtn from "../components/LegendToggleBtn";
+import { MapAtonResDto } from "../declarations/types/types";
+import { fetchAtonList } from "../api/aton-api";
+import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
+import TableBtn from "../components/TableBtn";
+import MapStyleDropdown from "../components/MapStyleDropdown";
+import { MAP_STYLES } from "../declarations/constants/constants";
+import AtonInfo, { AtonInfoProps } from "../components/AtonInfo";
+import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
 
-type ScatterplotLayerData = {
-  position: [number, number];
-  atonname: string;
-  status: number;
-  region: string;
-  latitude: number;
-  longitude: number;
-  atonbatt: number;
-  lantBatt: number;
-  offPosition: string;
-  ambient: string;
-  light: number;
-  localTime: string;
-  utcTime: string;
-};
-
-type HoverInfo = {
-  structure: AtonType;
-  name: string;
-  region: string;
-  latitude: number;
-  longitude: number;
-  atonbatt: number;
-  lantBatt: number;
-  offPosition: string;
-  ambient: string;
-  light: number;
-  localTime: string;
-  utcTime: string;
-  x: number; // x position of the hover event
-  y: number; // y position of the hover event
-};
+export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
 
 export default function MapModule() {
+  const { toggles, setToggles } = useAtonStore();
   const mapRef = useRef<MapRef | null>(null);
+  const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
+  const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
-  const initialViewState = {
+  const [atonInfoData, setAtonInfoData] = useState<AtonInfoProps | null>(null);
+  const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
+  const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
+  const [mapViewState, setMapViewState] = useState<MapViewState>({
     longitude: 101.5466,
     latitude: 3.0891,
     zoom: 13,
     pitch: 0,
     bearing: 0,
-  };
+  });
 
   useEffect(() => {
-    const socket = new WebSocket("wss://dash.datainsight.my/wss/");
+    async function fetchMapAtonData() {
+      try {
+        const mapAtonFetchRes = await fetchAtonList();
+        setMapAton(mapAtonFetchRes);
+      } catch (error) {
+        console.error("Error fetching AtoN data:", error);
+      }
+    }
 
-    socket.onopen = () => {
-      console.log("Connected to WebSocket server");
-      socket.send("getallaton");
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      const newLayer = new ScatterplotLayer({
-        id: `scatterplot-layer-${data.ss_longitude}-${data.ss_latitude}`,
-        data: [
-          {
-            position: [data.ss_longitude, data.ss_latitude],
-            atonname: data.atonname,
-            status: data.status,
-            region: data.region,
-            latitude: data.latitude,
-            longitude: data.longitude,
-            atonbatt: data.atonbatt,
-            lantBatt: data.lantBatt,
-            offPosition: data.offPosition,
-            ambient: data.ambient,
-            light: data.light,
-            localTime: data.localTime,
-            utcTime: data.utcTime,
-          } as ScatterplotLayerData,
-        ],
-        getRadius: 5000,
-        getFillColor: [255, 0, 0],
-        pickable: true,
-        onHover: (info) => {
-          if (info.object) {
-            setHoverInfo({
-              structure: info.object.structure,
-              name: info.object.atonname,
-              region: info.object.region,
-              latitude: info.object.latitude,
-              longitude: info.object.longitude,
-              atonbatt: info.object.atonbatt,
-              lantBatt: info.object.lantBatt,
-              offPosition: info.object.offPosition,
-              ambient: info.object.ambient,
-              light: info.object.light,
-              localTime: info.object.localTime,
-              utcTime: info.object.utcTime,
-              x: info.x,
-              y: info.y,
-            });
-          } else setHoverInfo(null)
-        }
-      });
-
-      setLayers((prevLayers) =>
-        prevLayers ? [...prevLayers, newLayer] : [newLayer]
-      );
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    return () => socket.close();
+    if (!mapAton || mapAton.length === 0) {
+      fetchMapAtonData();
+    }
   }, []);
 
+  useEffect(() => {
+    const newLayers = mapAton
+      ?.map((aton, index) => {
+        const layerId = `scatterplot-layer-${aton?.mmsi}-${index}`;
+
+        return new ScatterplotLayer({
+          id: layerId,
+          data: [
+            {
+              coordinate: [aton?.longitude, aton?.latitude],
+              name: aton?.name,
+              mmsi: aton?.mmsi,
+              battAton: aton?.last_BattAton,
+              type: aton?.type,
+            },
+          ],
+          radiusUnits: "pixels",
+          getRadius: 5,
+          getPosition: (d) => d.coordinate,
+          getFillColor: [255, 0, 0],
+          pickable: true,
+          onClick: (info) => {
+            if (info.object) {
+              setToggles({ ...toggles, radialMenu: true });
+              setRadialMenuData({
+                mmsi: info.object.mmsi,
+                position: [info.x, info.y],
+              });
+              setAtonInfoData({
+                name: info.object.name,
+                mmsi: info.object.mmsi,
+                type: info.object.type,
+                position: [info.x, info.y],
+              });
+            } else {
+              setRadialMenuData(null);
+              setToggles({ ...toggles, radialMenu: false });
+            }
+          },
+          onHover: (info) => {
+            if (info.object) {
+              setToggles({ ...toggles, hoverInfo: true });
+              setHoverInfoData({
+                name: info?.object?.name,
+                mmsi: info?.object?.mmsi,
+                lantBatt: info?.object?.battAton,
+                position: [info.x, info.y],
+              });
+            } else {
+              setHoverInfoData(null);
+              setToggles({ ...toggles, radialMenu: true, hoverInfo: false });
+            }
+          },
+        });
+      })
+      .filter((layer) => layer !== null);
+
+    setLayers(newLayers);
+  }, [mapAton]);
+
+  useEffect(() => {
+    const handleRightClick = (event: MouseEvent) => {
+      event.preventDefault();
+      const { clientX: x, clientY: y } = event;
+
+      setRadialMenuData({ mmsi: 0, position: [x, y] });
+      setToggles({ ...toggles, radialMenu: true });
+    };
+
+    const mapElement = mapRef.current?.getMap().getCanvas();
+
+    if (mapElement) {
+      mapElement.addEventListener("contextmenu", handleRightClick);
+    }
+
+    return () => {
+      if (mapElement) {
+        mapElement.removeEventListener("contextmenu", handleRightClick);
+      }
+    };
+  }, [mapRef, toggles, setToggles]);
+
+  const handleTableModuleToggle = () => {
+    setToggles({
+      ...toggles,
+      tableModule: !toggles.tableModule,
+      legendToggleBtn: false,
+      legend: false,
+      atonMessageCountOverview: false,
+      atonSummaryPanel: false,
+      atonSummaryToggleBtn: false,
+    });
+  };
+
+  const handleMapStyleChange = (event: any) => {
+    const newStyle = event.target.value;
+    setMapStyle(newStyle);
+  };
+
+  const handleViewStateChange = (params: ViewStateChangeParameters) => {
+    // TODO: Handle dynamic radius value if zoom 
+
+    // TODO: If interact with map will turn off Radial Menu
+  };
+
   return (
-    <div className="h-[90vh] overflow-hidden p-3 mx-10 bg-gray-800 text-white flex flex-col rounded-md">
+    <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-900 text-white flex flex-col rounded-md">
       <div className="mb-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">AtoN</h1>
-        <div className="flex gap-6 mr-8">
-          <RiRefreshLine fontSize={30} className="text-blue-400" />
-          <CiViewTable fontSize={30} className="text-blue-400" />
-        </div>
+        {toggles.tableModule === true ? null : (
+          <>
+            <h1 className="text-xl ">AtoN</h1>
+            <div className="flex gap-6 mr-6">
+              {/* <TableRefreshBtn onClick={() => handleTableDataRefresh()}/> */}
+              <TableBtn onClick={() => handleTableModuleToggle()} />
+              <MapStyleDropdown
+                mapStyle={mapStyle}
+                handleMapStyleChange={handleMapStyleChange}
+              />
+            </div>
+          </>
+        )}
+        {toggles.tableModule && <TableOptions />}
       </div>
       <div className="flex-1 relative">
-        <Sidebar />
-        {/* <MessageOverview /> */}
-        {/* <TableModule /> */}
         <DeckGL
-          initialViewState={initialViewState}
+          initialViewState={mapViewState}
+          onViewStateChange={(params) => handleViewStateChange(params)}
           controller={true}
           layers={layers}
         >
           <Map
             ref={mapRef}
             mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-            mapStyle="mapbox://styles/mapbox/satellite-v9"
-          >
-            <NavigationControl
-              visualizePitch
-              position="bottom-right"
-              showCompass
-              showZoom
-            />
-          </Map>
+            mapStyle={mapStyle}
+            attributionControl={false}
+          />
         </DeckGL>
-        {hoverInfo && (
-          <div
-            className="absolute bg-gray-700 p-2 rounded"
-            style={{
-              left: hoverInfo.x + 10,
-              top: hoverInfo.y + 10,
-              pointerEvents: "none",
-            }}
-          >
-            <div>
-              <strong>Position:</strong> {hoverInfo.name}
-              <br />
-              <strong>Region:</strong> {hoverInfo.region}
-              <br />
-              <strong>Latitude:</strong> {hoverInfo.latitude}
-              <br />
-              <strong>Longitude:</strong> {hoverInfo.longitude}
-              <br />
-              <strong>Aton Battery:</strong> {hoverInfo.atonbatt}
-              <br />
-              <strong>Lant Battery:</strong> {hoverInfo.lantBatt}
-              <br />
-              <strong>Offset Position:</strong> {hoverInfo.offPosition}
-              <br />
-              <strong>Ambient:</strong> {hoverInfo.ambient}
-              <br />
-              <strong>Light:</strong> {hoverInfo.light}
-              <br />
-              <strong>Local Time:</strong> {hoverInfo.localTime}
-              <br />
-              <strong>UTC Time:</strong> {hoverInfo.utcTime}
-            </div>
-          </div>
-        )}
-        <Legend />
+        {/* Microinteractive Components */}
+        {toggles.atonInfo && atonInfoData && <AtonInfo {...atonInfoData} />}
+        {toggles.radialMenu && radialMenuData && <RadialMenu {...radialMenuData} />}
+        {toggles.hoverInfo && hoverInfoData && <HoverInfo {...hoverInfoData} />}
+        {toggles.atonSummaryPanel && (
+  <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
+    <AtonSummaryPanel />
+    {toggles.atonMessageCountOverview && <AtonMessageCountOverview />}
+  </div>
+)}
+        {toggles.tableModule && <TableModule />}
+        
+        {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
+        {toggles.legend && <Legend />}
+        {toggles.legendToggleBtn && <LegendToggleBtn />}
       </div>
     </div>
   );
