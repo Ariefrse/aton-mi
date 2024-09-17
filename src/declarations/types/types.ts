@@ -18,7 +18,7 @@ export type { HeatmapLayer, HexagonLayerProps } from '@deck.gl/aggregation-layer
 
 export type ShipTypeColorMap = { [key: number]: string; };
 
-export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse'
+export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse' | string; // Add any other types that might be in your data
 export type AtonStatus = 'Good' | 'Warning' | 'Error'
 export type PackageCh = 'A' | 'B'
 export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
@@ -160,10 +160,3 @@ export type UserSettings = {
   }
   // TODO: To add table filter settings
 }
-
-export type AtonSummaryItem = {
-  type: string;
-  region: string;
-  health_OKNG: number;
-  count: number;
-};

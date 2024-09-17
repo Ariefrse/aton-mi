@@ -1,8 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
-import { AtonType } from '../declarations/types/types'
-import { AtonSummaryItem } from '../api/aton-api'
 
 export default function AtonSummaryPanel() {
   const { toggles, setToggles, atonSummary, fetchAtonSummary, filterState, setFilterState } = useAtonStore();
@@ -198,7 +196,7 @@ export default function AtonSummaryPanel() {
 }
 
 function SummaryItem({ label, value, total }: { label: string; value: number; total: number }) {
-  const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : '0.00';
+  const percentage = ((value / total) * 100).toFixed(2);
   return (
     <div className="flex justify-between items-center">
       <span>{label}</span>

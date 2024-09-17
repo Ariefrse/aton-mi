@@ -57,7 +57,7 @@ export default function MapModule() {
       try {
         const mapAtonFetchRes = await fetchAtonList();
         console.log("Fetched AtoN data:", mapAtonFetchRes);
-        setMapAton(mapAtonFetchRes || []);
+        setMapAton(mapAtonFetchRes as AtonList[]);
       } catch (error) {
         console.error("Error fetching AtoN data:", error);
       }
