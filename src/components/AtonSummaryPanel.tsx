@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
+import { AtonSummaryItem } from '../api/aton-api'
 
 export default function AtonSummaryPanel() {
   const { toggles, setToggles, atonSummary, fetchAtonSummary, filterState, setFilterState } = useAtonStore();
@@ -14,7 +15,7 @@ export default function AtonSummaryPanel() {
   const filteredAtonSummary = useMemo(() => {
     if (!atonSummary) return null;
 
-    return atonSummary.filter(item => {
+    return atonSummary.filter((item: AtonSummaryItem) => {
       const structureMatch = filterState.selectedStructure === 'All' || filterState.selectedStructure === item.type;
       const regionMatch = filterState.selectedRegion === 'All' || filterState.selectedRegion === item.region;
       let conditionMatch = true;

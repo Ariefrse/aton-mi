@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import { AtonStore, AtonStatus, AtonType, AtonStatistics } from "../declarations/types/types";
 import { GridFilterModel } from "@mui/x-data-grid";
-import { fetchAtonCloudList } from '../api/aton-api';
-import { fetchAtonSummary } from '../api/aton-api';
-import { AtonSummaryItem } from '../api/aton-api';
+import { fetchAtonSummary, AtonSummaryItem } from '../api/aton-api'; // Add AtonSummaryItem to the import
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -29,7 +27,7 @@ type ViewState = {
   bearing: number,
 }
 
-export type GlobalAtonFilterOptions = {
+export type AtonFilterOptions = {
   structure: AtonType
   condition: AtonStatus | 'All'
   regions: 'North' | 'South' | 'East' | 'West' | 'Borneo'
@@ -51,7 +49,7 @@ type AtonStoreState = {
   setAtonStatsData: (data: AtonStatistics[]) => void;
   setToggles: (modal: Toggles) => void;
   setTableFilterOptions: (options: TableFilterOptions) => void;
-  atonSummary: AtonSummaryItem[] | null; // Updated type
+  atonSummary: AtonSummaryItem[];  // Updated type
   fetchAtonSummary: () => Promise<void>;
   filterState: {
     selectedStructure: string;
@@ -63,6 +61,8 @@ type AtonStoreState = {
     selectedRegion: string;
     condition: 'All' | 'Good' | 'Not Good';
   }>) => void;
+  selectedDate: Date | null;
+  setSelectedDate: (date: Date | null) => void;
 };
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
@@ -75,6 +75,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   },
   atonData: [],
   atonStatsData: [],
+  atonSummary: [],
   toggles: {
     radialMenu: false,
     hoverInfo: false,
@@ -92,7 +93,6 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     messageCountOverview: false,
   },
   tableFilterOptions: null,
-  atonSummary: null, // Initialize atonSummary
   filterState: {
     selectedStructure: 'All',
     selectedRegion: 'All',
@@ -108,11 +108,13 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   })),
   fetchAtonSummary: async () => {
     try {
-      const summary = await fetchAtonSummary();
-      set({ atonSummary: summary });
+      const atonSummary = await fetchAtonSummary();
+      set({ atonSummary });
     } catch (error) {
-      console.error('Error fetching AtoN summary:', error);
+      console.error('Failed to fetch AtoN summary:', error);
     }
   },
+  selectedDate: null,
+  setSelectedDate: (date) => set({ selectedDate: date }),
 }));
 

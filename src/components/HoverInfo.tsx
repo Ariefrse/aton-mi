@@ -1,12 +1,13 @@
-export type HoverInfoProps = null | {
-  mmsi: number;
-  name: string;
-  lantBatt: number;
-  position: [x:number, y:number]
+export type HoverInfoProps = {
+  mmsi?: number;
+  name?: string;
+  lantBatt?: number;
+  position?: [x: number, y: number];
 };
 
 function HoverInfo(props: HoverInfoProps) {
-  if (!props) return;
+  if (!props || !props.position) return null;
+
   return (
     <div
       className="absolute bg-gray-700 p-2 rounded"
@@ -16,12 +17,13 @@ function HoverInfo(props: HoverInfoProps) {
         pointerEvents: "none",
       }}
     >
-      <p className="font-bold">{props.name}</p>
-      <p>{props.mmsi}</p>
-      <p>
-        <strong>Lant Battery:</strong>
-        {props?.lantBatt?.toFixed(2)}
-      </p>
+      {props.name && <p className="font-bold">{props.name}</p>}
+      {props.mmsi && <p>MMSI: {props.mmsi}</p>}
+      {props.lantBatt !== undefined && (
+        <p>
+          <strong>Lant Battery:</strong> {props.lantBatt.toFixed(2)}V
+        </p>
+      )}
     </div>
   );
 }

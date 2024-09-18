@@ -7,34 +7,24 @@ type Aton = {
   type: AtonType
 }
 
-
-
 export type AtonSummaryItem = {
-  LDR_OKNG: number;
+  type: string;
+  region: string;
+  health_OKNG: number;
   cnt_msg21: number;
   cnt_msg6: number;
-  health_OKNG: number;
+  last_light: number;
   last_BattAton: number;
   last_BattLant: number;
-  last_LDR: number;
-  last_Temp: number;
-  last_health: number;
-  last_light: number;
-  last_racon: number;
-  lastseen: string;
-  latitude: number;
-  longitude: number;
-  lcl_ts: string;
-  mmsi: number;
-  name: string;
+  LDR_OKNG: number;
   off_pos_OKNG: number;
-  opt21_percent: number;
-  opt6_percent: number;
-  racon_OKNG: number;
-  region: string;
-  ts: string;
-  ts_iso: string;
-  type: string;
+
+  // Add these properties if they don't exist:
+  longitude: number;
+  latitude: number;
+  name: string;
+  mmsi: number;
+
 };
 
 export async function fetchAtonList() {
@@ -50,16 +40,16 @@ export async function fetchAtonList() {
   }
 }
 
-export async function fetchAton(mmsi: number) {
-  try {
-    const res = await fetch(`http://10.10.20.200:8020/aton/${mmsi}`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const aton = await res.json() as Aton
-    return aton;
-  } catch (error) {
-    console.error('Failed to fetch aton:', error);
-  }
-}
+// export async function fetchAton(mmsi: number) {
+//   try {
+//     const res = await fetch(`http://10.10.20.200:8020/aton/${mmsi}`);
+//     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+//     const aton = await res.json() as Aton
+//     return aton;
+//   } catch (error) {
+//     console.error('Failed to fetch aton:', error);
+//   }
+// }
 
 export async function fetchMessage21(mmsi: number) {
   try {

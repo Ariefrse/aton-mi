@@ -136,3 +136,17 @@ export const MAP_STYLES = {
   light: "mapbox://styles/mapbox/light-v10",
   dark: "mapbox://styles/mapbox/dark-v10",
 } as const;
+
+export const ATON_TYPE_ICONS = {
+  Buoy: "/assets/icon/buoy-icon.png",
+  Lighthouse: "/assets/icon/lighthouse-icon.png",
+  Beacon: "/assets/icon/beacon-icon.png",
+} as const;
+
+export const INITIAL_VIEW_STATE = {
+  longitude: 12.452,
+  latitude: 41.902,
+  zoom: 13,
+  pitch: 0,
+  bearing: 0,
+} as const;
