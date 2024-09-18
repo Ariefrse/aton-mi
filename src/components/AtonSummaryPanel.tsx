@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react'
-import { ChevronDown, ChevronUp, X } from 'lucide-react'
-import { useAtonStore } from '../store/store'
+import { useEffect, useState } from 'react';
+import { useAtonStore } from '../store/store';
 import { fetchAton } from '../api/aton-api';
 import { Aton } from '../declarations/types/types';
-import axios from 'axios';
-
-
+import { FaChevronUp, FaChevronDown } from "react-icons/fa";
+import CloseButton from './CloseButton';
 
 export default function AtonSummaryPanel() {
   const { toggles, setToggles } = useAtonStore();
@@ -64,7 +62,7 @@ export default function AtonSummaryPanel() {
         aria-controls={`${title.toLowerCase()}-content`}
       >
         <span className="font-medium">{title}</span>
-        {expandedSection === title ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        {expandedSection === title ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
       </button>
       {expandedSection === title && (
         <div id={`${title.toLowerCase()}-content`} className="mt-2 space-y-2">
@@ -89,8 +87,8 @@ export default function AtonSummaryPanel() {
               })
             }
         >
-          <X size={20} />
-        </button>
+          <CloseButton className='border-none mr-0'/>
+        </button> 
       </div>
 
       <div className="space-y-4">

@@ -75,7 +75,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     atonSummary: false,
     atonSummaryPanel: false,
     atonMessageCountOverview: false,
-    graph: false,
+    graph: true,
     tableModule: false,
     tableOptions: false,
     tableToggelBtn: true,

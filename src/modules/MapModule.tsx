@@ -1,7 +1,7 @@
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef, NavigationControl } from "react-map-gl";
 import { useState, useRef, useEffect } from "react";
-import { IconLayer, ScatterplotLayer } from "@deck.gl/layers";
+import { IconLayer } from "@deck.gl/layers";
 import Legend from "../components/Legend";
 import AtonSummaryPanel from "../components/AtonSummaryPanel";
 import { LayersList, MapViewState } from "@deck.gl/core";
@@ -18,6 +18,7 @@ import TableBtn from "../components/TableBtn";
 import MapStyleDropdown from "../components/MapStyleDropdown";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
+import Graph from "../components/Graph";
 
 type ClickInfoType = {
   name?: string;
@@ -80,7 +81,6 @@ export default function MapModule() {
               mmsi: aton?.mmsi,
               battAton: aton?.last_BattAton,
               type: aton?.type,
-             
             },
           ],
           getIcon: (d: { type: AtonType }) => {
@@ -89,17 +89,17 @@ export default function MapModule() {
               url: iconUrl,
               width: 128, // Increase width for better quality
               height: 128,
-           
-             // Increase height for better quality
-             // Adjust anchor point if necessary
-          };
-        },
+
+              // Increase height for better quality
+              // Adjust anchor point if necessary
+            };
+          },
           sizeScale: 1,
           getPosition: (d) => d.coordinate,
           getSize: 10,
           getColor: [255, 0, 0],
           pickable: false,
-          
+
           onClick: (info) => {
             if (info.object) {
               setToggles({ ...toggles, radialMenu: true });
@@ -112,7 +112,7 @@ export default function MapModule() {
                 mmsi: info.object.mmsi,
                 type: info.object.type,
                 position: [info.x, info.y],
-              })  ;
+              });
             } else {
               setRadialMenuData(null);
               setToggles({ ...toggles, radialMenu: false });
@@ -236,16 +236,16 @@ export default function MapModule() {
         {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
         {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
         {toggles.atonSummaryPanel && (
-  <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
-    <AtonSummaryPanel />
-    {toggles.atonMessageCountOverview && <AtonMessageCountOverview />}
-  </div>
-)}
+          <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
+            <AtonSummaryPanel />
+            {toggles.atonMessageCountOverview && <AtonMessageCountOverview />}
+          </div>
+        )}
         {toggles.tableModule && <TableModule />}
-        
         {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
         {toggles.legend && <Legend />}
         {toggles.legendToggleBtn && <LegendToggleBtn />}
+        {toggles.graph && <Graph />}
       </div>
     </div>
   );
