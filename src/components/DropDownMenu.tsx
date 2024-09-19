@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-export default function Example() {
+export default function DropDownMenu() {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>

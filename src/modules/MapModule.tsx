@@ -198,7 +198,7 @@ export default function MapModule() {
         )}
         {toggles.tableModule && <TableOptions />}
       </div>
-      <div className="flex-1 relative">
+      <div className="flex-1 relative flex justify-center items-center">
         <DeckGL
           initialViewState={mapViewState}
           // onViewStateChange={({ viewState }) => setMapViewState(viewState)}

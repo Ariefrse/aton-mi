@@ -29,9 +29,7 @@ export default function Graph() {
     const msg6Data = ATON_GRAPH_DATA.msg6;
 
     const timestamps: string[] = msg6Data.map((msg) => msg.ts_iso).slice(0, 10);
-    const data: number[] = msg6Data
-      .map((msg) => msg[graphType])
-      .slice(0, 10);
+    const data: number[] = msg6Data.map((msg) => msg[graphType]).slice(0, 10);
 
     setXAxisData(timestamps);
     setAtonGraphData(data);
@@ -42,8 +40,8 @@ export default function Graph() {
   };
 
   return (
-    <div className="bg-gray-700 m-4 h-[50vh] z-50">
-      <div className="mb-4 z-50">
+    <div className="absolute bg-gray-700 flex flex-col w-1/2 h-1/2">
+      <div className="bg-gray-700 mb-4 z-50 ml-auto">
         <label htmlFor="graphType" className="mr-2 text-white">
           Select Graph Type:
         </label>
@@ -62,7 +60,7 @@ export default function Graph() {
         </select>
       </div>
       <LineChart
-        className="bg-gray-800 rounded-md"
+        className="bg-gray-600 z-10"
         xAxis={[
           {
             data: xAxisData.map((x) => new Date(x)),
