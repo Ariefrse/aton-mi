@@ -3,6 +3,42 @@ import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
 import { AtonSummaryItem } from '../api/aton-api'
 
+function MultiSelect({ options, selected, onChange, label }: {
+  options: string[];
+  selected: string[];
+  onChange: (newSelection: string[]) => void;
+  label: string;
+})  {
+  const handleChange = (option: string) => {
+    let newSelection: string[];
+    if (option === 'All') {
+      newSelection = selected.includes('All') ? [] : ['All'];
+    } else {
+      newSelection = selected.includes(option)
+        ? selected.filter(item => item !== option && item !== 'All')
+        : [...selected.filter(item => item !== 'All'), option];
+    }
+    onChange(newSelection.length === 0 ? ['All'] : newSelection);
+  };
+
+  return (
+    <div className="space-y-2">
+      {options.map((option) => (
+        <div key={option} className="flex items-center space-x-2">
+          <input 
+            type="checkbox" 
+            id={`${label}-${option}`} 
+            checked={selected.includes(option)}
+            onChange={() => handleChange(option)}
+            className="bg-gray-700 border-gray-600" 
+          />
+          <label htmlFor={`${label}-${option}`}>{option}</label>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AtonSummaryPanel() {
   const { toggles, setToggles, atonSummary, fetchAtonSummary, filterState, setFilterState } = useAtonStore();
   
@@ -16,8 +52,8 @@ export default function AtonSummaryPanel() {
     if (!atonSummary) return null;
 
     return atonSummary.filter((item: AtonSummaryItem) => {
-      const structureMatch = filterState.selectedStructure === 'All' || filterState.selectedStructure === item.type;
-      const regionMatch = filterState.selectedRegion === 'All' || filterState.selectedRegion === item.region;
+      const structureMatch = filterState.selectedStructures.includes('All') || filterState.selectedStructures.includes(item.type);
+      const regionMatch = filterState.selectedRegions.includes('All') || filterState.selectedRegions.includes(item.region);
       let conditionMatch = true;
       if (filterState.condition === 'Good') {
         conditionMatch = item.health_OKNG === 1;
@@ -66,12 +102,12 @@ export default function AtonSummaryPanel() {
     setExpandedSection(expandedSection === section ? null : section)
   }
 
-  const handleStructureChange = (structure: string) => {
-    setFilterState({ selectedStructure: structure });
+  const handleStructureChange = (selectedStructures: string[]) => {
+    setFilterState({ selectedStructures });
   }
 
-  const handleRegionChange = (region: string) => {
-    setFilterState({ selectedRegion: region });
+  const handleRegionChange = (selectedRegions: string[]) => {
+    setFilterState({ selectedRegions });
   }
 
   const handleConditionChange = (newCondition: 'All' | 'Good' | 'Not Good') => {
@@ -118,21 +154,21 @@ export default function AtonSummaryPanel() {
 
       <div className="space-y-4">
         {renderExpandableSection('Structure', (
-          <div className="space-y-2">
-            {uniqueStructures.map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input 
-                  type="radio" 
-                  id={`structure-${item}`} 
-                  name="structure"
-                  checked={filterState.selectedStructure === item}
-                  onChange={() => handleStructureChange(item)}
-                  className="bg-gray-700 border-gray-600" 
-                />
-                <label htmlFor={`structure-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
+          <MultiSelect
+            options={uniqueStructures}
+            selected={filterState.selectedStructures}
+            onChange={handleStructureChange}
+            label="structure"
+          />
+        ))}
+
+        {renderExpandableSection('Region', (
+          <MultiSelect
+            options={uniqueRegions}
+            selected={filterState.selectedRegions}
+            onChange={handleRegionChange}
+            label="region"
+          />
         ))}
 
         {renderExpandableSection('Condition', (
@@ -148,24 +184,6 @@ export default function AtonSummaryPanel() {
                   className="bg-gray-700 border-gray-600" 
                 />
                 <label htmlFor={`condition-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
-        ))}
-
-        {renderExpandableSection('Region', (
-          <div className="space-y-2">
-            {uniqueRegions.map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input 
-                  type="radio" 
-                  id={`region-${item}`} 
-                  name="region"
-                  checked={filterState.selectedRegion === item}
-                  onChange={() => handleRegionChange(item)}
-                  className="bg-gray-700 border-gray-600" 
-                />
-                <label htmlFor={`region-${item}`}>{item}</label>
               </div>
             ))}
           </div>

@@ -52,13 +52,13 @@ type AtonStoreState = {
   atonSummary: AtonSummaryItem[];  // Updated type
   fetchAtonSummary: () => Promise<void>;
   filterState: {
-    selectedStructure: string;
-    selectedRegion: string;
+    selectedStructures: string[];
+    selectedRegions: string[];
     condition: 'All' | 'Good' | 'Not Good';
   };
   setFilterState: (state: Partial<{
-    selectedStructure: string;
-    selectedRegion: string;
+    selectedStructures: string[];
+    selectedRegions: string[];
     condition: 'All' | 'Good' | 'Not Good';
   }>) => void;
   selectedDate: Date | null;
@@ -94,8 +94,8 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   },
   tableFilterOptions: null,
   filterState: {
-    selectedStructure: 'All',
-    selectedRegion: 'All',
+    selectedStructures: ['All'],
+    selectedRegions: ['All'],
     condition: 'All',
   },
   setViewState: (data) => set({ viewState: data }),
