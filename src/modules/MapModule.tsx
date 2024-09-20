@@ -1,29 +1,29 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef } from "react-map-gl";
-import { ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+import { ScatterplotLayer } from "@deck.gl/layers";
 import { LayersList, MapViewState, Color } from "@deck.gl/core";
 import { useAtonStore } from "../store/store";
-import { AtonType, AtonList } from "../declarations/types/types";
-import { AtonSummaryItem } from "../api/aton-api";
+import { AtonData, AtonType } from "../declarations/types/types";
 import { MAP_STYLES } from "../declarations/constants/constants";
-import 'mapbox-gl/dist/mapbox-gl.css';
-import circle from '../assets/icon/circle.svg';
-import square from '../assets/icon/Square.svg';
-import beacon from '../assets/icon/beacon.svg';
+import "mapbox-gl/dist/mapbox-gl.css";
+import circle from "../assets/icon/circle.svg";
+import square from "../assets/icon/Square.svg";
+import beacon from "../assets/icon/beacon.svg";
 
 // Import components
 import Legend from "../components/Legend";
-import AtonSummaryPanel from "../components/AtonSummaryPanel";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
-import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 import TableBtn from "../components/TableBtn";
 import MapStyleDropdown from "../components/MapStyleDropdown";
 import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
+import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
+import AtonSummaryPanel from "../components/AtonSummaryPanel";
+import { fetchAtonData } from "../api/aton-api";
 
 // Types
 type ClickInfoType = {
@@ -50,59 +50,63 @@ const ATON_TYPE_ICONS: { [key: string]: string } = {
   Beacon: beacon,
 };
 
-// Add this constant at the top of the file, after other imports
 const ATON_COLORS: { [key: string]: Color } = {
-  GOOD: [0, 255, 0, 255],    // Green
+  GOOD: [0, 255, 0, 255], // Green
   NOT_GOOD: [255, 0, 0, 255], // Red
   OUTLINE: [255, 255, 255, 255], // White for the outline
 };
 
 export default function MapModule() {
   // Hooks
-  const { toggles, setToggles, filterState, atonSummary, fetchAtonSummary } = useAtonStore();
+  const { atonData, setAtonData, toggles, setToggles, filterState } =
+    useAtonStore();
   const mapRef = useRef<MapRef | null>(null);
 
   // State
-  const [mapAton, setMapAton] = useState<AtonList[]>([]);
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
-  const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps | null>(null);
+  const [hoverData, setHoverData] = useState<HoverInfoProps | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // Effects
   useEffect(() => {
-    const loadData = async () => {
-      if (atonSummary.length === 0) {  // Only fetch if data is not already loaded
-        await fetchAtonSummary();
+    const fetchData = async () => {
+      if (atonData.length === 0) {
+        const data = await fetchAtonData();
+        setAtonData(data);
         setIsDataLoaded(true);
       }
-      console.log("Aton Summary Data:", atonSummary);
+      console.log("Aton Summary Data:", atonData);
     };
-    loadData();
-  }, [fetchAtonSummary, atonSummary]);
+
+    fetchData()
+  }, [atonData]);
 
   useEffect(() => {
-    if (!atonSummary || atonSummary.length === 0) return;
-    const filteredData = filterAtonData(atonSummary, filterState);
-    console.log('Filtered Aton Data:', filteredData);
-    console.log('Filtered Aton Data Length:', filteredData.length);
+    if (!atonData || atonData.length === 0) return;
+    const filteredData = filterAtonData(atonData, filterState);
+    console.log("Filtered Aton Data:", filteredData);
+    console.log("Filtered Aton Data Length:", filteredData.length);
     const layers = createLayers(filteredData);
     console.log("Layers:", layers);
     setLayers(layers);
-  }, [atonSummary, filterState, toggles, setToggles]);
+  }, [atonData, filterState, toggles, setToggles]);
 
   useEffect(() => {
     const mapElement = mapRef.current?.getMap().getCanvas();
     if (mapElement) {
       mapElement.addEventListener("contextmenu", handleRightClick);
-      return () => mapElement.removeEventListener("contextmenu", handleRightClick);
+      return () =>
+        mapElement.removeEventListener("contextmenu", handleRightClick);
     }
   }, [mapRef, toggles, setToggles]);
 
-  // Memoized values
-  const filteredAtonData = useMemo(() => filterAtonData(atonSummary, filterState), [atonSummary, filterState]);
+  const memoisedFilteredAtonData = useMemo(
+    () => filterAtonData(atonData, filterState),
+    [atonData, filterState]
+  );
 
   // Event handlers
   const handleRightClick = (event: MouseEvent) => {
@@ -128,27 +132,30 @@ export default function MapModule() {
     setMapStyle((event.target as HTMLSelectElement).value as MapStyle);
   };
 
-  // Helper functions
-  const createLayers = (data: AtonSummaryItem[]) => {
+  const createLayers = (data: AtonData[]) => {
     const scatterplotLayer = new ScatterplotLayer({
-      id: 'aton-outline-layer',
+      id: "aton-outline-layer",
       data: data,
-      getPosition: (d: AtonSummaryItem) => [Number(d.longitude), Number(d.latitude)],
+      getPosition: (d: AtonData) => [Number(d.long), Number(d.lat)],
       getFillColor: [0, 0, 0, 0], // Transparent fill
-      getLineColor: (d: AtonSummaryItem): Color => {
-        return d.health_OKNG === 1 ? ATON_COLORS.GOOD : ATON_COLORS.NOT_GOOD;
+      getLineColor: (d: AtonData): Color => {
+        return d.healthStatus === 1 ? ATON_COLORS.GOOD : ATON_COLORS.NOT_GOOD;
       },
-      getRadius: (d: AtonSummaryItem) => {
+      getRadius: (d: AtonData) => {
         switch (d.type) {
-          case 'Buoy': return 15;
-          case 'Lighthouse': return 17;
-          case 'Beacon': return 16;
-          default: return 15;
+          case "Buoy":
+            return 15;
+          case "Lighthouse":
+            return 17;
+          case "Beacon":
+            return 16;
+          default:
+            return 15;
         }
       },
       pickable: true,
       stroked: true,
-      lineWidthUnits: 'pixels',
+      lineWidthUnits: "pixels",
       lineWidthScale: 2,
       lineWidthMinPixels: 1,
       lineWidthMaxPixels: 10,
@@ -184,14 +191,14 @@ export default function MapModule() {
   const handleIconHover = (info: any) => {
     if (info.object) {
       setToggles({ ...toggles, hoverInfo: true });
-      setHoverInfoData({
+      setHoverData({
         name: info.object.name,
         mmsi: info.object.mmsi,
         lantBatt: info.object.last_BattLant,
         position: [info.x, info.y],
       });
     } else {
-      setHoverInfoData(null);
+      setHoverData(null);
       setToggles({ ...toggles, hoverInfo: false });
     }
   };
@@ -239,7 +246,7 @@ export default function MapModule() {
           ref={mapRef}
           mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
           mapStyle={mapStyle}
-          style={{width: '100%', height: '100%'}}
+          style={{ width: "100%", height: "100%" }}
         >
           {/* <NavigationControl visualizePitch position="bottom-right" /> */}
         </Map>
@@ -252,10 +259,12 @@ export default function MapModule() {
   function renderOverlays() {
     return (
       <>
-        {hoverInfoData && toggles.hoverInfo && <HoverInfo {...hoverInfoData} />}
+        {hoverData && toggles.hoverInfo && <HoverInfo {...hoverData} />}
         {clickInfo && renderClickInfo()}
-        {toggles.radialMenu && radialMenuData && <RadialMenu {...radialMenuData} />}
-        {toggles.atonSummaryPanel && renderAtonSummaryPanel()}
+        {toggles.radialMenu && radialMenuData && (
+          <RadialMenu {...radialMenuData} />
+        )}
+        {toggles.atonSummaryPanel && renderatonDataPanel()}
         {toggles.tableModule && <TableModule />}
         {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
         {toggles.legend && <Legend />}
@@ -276,7 +285,7 @@ export default function MapModule() {
     );
   }
 
-  function renderAtonSummaryPanel() {
+  function renderatonDataPanel() {
     return (
       <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
         <AtonSummaryPanel />
@@ -287,15 +296,19 @@ export default function MapModule() {
 }
 
 // Utility functions
-function filterAtonData(atonSummary: AtonSummaryItem[], filterState: any): AtonSummaryItem[] {
-  return atonSummary.filter((aton: AtonSummaryItem) => {
-    const structureMatch = filterState.selectedStructure === 'All' || filterState.selectedStructure === aton.type;
-    const regionMatch = filterState.selectedRegion === 'All' || filterState.selectedRegion === aton.region;
+function filterAtonData(atonData: AtonData[], filterState: any): AtonData[] {
+  return atonData.filter((aton: AtonData) => {
+    const structureMatch =
+      filterState.selectedStructure === "All" ||
+      filterState.selectedStructure === aton.type;
+    const regionMatch =
+      filterState.selectedRegion === "All" ||
+      filterState.selectedRegion === aton.region;
     let conditionMatch = true;
-    if (filterState.condition === 'Good') {
-      conditionMatch = aton.health_OKNG === 1;
-    } else if (filterState.condition === 'Not Good') {
-      conditionMatch = aton.health_OKNG === 0;
+    if (filterState.condition === "Good") {
+      conditionMatch = aton.healthStatus === 1;
+    } else if (filterState.condition === "Not Good") {
+      conditionMatch = aton.healthStatus === 0;
     }
     return structureMatch && regionMatch && conditionMatch;
   });

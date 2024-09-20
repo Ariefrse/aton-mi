@@ -1,45 +1,23 @@
-import { AtonStatistics, AtonType, Msg21, Msg6 } from "../declarations/types/types";
+import { AtonSummaryItemResDto, AtonTableResDto, Msg21ResDto, Msg6ResDto } from "../declarations/dtos/dtos";
+import { AtonData, AtonTable, Msg21, Msg6 } from "../declarations/types/types";
+import { transformAtonPanelData, transformAtonTableData, transformMsg21, transformMsg6 } from "./data-adapter";
 
-type Aton = {
-  name: string
-  region: string
-  mmsi: number
-  type: AtonType
-}
 
-export type AtonSummaryItem = {
-  type: string;
-  region: string;
-  health_OKNG: number;
-  cnt_msg21: number;
-  cnt_msg6: number;
-  last_light: number;
-  last_BattAton: number;
-  last_BattLant: number;
-  LDR_OKNG: number;
-  off_pos_OKNG: number;
+// TODO: Unused
+// export async function fetchAtonList(): Promise<AtonListResDto[]> {
+//   try {
+//     const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists`);
+//     // const res = await fetch(`http://localhost:3000/aton/cloud/lists/${type}`);
+//     // const res = await fetch(`http://localhost:3000/atonForMap`);
+//     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+//     return await res.json()
+//   } catch (error) {
+//     console.error('Failed to fetch aton list:', error);
+//     throw error
+//   }
+// }
 
-  // Add these properties if they don't exist:
-  longitude: number;
-  latitude: number;
-  name: string;
-  mmsi: number;
-
-};
-
-export async function fetchAtonList() {
-  try {
-    const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists`);
-    // const res = await fetch(`http://localhost:3000/aton/cloud/lists/${type}`);
-    // const res = await fetch(`http://localhost:3000/atonForMap`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const atonList = await res.json() as Aton[]
-    return atonList;
-  } catch (error) {
-    console.error('Failed to fetch aton list:', error);
-  }
-}
-
+// TODO: Unused
 // export async function fetchAton(mmsi: number) {
 //   try {
 //     const res = await fetch(`http://10.10.20.200:8020/aton/${mmsi}`);
@@ -51,58 +29,61 @@ export async function fetchAtonList() {
 //   }
 // }
 
-export async function fetchMessage21(mmsi: number) {
+export async function fetchMsg21(mmsi: number): Promise<Msg21[]> {
   try {
     const res = await fetch(`http://10.10.20.200:8020/aton/msg21/${mmsi}`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const message21 = await res.json() as Msg21[];
-    return message21;
+    const data: Msg21ResDto[] = await res.json()
+    return data.map(transformMsg21);
   } catch (error) {
     console.error('Failed to fetch message21:', error);
+    throw error
   }
 }
 
-export async function fetchMessage6(mmsi: number) {
+export async function fetchMsg6(mmsi: number): Promise<Msg6[]> {
   try {
     const res = await fetch(`http://10.10.20.200:8020/aton/msg6/${mmsi}`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const message6 = await res.json() as Msg6[];
-    return message6;
+    const data: Msg6ResDto[] = await res.json()
+    return data.map(transformMsg6)
   } catch (error) {
     console.error('Failed to fetch message6:', error);
+    throw error;
   }
 }
 
-export async function fetchAtonStats() {
+
+export async function fetchAtonTableData(): Promise<AtonTable[]> {
   try {
     const res = await fetch('http://localhost:3000/report-stats')
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const stats = await res.json() as AtonStatistics[]
-    return stats
+    const data: AtonTableResDto[] = await res.json()
+    return data.map(transformAtonTableData)
   } catch (error) {
     console.error('Failed to fetch')
+    throw error
   }
 }
 
-export const fetchAtonCloudList = async () => {
-  try {
-    const response = await fetch('http://10.10.20.200:8020/aton/cloud/lists');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching AtoN cloud list:', error);
-    throw error;
-  }
-};
+// TODO: Unused
+// export const fetchAtonCloudList = async () => {
+//   try {
+//     const res = await fetch('http://10.10.20.200:8020/aton/cloud/lists');
+//     if (!res.ok) throw new Error('Network response was not ok');
+//     return await res.json();
+//   } catch (error) {
+//     console.error('Error fetching AtoN cloud list:', error);
+//     throw error;
+//   }
+// };
 
-export async function fetchAtonSummary(): Promise<AtonSummaryItem[]> {
+export async function fetchAtonData(): Promise<AtonData[]> {
   try {
     const res = await fetch('http://10.10.20.200:8020/aton/cloud/lists');
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const atonSummary = await res.json() as AtonSummaryItem[];
-    return atonSummary;
+    const data: AtonSummaryItemResDto[] = await res.json()
+    return data.map(transformAtonPanelData)
   } catch (error) {
     console.error('Failed to fetch AtoN summary:', error);
     throw error;

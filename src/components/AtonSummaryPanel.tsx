@@ -1,82 +1,111 @@
-import { useEffect, useState, useMemo } from 'react'
-import { ChevronDown, ChevronUp, X } from 'lucide-react'
-import { useAtonStore } from '../store/store'
-import { AtonSummaryItem } from '../api/aton-api'
+import { useEffect, useState, useMemo } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useAtonStore } from "../store/store";
+import { fetchAtonData } from "../api/aton-api";
 
 export default function AtonSummaryPanel() {
-  const { toggles, setToggles, atonSummary, fetchAtonSummary, filterState, setFilterState } = useAtonStore();
-  
-  const [expandedSection, setExpandedSection] = useState<string | null>(null)
+  const {
+    toggles,
+    setToggles,
+    atonData,
+    setAtonData,
+    filterState,
+    setFilterState,
+  } = useAtonStore();
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchAtonSummary();
-  }, [fetchAtonSummary]);
+    if (atonData.length < 0 && atonData.length === undefined) {
+      try {
+        async () => {
+          const data = await fetchAtonData();
+          setAtonData(data);
+        };
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [setAtonData]);
 
-  const filteredAtonSummary = useMemo(() => {
-    if (!atonSummary) return null;
+  const filteredPanelData = useMemo(() => {
+    if (!atonData) return null;
 
-    return atonSummary.filter((item: AtonSummaryItem) => {
-      const structureMatch = filterState.selectedStructure === 'All' || filterState.selectedStructure === item.type;
-      const regionMatch = filterState.selectedRegion === 'All' || filterState.selectedRegion === item.region;
+    return atonData.filter((item) => {
+      const structureMatch =
+        filterState.selectedStructure === "All" ||
+        filterState.selectedStructure === item.type;
+      const regionMatch =
+        filterState.selectedRegion === "All" ||
+        filterState.selectedRegion === item.region;
       let conditionMatch = true;
-      if (filterState.condition === 'Good') {
-        conditionMatch = item.health_OKNG === 1;
-      } else if (filterState.condition === 'Not Good') {
-        conditionMatch = item.health_OKNG === 0;
+      if (filterState.condition === "Good") {
+        conditionMatch = item.healthStatus === 1;
+      } else if (filterState.condition === "Not Good") {
+        conditionMatch = item.healthStatus === 0;
       }
       return structureMatch && regionMatch && conditionMatch;
     });
-  }, [atonSummary, filterState]);
+  }, [atonData, filterState]);
 
-  const summaryData = useMemo(() => {
-    if (!filteredAtonSummary) return null;
+  const memoizedPanelData = useMemo(() => {
+    if (!filteredPanelData) return null;
 
-    const totalSites = filteredAtonSummary.length;
-    const noMessages21 = filteredAtonSummary.filter(item => item.cnt_msg21 === 0).length;
-    const noMessages6 = filteredAtonSummary.filter(item => item.cnt_msg6 === 0).length;
-    const lightError = filteredAtonSummary.filter(item => item.last_light === 0).length;
-    const lowBattAtoN = filteredAtonSummary.filter(item => item.last_BattAton < 12).length;
-    const lowBattLantern = filteredAtonSummary.filter(item => item.last_BattLant < 12).length;
-    const badLDR = filteredAtonSummary.filter(item => item.LDR_OKNG === 0).length;
-    const offPosition = filteredAtonSummary.filter(item => item.off_pos_OKNG === 1).length;
-
-    return {
-      totalSites,
-      noMessages21,
-      noMessages6,
-      lightError,
-      lowBattAtoN,
-      lowBattLantern,
-      badLDR,
-      offPosition
-    };
-  }, [filteredAtonSummary]);
+    return filteredPanelData.reduce(
+      (acc, item) => {
+        acc.totalSites++;
+        if (item.msg21Count === 0) acc.msg21Count++;
+        if (item.msg6Count === 0) acc.msg6Count++;
+        if (item.lastLight === 0) acc.lightError++;
+        if (item.lastBattAton < 12) acc.lowBattAtoN++;
+        if (item.lastBattLant < 12) acc.lowBattLant++;
+        if (item.ldrStatus === 0) acc.badLDR++;
+        if (item.offPosStatus === 1) acc.offPos++;
+        return acc;
+      },
+      {
+        totalSites: 0,
+        msg21Count: 0,
+        msg6Count: 0,
+        lightError: 0,
+        lowBattAtoN: 0,
+        lowBattLant: 0,
+        badLDR: 0,
+        offPos: 0,
+      }
+    );
+  }, [filteredPanelData]);
 
   const uniqueStructures = useMemo(() => {
-    if (!atonSummary) return [];
-    return ['All', ...Array.from(new Set(atonSummary.map(item => item.type)))];
-  }, [atonSummary]);
+    if (!atonData) return [];
+    return [
+      "All",
+      ...Array.from(new Set(atonData.map((item) => item.type))),
+    ];
+  }, [atonData]);
 
   const uniqueRegions = useMemo(() => {
-    if (!atonSummary) return [];
-    return ['All', ...Array.from(new Set(atonSummary.map(item => item.region)))];
-  }, [atonSummary]);
+    if (!atonData) return [];
+    return [
+      "All",
+      ...Array.from(new Set(atonData.map((item) => item.region))),
+    ];
+  }, [atonData]);
 
   const toggleSection = (section: string) => {
-    setExpandedSection(expandedSection === section ? null : section)
-  }
+    setExpandedSection(expandedSection === section ? null : section);
+  };
 
   const handleStructureChange = (structure: string) => {
     setFilterState({ selectedStructure: structure });
-  }
+  };
 
   const handleRegionChange = (region: string) => {
     setFilterState({ selectedRegion: region });
-  }
+  };
 
-  const handleConditionChange = (newCondition: 'All' | 'Good' | 'Not Good') => {
+  const handleConditionChange = (newCondition: "All" | "Good" | "Not Good") => {
     setFilterState({ condition: newCondition });
-  }
+  };
 
   const renderExpandableSection = (title: string, content: React.ReactNode) => (
     <div>
@@ -87,7 +116,11 @@ export default function AtonSummaryPanel() {
         aria-controls={`${title.toLowerCase()}-content`}
       >
         <span className="font-medium">{title}</span>
-        {expandedSection === title ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        {expandedSection === title ? (
+          <ChevronUp size={16} />
+        ) : (
+          <ChevronDown size={16} />
+        )}
       </button>
       {expandedSection === title && (
         <div id={`${title.toLowerCase()}-content`} className="mt-2 space-y-2">
@@ -95,7 +128,7 @@ export default function AtonSummaryPanel() {
         </div>
       )}
     </div>
-  )
+  );
 
   return (
     <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg">
@@ -106,86 +139,121 @@ export default function AtonSummaryPanel() {
           aria-label="Close"
           onClick={() =>
             setToggles({
-                ...toggles,
-                atonSummaryPanel: false,
-                atonSummaryToggleBtn: true,
-              })
-            }
+              ...toggles,
+              atonSummaryPanel: false,
+              atonSummaryToggleBtn: true,
+            })
+          }
         >
           <X size={20} />
         </button>
       </div>
 
       <div className="space-y-4">
-        {renderExpandableSection('Structure', (
+        {renderExpandableSection(
+          "Structure",
           <div className="space-y-2">
             {uniqueStructures.map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input 
-                  type="radio" 
-                  id={`structure-${item}`} 
+                <input
+                  type="radio"
+                  id={`structure-${item}`}
                   name="structure"
                   checked={filterState.selectedStructure === item}
                   onChange={() => handleStructureChange(item)}
-                  className="bg-gray-700 border-gray-600" 
+                  className="bg-gray-700 border-gray-600"
                 />
                 <label htmlFor={`structure-${item}`}>{item}</label>
               </div>
             ))}
           </div>
-        ))}
+        )}
 
-        {renderExpandableSection('Condition', (
+        {renderExpandableSection(
+          "Condition",
           <div className="space-y-2">
-            {['All', 'Good', 'Not Good'].map((item) => (
+            {["All", "Good", "Not Good"].map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input 
-                  type="radio" 
-                  id={`condition-${item}`} 
-                  name="condition" 
+                <input
+                  type="radio"
+                  id={`condition-${item}`}
+                  name="condition"
                   checked={filterState.condition === item}
-                  onChange={() => handleConditionChange(item as 'All' | 'Good' | 'Not Good')}
-                  className="bg-gray-700 border-gray-600" 
+                  onChange={() =>
+                    handleConditionChange(item as "All" | "Good" | "Not Good")
+                  }
+                  className="bg-gray-700 border-gray-600"
                 />
                 <label htmlFor={`condition-${item}`}>{item}</label>
               </div>
             ))}
           </div>
-        ))}
+        )}
 
-        {renderExpandableSection('Region', (
+        {renderExpandableSection(
+          "Region",
           <div className="space-y-2">
             {uniqueRegions.map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input 
-                  type="radio" 
-                  id={`region-${item}`} 
+                <input
+                  type="radio"
+                  id={`region-${item}`}
                   name="region"
                   checked={filterState.selectedRegion === item}
                   onChange={() => handleRegionChange(item)}
-                  className="bg-gray-700 border-gray-600" 
+                  className="bg-gray-700 border-gray-600"
                 />
                 <label htmlFor={`region-${item}`}>{item}</label>
               </div>
             ))}
           </div>
-        ))}
+        )}
 
         <div className="flex justify-between items-center">
           <span className="font-medium">Total Sites</span>
-          <span className="font-bold">{summaryData?.totalSites || 'Loading...'}</span>
+          <span className="font-bold">
+            {memoizedPanelData?.totalSites || "Loading..."}
+          </span>
         </div>
 
         <div className="space-y-2">
-          {summaryData ? (
+          {memoizedPanelData ? (
             <>
-              <SummaryItem label="No Messages 21" value={summaryData.noMessages21} total={summaryData.totalSites} />
-              <SummaryItem label="No Messages 6" value={summaryData.noMessages6} total={summaryData.totalSites} />
-              <SummaryItem label="Light Error" value={summaryData.lightError} total={summaryData.totalSites} />
-              <SummaryItem label="Low Batt AtoN" value={summaryData.lowBattAtoN} total={summaryData.totalSites} />
-              <SummaryItem label="Low Batt Lantern" value={summaryData.lowBattLantern} total={summaryData.totalSites} />
-              <SummaryItem label="Bad LDR" value={summaryData.badLDR} total={summaryData.totalSites} />
-              <SummaryItem label="Off Position" value={summaryData.offPosition} total={summaryData.totalSites} />
+              <SummaryItem
+                label="No Messages 21"
+                value={memoizedPanelData.msg21Count}
+                total={memoizedPanelData.totalSites}
+              />
+              <SummaryItem
+                label="No Messages 6"
+                value={memoizedPanelData.msg6Count}
+                total={memoizedPanelData.totalSites}
+              />
+              <SummaryItem
+                label="Light Error"
+                value={memoizedPanelData.lightError}
+                total={memoizedPanelData.totalSites}
+              />
+              <SummaryItem
+                label="Low Batt AtoN"
+                value={memoizedPanelData.lowBattAtoN}
+                total={memoizedPanelData.totalSites}
+              />
+              <SummaryItem
+                label="Low Batt Lantern"
+                value={memoizedPanelData.lowBattLant}
+                total={memoizedPanelData.totalSites}
+              />
+              <SummaryItem
+                label="Bad LDR"
+                value={memoizedPanelData.badLDR}
+                total={memoizedPanelData.totalSites}
+              />
+              <SummaryItem
+                label="Off Position"
+                value={memoizedPanelData.offPos}
+                total={memoizedPanelData.totalSites}
+              />
             </>
           ) : (
             <p>Loading summary data...</p>
@@ -196,14 +264,24 @@ export default function AtonSummaryPanel() {
   );
 }
 
-function SummaryItem({ label, value, total }: { label: string; value: number; total: number }) {
+type SummaryItemProps = {
+  label: string;
+  value: number;
+  total: number;
+};
+
+function SummaryItem({ label, value, total }: SummaryItemProps) {
   const percentage = ((value / total) * 100).toFixed(2);
   return (
     <div className="flex justify-between items-center">
       <span>{label}</span>
       <div className="flex items-center space-x-2">
         <span className="font-semibold">{value}</span>
-        <span className={`text-${parseFloat(percentage) > 0 ? 'blue' : 'red'}-400`}>{percentage}%</span>
+        <span
+          className={`text-${parseFloat(percentage) > 0 ? "blue" : "red"}-400`}
+        >
+          {percentage}%
+        </span>
       </div>
     </div>
   );
