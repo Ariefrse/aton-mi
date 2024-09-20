@@ -32,11 +32,11 @@ export default function AtonSummaryPanel() {
 
     return atonData.filter((item) => {
       const structureMatch =
-        filterState.selectedStructure === "All" ||
-        filterState.selectedStructure === item.type;
+        filterState.structure === "All" ||
+        filterState.structure === item.type;
       const regionMatch =
-        filterState.selectedRegion === "All" ||
-        filterState.selectedRegion === item.region;
+        filterState.region === "All" ||
+        filterState.region === item.region;
       let conditionMatch = true;
       if (filterState.condition === "Good") {
         conditionMatch = item.healthStatus === 1;
@@ -96,11 +96,11 @@ export default function AtonSummaryPanel() {
   };
 
   const handleStructureChange = (structure: string) => {
-    setFilterState({ selectedStructure: structure });
+    setFilterState({ structure: structure });
   };
 
   const handleRegionChange = (region: string) => {
-    setFilterState({ selectedRegion: region });
+    setFilterState({ region: region });
   };
 
   const handleConditionChange = (newCondition: "All" | "Good" | "Not Good") => {
@@ -159,7 +159,7 @@ export default function AtonSummaryPanel() {
                   type="radio"
                   id={`structure-${item}`}
                   name="structure"
-                  checked={filterState.selectedStructure === item}
+                  checked={filterState.structure === item}
                   onChange={() => handleStructureChange(item)}
                   className="bg-gray-700 border-gray-600"
                 />
@@ -199,7 +199,7 @@ export default function AtonSummaryPanel() {
                   type="radio"
                   id={`region-${item}`}
                   name="region"
-                  checked={filterState.selectedRegion === item}
+                  checked={filterState.region === item}
                   onChange={() => handleRegionChange(item)}
                   className="bg-gray-700 border-gray-600"
                 />

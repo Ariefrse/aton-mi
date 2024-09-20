@@ -25,6 +25,12 @@ type ViewState = {
   bearing: number,
 }
 
+export type FilterState = {
+  structure: string;
+  region: string;
+  condition: 'All' | 'Good' | 'Not Good';
+}
+
 export type AtonFilterOptions = {
   structure: AtonType
   condition: AtonStatus | 'All'
@@ -39,13 +45,8 @@ export type AtonStoreState = {
   viewState?: ViewState
   toggles: Toggles;
   tableFilterOptions: TableFilterOptions;
-  filterState: {
-    selectedStructure: string;
-    selectedRegion: string;
-    condition: 'All' | 'Good' | 'Not Good';
-  };
+  filterState: FilterState
   atonData: AtonData[]
-  // atonSummaryData: AtonSummaryItem[]
   atonTablePreviewData?: AtonTable[]
   selectedDate: Date | null;
 
@@ -53,14 +54,9 @@ export type AtonStoreState = {
   setViewState: (data: ViewState) => void;
   setToggles: (modal: Toggles) => void;
   setTableFilterOptions: (options: TableFilterOptions) => void;
-  setFilterState: (state: Partial<{
-    selectedStructure: string;
-    selectedRegion: string;
-    condition: 'All' | 'Good' | 'Not Good';
-  }>) => void;
+  setFilterState: (state: Partial<FilterState>) => void;
 
   setAtonData: (data: AtonData[]) => void;
   setAtonTableData: (data: AtonTable[]) => void;
-  // setAtonSummaryData: (data: AtonSummaryItem[]) => void;
   setSelectedDate: (date: Date | null) => void;
 };

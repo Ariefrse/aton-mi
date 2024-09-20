@@ -4,7 +4,10 @@ export type AtonInfoTooltipProps = {
   name: string;
   mmsi: number;
   type: AtonType;
-  position: [number, number];
+  position: {
+    lat: number;
+    lng: number;
+  };
 };
 
 export default function AtonInfoTooltip(props: AtonInfoTooltipProps) {
@@ -13,8 +16,8 @@ export default function AtonInfoTooltip(props: AtonInfoTooltipProps) {
       <h2 className="text-lg font-bold">{props.name}</h2>
       <p>MMSI: {props.mmsi}</p>
       <p>Type: {props.type}</p>
-      <p>Latitude: {props?.position[0]}</p>
-      <p>Longitude: {props?.position?.[1]}</p>
+      <p>Latitude: {props?.position?.lat}</p>
+      <p>Longitude: {props?.position?.lng}</p>
     </div>
   );
 }
