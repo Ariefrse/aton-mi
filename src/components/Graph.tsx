@@ -40,8 +40,8 @@ export default function Graph() {
   };
 
   return (
-    <div className="absolute bg-gray-700 flex flex-col w-1/2 h-1/2">
-      <div className="bg-gray-700 mb-4 z-50 ml-auto">
+    <div className="absolute bg-gray-900 rounded-md flex flex-col w-1/2 h-1/2">
+      <div className="mb-4 z-50 ml-auto pt-4 pr-2">
         <label htmlFor="graphType" className="mr-2 text-white">
           Select Graph Type:
         </label>
@@ -60,7 +60,7 @@ export default function Graph() {
         </select>
       </div>
       <LineChart
-        className="bg-gray-600 z-10"
+        className="bg-gray-900 z-10"
         xAxis={[
           {
             data: xAxisData.map((x) => new Date(x)),
@@ -83,7 +83,7 @@ export default function Graph() {
         series={[
           {
             data: atonGraphData,
-            label: GRAPH_DATA_MAP[graphType],
+            label: `${ATON_GRAPH_DATA.mmsi} - ${ATON_GRAPH_DATA.name} (${GRAPH_DATA_MAP[graphType]})`,
             color: "red",
           },
         ]}
