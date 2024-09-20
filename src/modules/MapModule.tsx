@@ -21,10 +21,10 @@ import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import AtonSummaryPanel from "../components/AtonSummaryPanel";
-import { fetchAtonData } from "../api/aton-api";
 import ClickInfo, { ClickInfoProps } from "../components/ClickInfo";
 import MapHeader from "../components/MapHeader";
 import { FilterState } from "../declarations/types/store-types";
+import { fetchAtonData } from "../api/aton-api";
 
 export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
 

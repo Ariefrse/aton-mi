@@ -1,6 +1,6 @@
 import { AtonSummaryItemResDto, AtonTableResDto, Msg21ResDto, Msg6ResDto } from "../declarations/dtos/dtos";
 import { AtonData, AtonTable, Msg21, Msg6 } from "../declarations/types/types";
-import { transformAtonPanelData, transformAtonTableData, transformMsg21, transformMsg6 } from "./data-adapter";
+import { transformAtonPanelData, transformAtonTableData, transformMsg21, transformMsg6 } from "./api-adapter";
 
 
 // TODO: Unused
