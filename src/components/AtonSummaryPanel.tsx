@@ -32,11 +32,9 @@ export default function AtonSummaryPanel() {
 
     return atonData.filter((item) => {
       const structureMatch =
-        filterState.structure === "All" ||
-        filterState.structure === item.type;
+        filterState.structure === "All" || filterState.structure === item.type;
       const regionMatch =
-        filterState.region === "All" ||
-        filterState.region === item.region;
+        filterState.region === "All" || filterState.region === item.region;
       let conditionMatch = true;
       if (filterState.condition === "Good") {
         conditionMatch = item.healthStatus === 1;
@@ -77,18 +75,12 @@ export default function AtonSummaryPanel() {
 
   const uniqueStructures = useMemo(() => {
     if (!atonData) return [];
-    return [
-      "All",
-      ...Array.from(new Set(atonData.map((item) => item.type))),
-    ];
+    return ["All", ...Array.from(new Set(atonData.map((item) => item.type)))];
   }, [atonData]);
 
   const uniqueRegions = useMemo(() => {
     if (!atonData) return [];
-    return [
-      "All",
-      ...Array.from(new Set(atonData.map((item) => item.region))),
-    ];
+    return ["All", ...Array.from(new Set(atonData.map((item) => item.region)))];
   }, [atonData]);
 
   const toggleSection = (section: string) => {
@@ -260,6 +252,15 @@ export default function AtonSummaryPanel() {
           )}
         </div>
       </div>
+      <button
+        className="absolute bottom-2 right-2 bg-red-500 rounded-xl w-7 h-7 border-2 border-white hover:bg-red-400 flex items-center justify-center"
+        onClick={() =>
+          setToggles({
+            ...toggles,
+            atonMessageCountOverview: !toggles.atonMessageCountOverview,
+          })
+        }
+      ></button>
     </div>
   );
 }

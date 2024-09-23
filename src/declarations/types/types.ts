@@ -26,36 +26,6 @@ export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
 export type pkgType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
 export type msgType = keyof typeof AIS_MSG_TYPE
 
-// export type Aton = {
-//   last_BattAton: number;
-//   last_BattLant: number;
-//   lat: number;
-//   long: number;
-//   meanBattAton: number;
-//   mmsi: number;
-//   name: string;
-//   region: string;
-//   ts: string;
-//   msg6?: Partial<Msg6>[]
-//   msg21?: Partial<Msg21>[]
-// }
-
-// export type AtonList = {
-//   lastBattAton: number;
-//   lastBattLant: number;
-//   lat: number;
-//   long: number;
-//   meanBattAton: number;
-//   mmsi: number;
-//   name: string;
-//   region: string;
-//   ts: string;
-//   type: AtonType;
-//   health: number;
-//   msg6?: Partial<Msg6>[];
-//   msg21?: Partial<Msg21>[];
-// };
-
 export type AtonData = {
   type: string;
   region: string;

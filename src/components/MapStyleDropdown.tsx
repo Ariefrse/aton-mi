@@ -9,7 +9,7 @@ type MapStyleDropdownProps = {
 function MapStyleDropdown({
   mapStyle,
   handleMapStyleChange,
-}: Readonly<MapStyleDropdownProps>) {
+}: MapStyleDropdownProps) {
   return (
     <select
       value={mapStyle}
