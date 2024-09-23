@@ -52,13 +52,15 @@ type AtonStoreState = {
   atonSummary: AtonSummaryItem[];  // Updated type
   fetchAtonSummary: () => Promise<void>;
   filterState: {
-    selectedStructure: string;
-    selectedRegion: string;
+    selectedStructures: string[];
+    selectedRegions: string[];
     condition: 'All' | 'Good' | 'Not Good';
   };
+  uniqueStructures: string[];
+  uniqueRegions: string[];
   setFilterState: (state: Partial<{
-    selectedStructure: string;
-    selectedRegion: string;
+    selectedStructures: string[];
+    selectedRegions: string[];
     condition: 'All' | 'Good' | 'Not Good';
   }>) => void;
   selectedDate: Date | null;
@@ -94,10 +96,12 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   },
   tableFilterOptions: null,
   filterState: {
-    selectedStructure: 'All',
-    selectedRegion: 'All',
+    selectedStructures: ['All'],
+    selectedRegions: ['All'],
     condition: 'All',
   },
+  uniqueStructures: [],
+  uniqueRegions: [],
   setViewState: (data) => set({ viewState: data }),
   setAtonData: (data) => set({ atonData: data }),
   setAtonStatsData: (data) => set({ atonStatsData: data }),
@@ -109,7 +113,9 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   fetchAtonSummary: async () => {
     try {
       const atonSummary = await fetchAtonSummary();
-      set({ atonSummary });
+      const uniqueStructures = ['All', ...Array.from(new Set(atonSummary.map(item => item.type)))];
+      const uniqueRegions = ['All', ...Array.from(new Set(atonSummary.map(item => item.region)))];
+      set({ atonSummary, uniqueStructures, uniqueRegions });
     } catch (error) {
       console.error('Failed to fetch AtoN summary:', error);
     }

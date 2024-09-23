@@ -289,8 +289,8 @@ export default function MapModule() {
 // Utility functions
 function filterAtonData(atonSummary: AtonSummaryItem[], filterState: any): AtonSummaryItem[] {
   return atonSummary.filter((aton: AtonSummaryItem) => {
-    const structureMatch = filterState.selectedStructure === 'All' || filterState.selectedStructure === aton.type;
-    const regionMatch = filterState.selectedRegion === 'All' || filterState.selectedRegion === aton.region;
+    const structureMatch = filterState.selectedStructures.includes('All') || filterState.selectedStructures.includes(aton.type);
+    const regionMatch = filterState.selectedRegions.includes('All') || filterState.selectedRegions.includes(aton.region);
     let conditionMatch = true;
     if (filterState.condition === 'Good') {
       conditionMatch = aton.health_OKNG === 1;

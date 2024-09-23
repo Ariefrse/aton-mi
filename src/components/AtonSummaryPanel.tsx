@@ -16,8 +16,8 @@ export default function AtonSummaryPanel() {
     if (!atonSummary) return null;
 
     return atonSummary.filter((item: AtonSummaryItem) => {
-      const structureMatch = filterState.selectedStructure === 'All' || filterState.selectedStructure === item.type;
-      const regionMatch = filterState.selectedRegion === 'All' || filterState.selectedRegion === item.region;
+      const structureMatch = filterState.selectedStructures.includes('All') || filterState.selectedStructures.includes(item.type);
+      const regionMatch = filterState.selectedRegions.includes('All') || filterState.selectedRegions.includes(item.region);
       let conditionMatch = true;
       if (filterState.condition === 'Good') {
         conditionMatch = item.health_OKNG === 1;
@@ -67,11 +67,31 @@ export default function AtonSummaryPanel() {
   }
 
   const handleStructureChange = (structure: string) => {
-    setFilterState({ selectedStructure: structure });
+    let newSelectedStructures = filterState.selectedStructures.includes(structure)
+      ? filterState.selectedStructures.filter(item => item !== structure)
+      : [...filterState.selectedStructures, structure];
+
+    if (structure !== 'All') {
+      newSelectedStructures = newSelectedStructures.filter(item => item !== 'All');
+    }
+
+    setFilterState({
+      selectedStructures: newSelectedStructures.length === 0 ? ['All'] : newSelectedStructures
+    });
   }
 
   const handleRegionChange = (region: string) => {
-    setFilterState({ selectedRegion: region });
+    let newSelectedRegions = filterState.selectedRegions.includes(region)
+      ? filterState.selectedRegions.filter(item => item !== region)
+      : [...filterState.selectedRegions, region];
+
+    if (region !== 'All') {
+      newSelectedRegions = newSelectedRegions.filter(item => item !== 'All');
+    }
+
+    setFilterState({
+      selectedRegions: newSelectedRegions.length === 0 ? ['All'] : newSelectedRegions
+    });
   }
 
   const handleConditionChange = (newCondition: 'All' | 'Good' | 'Not Good') => {
@@ -122,10 +142,10 @@ export default function AtonSummaryPanel() {
             {uniqueStructures.map((item) => (
               <div key={item} className="flex items-center space-x-2">
                 <input 
-                  type="radio" 
+                  type="checkbox" 
                   id={`structure-${item}`} 
                   name="structure"
-                  checked={filterState.selectedStructure === item}
+                  checked={filterState.selectedStructures.includes(item)}
                   onChange={() => handleStructureChange(item)}
                   className="bg-gray-700 border-gray-600" 
                 />
@@ -158,10 +178,10 @@ export default function AtonSummaryPanel() {
             {uniqueRegions.map((item) => (
               <div key={item} className="flex items-center space-x-2">
                 <input 
-                  type="radio" 
+                  type="checkbox" 
                   id={`region-${item}`} 
                   name="region"
-                  checked={filterState.selectedRegion === item}
+                  checked={filterState.selectedRegions.includes(item)}
                   onChange={() => handleRegionChange(item)}
                   className="bg-gray-700 border-gray-600" 
                 />
