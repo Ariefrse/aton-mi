@@ -3,7 +3,7 @@ import { match } from "ts-pattern";
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef } from "react-map-gl";
 import { ScatterplotLayer } from "@deck.gl/layers";
-import { LayersList, Color } from "@deck.gl/core";
+import { LayersList, Color, PickingInfo } from "@deck.gl/core";
 import { useAtonStore } from "../store/store";
 import { AtonData, AtonType } from "../declarations/types/types";
 import { MAP_STYLES } from "../declarations/constants/constants";
@@ -43,20 +43,17 @@ const ATON_COLORS: { [key: string]: Color } = {
 };
 
 export default function MapModule() {
-  // Hooks
   const { viewState, atonData, setAtonData, toggles, setToggles, filterState } =
     useAtonStore();
   const mapRef = useRef<MapRef | null>(null);
-
-  // State
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
+  const [selectedAton, setSelectedAton] = useState<AtonData>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [clickInfo, setClickInfo] = useState<ClickInfoProps | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
   const [hoverData, setHoverData] = useState<HoverInfoProps | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  // Effects
   useEffect(() => {
     const fetchData = async () => {
       if (atonData.length === 0) {
@@ -64,7 +61,7 @@ export default function MapModule() {
         setAtonData(data);
         setIsDataLoaded(true);
       }
-      console.log("Aton Summary Data:", atonData);
+      // console.log("Aton Summary Data:", atonData);
     };
 
     fetchData();
@@ -76,16 +73,15 @@ export default function MapModule() {
     // console.log("Filtered Aton Data:", filteredData);
     // console.log("Filtered Aton Data Length:", filteredData.length);
     const layers = createLayers(memoisedFilteredAtonData);
-    console.log("Layers:", layers);
+    // console.log("Layers:", layers);
     setLayers(layers);
   }, [atonData, filterState, toggles, setToggles]);
 
   useEffect(() => {
-    const mapElement = mapRef.current?.getMap().getCanvas();
-    if (mapElement) {
-      mapElement.addEventListener("contextmenu", handleRightClick);
-      return () =>
-        mapElement.removeEventListener("contextmenu", handleRightClick);
+    const mapEl = mapRef.current?.getMap().getCanvas();
+    if (mapEl) {
+      mapEl.addEventListener("contextmenu", handleRightClick);
+      return () => mapEl.removeEventListener("contextmenu", handleRightClick);
     }
   }, [mapRef, toggles, setToggles]);
 
@@ -139,7 +135,7 @@ export default function MapModule() {
     return [scatterplotLayer];
   };
 
-  const handleIconClick = (info: any) => {
+  const handleIconClick = (info: PickingInfo) => {
     if (info.object) {
       setToggles({ ...toggles, radialMenu: true });
       setRadialMenuData({
@@ -155,15 +151,17 @@ export default function MapModule() {
           lat: Number(info.object.latitude),
         },
       });
+      setSelectedAton(atonData.find((aton) => aton.mmsi === info.object.mmsi));
     } else {
       setRadialMenuData(null);
       setToggles({ ...toggles, radialMenu: false });
     }
   };
 
-  const handleIconHover = (info: any) => {
+  const handleIconHover = (info: PickingInfo) => {
     if (info.object) {
       setToggles({ ...toggles, hoverInfo: true });
+      setSelectedAton(atonData.find((aton) => aton.mmsi === info.object.mmsi));
       setHoverData({
         name: info.object.name,
         mmsi: info.object.mmsi,
@@ -199,11 +197,10 @@ export default function MapModule() {
     });
   }
 
-  // VIEW
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-900 text-white flex flex-col rounded-md">
       <MapHeader mapStyle={mapStyle} setMapStyle={setMapStyle} />
-      <div className="flex-1 relative">
+      <div className="flex items-center justify-center flex-1 relative">
         {isDataLoaded ? (
           <DeckGL
             initialViewState={viewState}
@@ -222,11 +219,9 @@ export default function MapModule() {
         ) : (
           <div>Loading AtoN data...</div>
         )}
-        {toggles.hoverInfo && hoverData && <HoverInfo {...hoverData} />}
+        {hoverData && <HoverInfo {...hoverData} />}
         {clickInfo && <ClickInfo {...clickInfo} />}
-        {toggles.radialMenu && radialMenuData && (
-          <RadialMenu {...radialMenuData} />
-        )}
+        {radialMenuData && <RadialMenu {...radialMenuData} />}
         {toggles.atonSummaryPanel && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummaryPanel />
@@ -237,7 +232,7 @@ export default function MapModule() {
         {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
         {toggles.legend && <Legend />}
         {toggles.legendToggleBtn && <LegendToggleBtn />}
-        {toggles.graph && <Graph />}
+        {toggles.graph && selectedAton && <Graph atonData={selectedAton} />}
       </div>
     </div>
   );

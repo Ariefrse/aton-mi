@@ -43,7 +43,6 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   setFilterState: (newState) => set((state) => ({
     filterState: { ...state.filterState, ...newState },
   })),
-  // setAtonSummaryData: (data) => set({ atonSummaryData: data }),
   selectedDate: null,
   setSelectedDate: (date) => set({ selectedDate: date }),
 }));

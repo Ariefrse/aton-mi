@@ -23,8 +23,8 @@ export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse';
 export type AtonStatus = 'Good' | 'Warning' | 'Error'
 export type PkgCh = 'A' | 'B'
 export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
-export type pkgType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
-export type msgType = keyof typeof AIS_MSG_TYPE
+export type PkgType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
+export type MsgType = keyof typeof AIS_MSG_TYPE
 
 export type AtonData = {
   type: AtonType;
@@ -54,6 +54,9 @@ export type Msg6 = {
   repeat: number;
   mmsi: number;
   seqNo: number;
+  localTs: string;
+  ts: string;
+  isoTs: string;
   destMmsi: number;
   retransmit: number;
   dac: number;
@@ -80,16 +83,13 @@ export type Msg6 = {
   buoyErrLedVinLow: number;
   buoyErrLedPower: number;
   buoyAdjMaxPower: number;
-  buoySensorInterru: number;
+  buoySensorInterrupt: number;
   buoySolarCharging: number;
 };
 
 export type Msg21 = {
-  pkgType: string;
-  pkgCh: string;
   msgType: number;
   msgTypeDesc: string;
-  repeat: number;
   mmsi: number;
   aidType: number;
   aidTypeDesc: string;
