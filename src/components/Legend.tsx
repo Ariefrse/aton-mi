@@ -1,4 +1,5 @@
-import { IoMdCheckmarkCircle, IoMdClose } from "react-icons/io";
+import { Diamond, Circle, Square } from "lucide-react";
+import { IoMdClose } from "react-icons/io";
 import { useAtonStore } from "../store/store";
 import { AtonStatus } from "../declarations/types/types";
 

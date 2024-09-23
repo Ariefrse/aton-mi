@@ -1,33 +1,46 @@
+import { useState, useRef, useEffect, useMemo } from "react";
+import { match } from "ts-pattern";
 import { DeckGL } from "@deck.gl/react";
-import Map, { MapRef, NavigationControl } from "react-map-gl";
-import { useState, useRef, useEffect } from "react";
-import { IconLayer } from "@deck.gl/layers";
+import Map, { MapRef } from "react-map-gl";
+import { ScatterplotLayer } from "@deck.gl/layers";
+import { LayersList, Color } from "@deck.gl/core";
+import { useAtonStore } from "../store/store";
+import { AtonData } from "../declarations/types/types";
+import { MAP_STYLES } from "../declarations/constants/constants";
+import "mapbox-gl/dist/mapbox-gl.css";
+import circle from "../assets/icon/circle.svg";
+import square from "../assets/icon/Square.svg";
+import beacon from "../assets/icon/beacon.svg";
+
+// Import components
 import Legend from "../components/Legend";
-import AtonSummaryPanel from "../components/AtonSummaryPanel";
-import { LayersList, MapViewState } from "@deck.gl/core";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
-import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
-import { useAtonStore } from "../store/store";
-import TableOptions from "../components/TableOptions";
 import LegendToggleBtn from "../components/LegendToggleBtn";
-import { AtonType, MapAtonResDto } from "../declarations/types/types";
-import { fetchAtonList } from "../api/aton-api";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
-import TableBtn from "../components/TableBtn";
-import MapStyleDropdown from "../components/MapStyleDropdown";
-import { MAP_STYLES } from "../declarations/constants/constants";
 import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
 import Graph from "../components/Graph";
+import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
+import AtonSummaryPanel from "../components/AtonSummaryPanel";
+import ClickInfo, { ClickInfoProps } from "../components/ClickInfo";
+import MapHeader from "../components/MapHeader";
+import { FilterState } from "../declarations/types/store-types";
+import { fetchAtonData } from "../api/aton-api";
 
-type ClickInfoType = {
-  name?: string;
-  mmsi?: number;
-  type?: AtonType;
-  position: [number, number];
+export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
+
+// Define a constant for AtoN type icons
+const ATON_TYPE_ICONS: { [key: string]: string } = {
+  Buoy: circle,
+  Lighthouse: square,
+  Beacon: beacon,
 };
 
-type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
+const ATON_COLORS: { [key: string]: Color } = {
+  GOOD: [0, 255, 0, 255], // Green
+  NOT_GOOD: [255, 0, 0, 255], // Red
+  OUTLINE: [255, 255, 255, 255], // White for the outline
+};
 
 const ATON_TYPE_ICONS: { [key in AtonType]: string } = {
   Buoy: "icon/Rectangle1.svg",
@@ -36,205 +49,190 @@ const ATON_TYPE_ICONS: { [key in AtonType]: string } = {
 };
 
 export default function MapModule() {
-  const { toggles, setToggles } = useAtonStore();
+  // Hooks
+  const { viewState, atonData, setAtonData, toggles, setToggles, filterState } =
+    useAtonStore();
   const mapRef = useRef<MapRef | null>(null);
-  const [mapAton, setMapAton] = useState<MapAtonResDto[]>();
+
+  // State
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
-  const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
+  const [clickInfo, setClickInfo] = useState<ClickInfoProps | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
-  const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps>(null);
-  const [mapViewState, setMapViewState] = useState<MapViewState>({
-    longitude: 101.5466,
-    latitude: 3.0891,
-    zoom: 13,
-    pitch: 0,
-    bearing: 0,
-  });
+  const [hoverData, setHoverData] = useState<HoverInfoProps | null>(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
+  // Effects
   useEffect(() => {
-    async function fetchMapAtonData() {
-      try {
-        const mapAtonFetchRes = await fetchAtonList();
-        setMapAton(mapAtonFetchRes);
-      } catch (error) {
-        console.error("Error fetching AtoN data:", error);
+    const fetchData = async () => {
+      if (atonData.length === 0) {
+        const data = await fetchAtonData();
+        setAtonData(data);
+        setIsDataLoaded(true);
       }
-    }
+      console.log("Aton Summary Data:", atonData);
+    };
 
-    if (!mapAton) {
-      fetchMapAtonData();
-    }
+    fetchData();
   }, []);
 
   useEffect(() => {
-    const newLayers = mapAton
-      ?.map((aton, index) => {
-        const layerId = `icon-layer-${aton?.mmsi}-${index}`;
-
-        return new IconLayer({
-          id: layerId,
-          data: [
-            {
-              coordinate: [aton?.longitude, aton?.latitude],
-              name: aton?.name,
-              mmsi: aton?.mmsi,
-              battAton: aton?.last_BattAton,
-              type: aton?.type,
-            },
-          ],
-          getIcon: (d: { type: AtonType }) => {
-            const iconUrl = ATON_TYPE_ICONS[d.type];
-            return {
-              url: iconUrl,
-              width: 128, // Increase width for better quality
-              height: 128,
-
-              // Increase height for better quality
-              // Adjust anchor point if necessary
-            };
-          },
-          sizeScale: 1,
-          getPosition: (d) => d.coordinate,
-          getSize: 10,
-          getColor: [255, 0, 0],
-          pickable: false,
-
-          onClick: (info) => {
-            if (info.object) {
-              setToggles({ ...toggles, radialMenu: true });
-              setRadialMenuData({
-                mmsi: info.object.mmsi,
-                position: [info.x, info.y],
-              });
-              setClickInfo({
-                name: info.object.name,
-                mmsi: info.object.mmsi,
-                type: info.object.type,
-                position: [info.x, info.y],
-              });
-            } else {
-              setRadialMenuData(null);
-              setToggles({ ...toggles, radialMenu: false });
-            }
-          },
-          onHover: (info) => {
-            if (info.object) {
-              setToggles({ ...toggles, hoverInfo: true });
-              setHoverInfoData({
-                name: info?.object?.name,
-                mmsi: info?.object?.mmsi,
-                lantBatt: info?.object?.battAton,
-                position: [info.x, info.y],
-              });
-            } else {
-              setHoverInfoData(null);
-              setToggles({ ...toggles, hoverInfo: false });
-            }
-          },
-        });
-      })
-      .filter((layer) => layer !== null);
-
-    setLayers(newLayers);
-    console.log(`Number of layers: ${newLayers?.length}`);
-  }, [mapAton]);
+    if (!atonData || atonData.length === 0) return;
+    // const filteredData = memoisedFilteredAtonData;
+    // console.log("Filtered Aton Data:", filteredData);
+    // console.log("Filtered Aton Data Length:", filteredData.length);
+    const layers = createLayers(memoisedFilteredAtonData);
+    console.log("Layers:", layers);
+    setLayers(layers);
+  }, [atonData, filterState, toggles, setToggles]);
 
   useEffect(() => {
-    const handleRightClick = (event: MouseEvent) => {
-      event.preventDefault();
-      // event.stopPropagation();
-      const { clientX: x, clientY: y } = event;
-
-      setRadialMenuData({ mmsi: 0, position: [x, y] });
-      setToggles({ ...toggles, radialMenu: true });
-    };
-
     const mapElement = mapRef.current?.getMap().getCanvas();
-
     if (mapElement) {
       mapElement.addEventListener("contextmenu", handleRightClick);
-    }
-
-    return () => {
-      if (mapElement) {
+      return () =>
         mapElement.removeEventListener("contextmenu", handleRightClick);
-      }
-    };
+    }
   }, [mapRef, toggles, setToggles]);
 
-  const toggleTableModule = () => {
-    setToggles({
-      ...toggles,
-      tableModule: !toggles.tableModule,
-      legendToggleBtn: false,
-      legend: false,
-      messageCountOverview: false,
-      atonSummaryPanel: false,
-      atonSummaryToggleBtn: false,
+  const memoisedFilteredAtonData = useMemo(
+    () => filterAtonData(atonData, filterState),
+    [atonData, filterState]
+  );
+
+  // Event handlers
+  const handleRightClick = (event: MouseEvent) => {
+    event.preventDefault();
+    const { clientX: x, clientY: y } = event;
+    setRadialMenuData({ mmsi: 0, position: [x, y] });
+    setToggles({ ...toggles, radialMenu: true });
+  };
+
+  const createLayers = (data: AtonData[]) => {
+    const scatterplotLayer = new ScatterplotLayer({
+      id: "aton-outline-layer",
+      data: data,
+      getPosition: (d: AtonData) => [Number(d.long), Number(d.lat)],
+      getFillColor: [0, 0, 0, 0], // Transparent fill
+      getLineColor: (d: AtonData): Color => {
+        return d.healthStatus === 1 ? ATON_COLORS.GOOD : ATON_COLORS.NOT_GOOD;
+      },
+      getRadius: (d: AtonData) => {
+        switch (d.type) {
+          case "Buoy":
+            return 15;
+          case "Lighthouse":
+            return 17;
+          case "Beacon":
+            return 16;
+          default:
+            return 15;
+        }
+      },
+      pickable: true,
+      stroked: true,
+      lineWidthUnits: "pixels",
+      lineWidthScale: 2,
+      lineWidthMinPixels: 1,
+      lineWidthMaxPixels: 10,
+      radiusScale: 6,
+      radiusMinPixels: 5,
+      radiusMaxPixels: 35,
+      onClick: handleIconClick,
+      onHover: handleIconHover,
     });
+
+    return [scatterplotLayer];
   };
 
-  const handleMapStyleChange = (event: any) => {
-    const newStyle = event.target.value;
-    setMapStyle(newStyle);
+  const handleIconClick = (info: any) => {
+    if (info.object) {
+      setToggles({ ...toggles, radialMenu: true });
+      setRadialMenuData({
+        mmsi: info.object.mmsi,
+        position: [info.x, info.y],
+      });
+      setClickInfo({
+        name: info.object.name,
+        mmsi: info.object.mmsi,
+        type: info.object.type,
+        position: {
+          lng: Number(info.object.longitude),
+          lat: Number(info.object.latitude),
+        },
+      });
+    } else {
+      setRadialMenuData(null);
+      setToggles({ ...toggles, radialMenu: false });
+    }
   };
 
+  const handleIconHover = (info: any) => {
+    if (info.object) {
+      setToggles({ ...toggles, hoverInfo: true });
+      setHoverData({
+        name: info.object.name,
+        mmsi: info.object.mmsi,
+        lantBatt: info.object.last_BattLant,
+        position: [info.x, info.y],
+      });
+    } else {
+      setHoverData(null);
+      setToggles({ ...toggles, hoverInfo: false });
+    }
+  };
+
+  function filterAtonData(
+    atonData: AtonData[],
+    filterState: FilterState
+  ): AtonData[] {
+    return atonData.filter((aton) => {
+      const structureMatch = match(filterState.structure)
+        .with("All", () => true)
+        .otherwise((structure) => structure === aton.type);
+
+      const regionMatch = match(filterState.region)
+        .with("All", () => true)
+        .otherwise((region) => region === aton.region);
+
+      const conditionMatch = match(filterState.condition)
+        .with("All", () => true)
+        .with("Good", () => aton.healthStatus === 1)
+        .with("Not Good", () => aton.healthStatus === 0)
+        .otherwise(() => false);
+
+      return structureMatch && regionMatch && conditionMatch;
+    });
+  }
+
+  // VIEW
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-900 text-white flex flex-col rounded-md">
-      <div className="mb-4 flex justify-between items-center">
-        {toggles.tableModule === true ? null : (
-          <>
-            <h1 className="text-xl ">AtoN</h1>
-            <div className="flex gap-6 mr-6">
-              {/* <TableRefreshBtn onClick={() => handleTableDataRefresh()}/> */}
-              <TableBtn onClick={() => toggleTableModule()} />
-              <MapStyleDropdown
-                mapStyle={mapStyle}
-                handleMapStyleChange={handleMapStyleChange}
-              />
-            </div>
-          </>
-        )}
-        {toggles.tableModule && <TableOptions />}
-      </div>
-      <div className="flex-1 relative flex justify-center items-center">
-        <DeckGL
-          initialViewState={mapViewState}
-          // onViewStateChange={({ viewState }) => setMapViewState(viewState)}
-          controller={true}
-          layers={layers}
-        >
-          <Map
-            ref={mapRef}
-            mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-            mapStyle={mapStyle}
-            style={{
-              zIndex: 0,
-            }}
+      <MapHeader mapStyle={mapStyle} setMapStyle={setMapStyle} />
+      <div className="flex-1 relative">
+        {isDataLoaded ? (
+          <DeckGL
+            initialViewState={viewState}
+            controller={true}
+            layers={layers}
           >
-            <NavigationControl
-              visualizePitch
-              position="bottom-right"
-              showCompass
-              showZoom
-            />
-          </Map>
-        </DeckGL>
-        {/* Microinteractive Components */}
-        {hoverInfoData && <HoverInfo {...hoverInfoData} />}
-        {clickInfo && (
-          <div className="absolute top-2 right-2 bg-gray-800 text-white p-4 rounded-md shadow-lg ">
-            <h2 className="text-lg font-bold">{clickInfo.name}</h2>
-            <p>MMSI: {clickInfo.mmsi}</p>
-            <p>Type: {clickInfo.type}</p>
-            <p>Latitude: {clickInfo?.position[0].toFixed(6)}</p>
-            <p>Longitude: {clickInfo?.position[1].toFixed(6)}</p>
-          </div>
+            <Map
+              ref={mapRef}
+              mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+              mapStyle={mapStyle}
+              style={{ width: "100%", height: "100%" }}
+            >
+              {/* <NavigationControl visualizePitch position="bottom-right" /> */}
+            </Map>
+          </DeckGL>
+        ) : (
+          <div>Loading AtoN data...</div>
         )}
-        ``
-        {toggles.radialMenu && <RadialMenu {...radialMenuData!} />}
-        {toggles.hoverInfo && <HoverInfo {...hoverInfoData!} />}
+        {toggles.hoverInfo && hoverData && <HoverInfo {...hoverData} />}
+        {clickInfo && <ClickInfo {...clickInfo} />}
+        {toggles.radialMenu && radialMenuData && (
+          <RadialMenu {...radialMenuData} />
+        )}
         {toggles.atonSummaryPanel && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummaryPanel />

@@ -6,7 +6,42 @@
   - Constants are named in SNAKE_CASE
 */
 
-export const AIS_MESSAGE_TYPES = {
+export const AMBIENT = {
+  0: 'No LDR',
+  1: 'Dark',
+  2: 'Dim',
+  3: 'Bright',
+} as const;
+
+export const LANTT = {
+  0: 'No Monitoring',
+  1: 'Primary',
+  2: 'Secondary',
+  3: 'Emergency',
+} as const;
+
+export const LANTT_BATT = {
+  0: 'Unknown',
+  1: 'Bad',
+  2: 'Low',
+  3: 'Good',
+} as const;
+
+export const RACON = {
+  0: 'Not Installed',
+  1: 'Not Monitor',
+  2: 'Operating',
+  3: 'Error',
+} as const;
+
+export const LIGHT = {
+  0: 'Not Installed',
+  1: 'Light ON',
+  2: 'Light OFF',
+  3: 'Error',
+} as const;
+
+export const AIS_MSG_TYPE = {
   1: 'Class A Position Report',
   2: 'Class A Position Report with Extended Detailed Position',
   3: 'Class A Position Report with Special Position',
@@ -69,7 +104,7 @@ export const AID_TYPE = {
   30: 'Special Mark'
 } as const
 
-export const POSITION_ACCURACY = {
+export const POS_ACCURACY = {
   0: 'an unaugmented GNSS fix with accuracy > 10m',
   1: 'a DGPS-quality fix with an accuracy of < 10ms',
   // TODO: I think there's still more ... 
@@ -100,4 +135,18 @@ export const MAP_STYLES = {
   outdoors: "mapbox://styles/mapbox/outdoors-v11",
   light: "mapbox://styles/mapbox/light-v10",
   dark: "mapbox://styles/mapbox/dark-v10",
+} as const;
+
+export const ATON_TYPE_ICONS = {
+  Buoy: "/assets/icon/buoy-icon.png",
+  Lighthouse: "/assets/icon/lighthouse-icon.png",
+  Beacon: "/assets/icon/beacon-icon.png",
+} as const;
+
+export const INITIAL_VIEW_STATE = {
+  longitude: 12.452,
+  latitude: 41.902,
+  zoom: 13,
+  pitch: 0,
+  bearing: 0,
 } as const;

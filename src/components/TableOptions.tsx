@@ -4,6 +4,7 @@ import CsvButton from "./CsvButton";
 // import TextInput from "./TextInput";
 import CloseButton from "./CloseButton";
 import { useAtonStore } from "../store/store";
+import { GridToolbar } from "@mui/x-data-grid";
 
 const TableOptions = () => {
   const { toggles, setToggles } = useAtonStore();
@@ -26,16 +27,15 @@ const TableOptions = () => {
       <BackspaceIcon className="w-10 h-10" />
       <CsvButton /> */}
       <div className="flex gap-6 mr-4">
-      <CloseButton
-        
-        onClick={() =>
-          setToggles({
-            ...toggles,
-            tableModule: false,
-            tableOptions: false,
-            atonSummaryToggleBtn: true,
-          })
-        }
+        <CloseButton
+          onClick={() =>
+            setToggles({
+              ...toggles,
+              tableModule: false,
+              tableOptions: false,
+              atonSummaryToggleBtn: true,
+            })
+          }
         />
       </div>
     </>

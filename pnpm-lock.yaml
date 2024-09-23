@@ -20,6 +20,9 @@ importers:
       '@deck.gl/layers':
         specifier: ^9.0.26
         version: 9.0.27(@deck.gl/core@9.0.27)(@loaders.gl/core@4.2.2)(@luma.gl/core@9.0.23)(@luma.gl/engine@9.0.23(@luma.gl/core@9.0.23))
+      '@deck.gl/mapbox':
+        specifier: ^9.0.29
+        version: 9.0.29(@deck.gl/core@9.0.27)(@luma.gl/core@9.0.23)
       '@deck.gl/react':
         specifier: ^9.0.27
         version: 9.0.27(@deck.gl/core@9.0.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -29,6 +32,12 @@ importers:
       '@emotion/styled':
         specifier: ^11.13.0
         version: 11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
+      '@fortawesome/free-solid-svg-icons':
+        specifier: ^6.6.0
+        version: 6.6.0
+      '@fortawesome/react-fontawesome':
+        specifier: ^0.2.2
+        version: 0.2.2(@fortawesome/fontawesome-svg-core@6.6.0)(react@18.3.1)
       '@headlessui/react':
         specifier: ^2.1.2
         version: 2.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -44,6 +53,9 @@ importers:
       '@mui/x-data-grid':
         specifier: ^7.15.0
         version: 7.15.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@mui/material@6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mui/x-date-pickers':
+        specifier: ^7.17.0
+        version: 7.17.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@mui/material@6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(date-fns@4.1.0)(dayjs@1.11.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@nextui-org/react':
         specifier: ^2.4.6
         version: 2.4.6(@types/react@18.3.3)(framer-motion@11.3.31(@emotion/is-prop-valid@1.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.9)
@@ -58,19 +70,25 @@ importers:
         version: 3.4.0
       antd:
         specifier: ^5.20.4
-        version: 5.20.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 5.20.4(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       axios:
         specifier: ^1.7.7
         version: 1.7.7
       chart.js:
         specifier: ^4.4.3
         version: 4.4.3
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       express:
         specifier: ^4.19.2
         version: 4.19.2
+      fontawesome:
+        specifier: ^5.6.3
+        version: 5.6.3
       lucide-react:
         specifier: ^0.438.0
         version: 0.438.0(react@18.3.1)
@@ -86,6 +104,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      react-fontawesome:
+        specifier: ^1.7.1
+        version: 1.7.1(react@18.3.1)
       react-icons:
         specifier: ^5.3.0
         version: 5.3.0(react@18.3.1)
@@ -95,6 +116,9 @@ importers:
       react-tabulator:
         specifier: ^0.21.0
         version: 0.21.0(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      ts-pattern:
+        specifier: ^5.3.1
+        version: 5.3.1
       zustand:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.3)(react@18.3.1)
@@ -876,6 +900,12 @@ packages:
       '@luma.gl/core': ^9.0.0
       '@luma.gl/engine': ^9.0.0
 
+  '@deck.gl/mapbox@9.0.29':
+    resolution: {integrity: sha512-3zmixpGMf7BxqgU3cE5h3jYe6l1KR4edSNYdauRh+m0fUIQ4ZciD/2QOLBfOf6YJY7FVeC2mEgKo2+XTmiAl1Q==}
+    peerDependencies:
+      '@deck.gl/core': ^9.0.0
+      '@luma.gl/core': ~9.0.0
+
   '@deck.gl/react@9.0.27':
     resolution: {integrity: sha512-CdbPZJECoNF/MlS2UEBzUFRik+2cUjBzfFFgDZjUZtf7lg1DKauEzRsIFnIe0qrbHo7Kb9byO1S5noiwe0q79A==}
     peerDependencies:
@@ -1135,6 +1165,24 @@ packages:
   '@formatjs/intl-localematcher@0.5.4':
     resolution: {integrity: sha512-zTwEpWOzZ2CiKcB93BLngUX59hQkuZjT2+SAQEscSm52peDW/getsawMcWF1rGRpMCX6D7nSJA3CzJ8gn13N/g==}
 
+  '@fortawesome/fontawesome-common-types@6.6.0':
+    resolution: {integrity: sha512-xyX0X9mc0kyz9plIyryrRbl7ngsA9jz77mCZJsUkLl+ZKs0KWObgaEBoSgQiYWAsSmjz/yjl0F++Got0Mdp4Rw==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/fontawesome-svg-core@6.6.0':
+    resolution: {integrity: sha512-KHwPkCk6oRT4HADE7smhfsKudt9N/9lm6EJ5BVg0tD1yPA5hht837fB87F8pn15D8JfTqQOjhKTktwmLMiD7Kg==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/free-solid-svg-icons@6.6.0':
+    resolution: {integrity: sha512-IYv/2skhEDFc2WGUcqvFJkeK39Q+HyPf5GHUrT/l2pKbtgEIv1al1TKd6qStR5OIwQdN1GZP54ci3y4mroJWjA==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/react-fontawesome@0.2.2':
+    resolution: {integrity: sha512-EnkrprPNqI6SXJl//m29hpaNzOp1bruISWaOiRtkMi/xSvHJlzc2j2JAYS7egxt/EbjSNV/k6Xy0AQI6vB2+1g==}
+    peerDependencies:
+      '@fortawesome/fontawesome-svg-core': ~1 || ~6
+      react: '>=16.3'
+
   '@headlessui/react@2.1.2':
     resolution: {integrity: sha512-Kb3hgk9gRNRcTZktBrKdHhF3xFhYkca1Rk6e1/im2ENf83dgN54orMW0uSKTXFnUpZOUFZ+wcY05LlipwgZIFQ==}
     engines: {node: '>=10'}
@@ -1301,6 +1349,9 @@ packages:
 
   '@luma.gl/constants@9.0.23':
     resolution: {integrity: sha512-s/ZhIyEQMisXYj8HCMywcSyem5b8XbVzGPeiftG0k52Nm8+I6Z7cSrF8B88B7GoHVJylwaKyPMXGSXy19STz4w==}
+
+  '@luma.gl/constants@9.0.27':
+    resolution: {integrity: sha512-NBkMim3u0xt4UDe4e69L6E/pq5XNxfX60GrggJDzfilVRfIbx5XwKhBXTyNjjtNEk4oc6uYLHWd/05jGRHcfLg==}
 
   '@luma.gl/core@9.0.23':
     resolution: {integrity: sha512-7ZU5lKaIfpkqIIL/fF4vLqfeAo1VyFCdHz9MdcKmKFKig7QE6B97BygiVUOwRgOCgrxIpdMZS16JeKIiZFVdwQ==}
@@ -1487,6 +1538,43 @@ packages:
       '@emotion/styled':
         optional: true
 
+  '@mui/x-date-pickers@7.17.0':
+    resolution: {integrity: sha512-3mIw1uOZU/yKweZsVAo9QnwVFzLHqXgXG1TbGbDJ4AU6FhN2TCUlR9tzKHSlYdAHZ0bEWDS1/bgeGsQC7skXMA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      '@emotion/react': ^11.9.0
+      '@emotion/styled': ^11.8.1
+      '@mui/material': ^5.15.14 || ^6.0.0
+      '@mui/system': ^5.15.14 || ^6.0.0
+      date-fns: ^2.25.0 || ^3.2.0
+      date-fns-jalali: ^2.13.0-0 || ^3.2.0-0
+      dayjs: ^1.10.7
+      luxon: ^3.0.2
+      moment: ^2.29.4
+      moment-hijri: ^2.1.2
+      moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0
+      react: ^17.0.0 || ^18.0.0
+      react-dom: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/react':
+        optional: true
+      '@emotion/styled':
+        optional: true
+      date-fns:
+        optional: true
+      date-fns-jalali:
+        optional: true
+      dayjs:
+        optional: true
+      luxon:
+        optional: true
+      moment:
+        optional: true
+      moment-hijri:
+        optional: true
+      moment-jalaali:
+        optional: true
+
   '@mui/x-internals@7.15.0':
     resolution: {integrity: sha512-Q/IZvZhHpe64Ost1mRbdp6ML8KQQBprwwgzqo6pZbrCaWMPB2gk2jcUwdCwnLsc+gutaEPVhZ8N7it8VZcHtbg==}
     engines: {node: '>=14.0.0'}
@@ -1495,6 +1583,12 @@ packages:
 
   '@mui/x-internals@7.16.0':
     resolution: {integrity: sha512-ijer5XYmWlJqWaTmF6TGH1odG7EAupv8iDWYmDm2yVR9IQ+L2nQSuhiFClI+wmGx40KS2VKOlzDMPpF0t7/HCg==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+
+  '@mui/x-internals@7.17.0':
+    resolution: {integrity: sha512-FLlAGSJl/vsuaA/8hPGazXFppyzIzxApJJDZMoTS0geUmHd0hyooISV2ltllLmrZ/DGtHhI08m8GGnHL6/vVeg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0
@@ -3533,6 +3627,9 @@ packages:
     resolution: {integrity: sha512-VqKjzBLejbSMT4IgbmVgDjpkYrNWUYJnbCGo874u7MMKIWsILRX+OpX/gTk8MqjpT1A/c6HY2dCA77ZN0lkQ2Q==}
     engines: {node: '>=12'}
 
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
@@ -3840,6 +3937,9 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+
+  fontawesome@5.6.3:
+    resolution: {integrity: sha512-FCc+CawwsJWWprVEg9X14yI7zI+l9YVAyhzgu70qwGeDn0tLLDH/dVfqgij72g4BBGgLGfK2qnvFGAmYUkhaWg==}
 
   foreground-child@3.3.0:
     resolution: {integrity: sha512-Ld2g8rrAyMYFXBhEqMz8ZAHBi4J4uS1i/CxGMDnjyFWddMXLVcDp051DZfu+t7+ab7Wv6SMqpWmyFIj5UbfFvg==}
@@ -5009,6 +5109,12 @@ packages:
       '@types/react':
         optional: true
 
+  react-fontawesome@1.7.1:
+    resolution: {integrity: sha512-kottReWW1I9Uupub6A5YX4VK7qfpFnEjAcm5zB4Aepst7iofONT27GJYdTcRsj7q5uQu9PXBL7GsxAFKANNUVg==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      react: '>=0.12.0'
+
   react-hook-form@7.53.0:
     resolution: {integrity: sha512-M1n3HhqCww6S2hxLxciEXy2oISPnAzxY7gvwVPrtlczTM/1dDadXgUxDpHMrMTblDOcm/AXtXxHwZ3jpg1mqKQ==}
     engines: {node: '>=18.0.0'}
@@ -5449,6 +5555,9 @@ packages:
 
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
+
+  ts-pattern@5.3.1:
+    resolution: {integrity: sha512-1RUMKa8jYQdNfmnK4jyzBK3/PS/tnjcZ1CW0v1vWDeYe5RBklc/nquw03MEoB66hVBm4BnlCfmOqDVxHyT1DpA==}
 
   tslib@2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
@@ -6704,6 +6813,13 @@ snapshots:
       '@math.gl/web-mercator': 4.0.1
       earcut: 2.2.4
 
+  '@deck.gl/mapbox@9.0.29(@deck.gl/core@9.0.27)(@luma.gl/core@9.0.23)':
+    dependencies:
+      '@deck.gl/core': 9.0.27
+      '@luma.gl/constants': 9.0.27
+      '@luma.gl/core': 9.0.23
+      '@math.gl/web-mercator': 4.0.1
+
   '@deck.gl/react@9.0.27(@deck.gl/core@9.0.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@deck.gl/core': 9.0.27
@@ -6937,6 +7053,22 @@ snapshots:
   '@formatjs/intl-localematcher@0.5.4':
     dependencies:
       tslib: 2.6.3
+
+  '@fortawesome/fontawesome-common-types@6.6.0': {}
+
+  '@fortawesome/fontawesome-svg-core@6.6.0':
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.6.0
+
+  '@fortawesome/free-solid-svg-icons@6.6.0':
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.6.0
+
+  '@fortawesome/react-fontawesome@0.2.2(@fortawesome/fontawesome-svg-core@6.6.0)(react@18.3.1)':
+    dependencies:
+      '@fortawesome/fontawesome-svg-core': 6.6.0
+      prop-types: 15.8.1
+      react: 18.3.1
 
   '@headlessui/react@2.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -7214,6 +7346,8 @@ snapshots:
 
   '@luma.gl/constants@9.0.23': {}
 
+  '@luma.gl/constants@9.0.27': {}
+
   '@luma.gl/core@9.0.23':
     dependencies:
       '@math.gl/types': 4.0.1
@@ -7425,6 +7559,27 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
+  '@mui/x-date-pickers@7.17.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@mui/material@6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(date-fns@4.1.0)(dayjs@1.11.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.25.6
+      '@mui/material': 6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mui/system': 6.0.1(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
+      '@mui/utils': 5.16.6(@types/react@18.3.3)(react@18.3.1)
+      '@mui/x-internals': 7.17.0(@types/react@18.3.3)(react@18.3.1)
+      '@types/react-transition-group': 4.4.11
+      clsx: 2.1.1
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    optionalDependencies:
+      '@emotion/react': 11.13.3(@types/react@18.3.3)(react@18.3.1)
+      '@emotion/styled': 11.13.0(@emotion/react@11.13.3(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
+      date-fns: 4.1.0
+      dayjs: 1.11.13
+    transitivePeerDependencies:
+      - '@types/react'
+
   '@mui/x-internals@7.15.0(@types/react@18.3.3)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.25.6
@@ -7434,6 +7589,14 @@ snapshots:
       - '@types/react'
 
   '@mui/x-internals@7.16.0(@types/react@18.3.3)(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.25.6
+      '@mui/utils': 5.16.6(@types/react@18.3.3)(react@18.3.1)
+      react: 18.3.1
+    transitivePeerDependencies:
+      - '@types/react'
+
+  '@mui/x-internals@7.17.0(@types/react@18.3.3)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.25.6
       '@mui/utils': 5.16.6(@types/react@18.3.3)(react@18.3.1)
@@ -10063,7 +10226,7 @@ snapshots:
 
   ansi-styles@6.2.1: {}
 
-  antd@5.20.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  antd@5.20.4(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@ant-design/colors': 7.1.0
       '@ant-design/cssinjs': 1.21.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -10095,7 +10258,7 @@ snapshots:
       rc-motion: 2.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-notification: 5.6.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-pagination: 4.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      rc-picker: 4.6.14(dayjs@1.11.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-picker: 4.6.14(date-fns@4.1.0)(dayjs@1.11.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-progress: 4.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-rate: 2.13.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-resize-observer: 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -10495,6 +10658,8 @@ snapshots:
     dependencies:
       d3-array: 3.2.4
 
+  date-fns@4.1.0: {}
+
   dayjs@1.11.13: {}
 
   debug@2.6.9:
@@ -10844,6 +11009,8 @@ snapshots:
       tslib: 2.6.3
 
   follow-redirects@1.15.6: {}
+
+  fontawesome@5.6.3: {}
 
   foreground-child@3.3.0:
     dependencies:
@@ -12011,7 +12178,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  rc-picker@4.6.14(dayjs@1.11.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  rc-picker@4.6.14(date-fns@4.1.0)(dayjs@1.11.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.25.6
       '@rc-component/trigger': 2.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -12022,6 +12189,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     optionalDependencies:
+      date-fns: 4.1.0
       dayjs: 1.11.13
 
   rc-progress@4.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
@@ -12208,6 +12376,11 @@ snapshots:
       use-sidecar: 1.1.2(@types/react@18.3.3)(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.3
+
+  react-fontawesome@1.7.1(react@18.3.1):
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.3.1
 
   react-hook-form@7.53.0(react@18.3.1):
     dependencies:
@@ -12663,6 +12836,8 @@ snapshots:
       typescript: 5.5.4
 
   ts-interface-checker@0.1.13: {}
+
+  ts-pattern@5.3.1: {}
 
   tslib@2.4.0: {}
 

@@ -1,6 +1,5 @@
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import { X } from 'lucide-react';
 import { useAtonStore } from '../store/store'; // Make sure to replace with the correct path
 import { IoMdClose } from 'react-icons/io';
 import { useState } from 'react';
@@ -94,7 +93,7 @@ const AtonMessageCountOverview = () => {
               onClick={() => {
                 setToggles({
                   ...toggles,
-                  messageCountOverview: false,
+                  atonMessageCountOverview: false,
                  // Added this line
                 });
                 setIsVisible(false); // Update visibility state
