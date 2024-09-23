@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef } from "react-map-gl";
-import { ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+import { ScatterplotLayer } from '@deck.gl/layers';
 import { LayersList, MapViewState, Color } from "@deck.gl/core";
 import { useAtonStore } from "../store/store";
-import { AtonType, AtonList } from "../declarations/types/types";
+import { AtonType } from "../declarations/types/types";
 import { AtonSummaryItem } from "../api/aton-api";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import 'mapbox-gl/dist/mapbox-gl.css';
-import circle from '../assets/icon/circle.svg';
-import square from '../assets/icon/Square.svg';
-import beacon from '../assets/icon/beacon.svg';
+// import circle from '../assets/icon/circle.svg';
+// import square from '../assets/icon/Square.svg';
+// import beacon from '../assets/icon/beacon.svg';
 
 // Import components
 import Legend from "../components/Legend";
@@ -44,11 +44,11 @@ const INITIAL_VIEW_STATE: MapViewState = {
 };
 
 // Define a constant for AtoN type icons
-const ATON_TYPE_ICONS: { [key: string]: string } = {
-  Buoy: circle,
-  Lighthouse: square,
-  Beacon: beacon,
-};
+// const ATON_TYPE_ICONS: { [key: string]: string } = {
+//   Buoy: circle,
+//   Lighthouse: square,
+//   Beacon: beacon,
+// };
 
 // Add this constant at the top of the file, after other imports
 const ATON_COLORS: { [key: string]: Color } = {
@@ -63,7 +63,7 @@ export default function MapModule() {
   const mapRef = useRef<MapRef | null>(null);
 
   // State
-  const [mapAton, setMapAton] = useState<AtonList[]>([]);
+  // const [mapAton, setMapAton] = useState<AtonList[]>([]);
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
@@ -102,7 +102,7 @@ export default function MapModule() {
   }, [mapRef, toggles, setToggles]);
 
   // Memoized values
-  const filteredAtonData = useMemo(() => filterAtonData(atonSummary, filterState), [atonSummary, filterState]);
+  // const filteredAtonData = useMemo(() => filterAtonData(atonSummary, filterState), [atonSummary, filterState]);
 
   // Event handlers
   const handleRightClick = (event: MouseEvent) => {

@@ -98,7 +98,7 @@ export default function AtonSummaryPanel() {
     setFilterState({ condition: newCondition });
   }
 
-  const renderExpandableSection = (title: string, content: React.ReactNode) => (
+  const ExpandableSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <div>
       <button
         className="w-full flex justify-between items-center py-2"
@@ -111,7 +111,7 @@ export default function AtonSummaryPanel() {
       </button>
       {expandedSection === title && (
         <div id={`${title.toLowerCase()}-content`} className="mt-2 space-y-2">
-          {content}
+          {children}
         </div>
       )}
     </div>
@@ -137,8 +137,8 @@ export default function AtonSummaryPanel() {
       </div>
 
       <div className="space-y-4">
-        {renderExpandableSection('Structure', (
-          <div className="space-y-2">
+        <ExpandableSection title='Structure'>
+        <div className="space-y-2">
             {uniqueStructures.map((item) => (
               <div key={item} className="flex items-center space-x-2">
                 <input 
@@ -153,9 +153,12 @@ export default function AtonSummaryPanel() {
               </div>
             ))}
           </div>
-        ))}
+        
 
-        {renderExpandableSection('Condition', (
+        </ExpandableSection>
+          
+
+        <ExpandableSection title='Condition'>
           <div className="space-y-2">
             {['All', 'Good', 'Not Good'].map((item) => (
               <div key={item} className="flex items-center space-x-2">
@@ -171,9 +174,9 @@ export default function AtonSummaryPanel() {
               </div>
             ))}
           </div>
-        ))}
+        </ExpandableSection>
 
-        {renderExpandableSection('Region', (
+        <ExpandableSection title='Region'>
           <div className="space-y-2">
             {uniqueRegions.map((item) => (
               <div key={item} className="flex items-center space-x-2">
@@ -189,7 +192,7 @@ export default function AtonSummaryPanel() {
               </div>
             ))}
           </div>
-        ))}
+        </ExpandableSection>
 
         <div className="flex justify-between items-center">
           <span className="font-medium">Total Sites</span>
