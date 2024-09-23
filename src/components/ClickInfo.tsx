@@ -16,8 +16,8 @@ export default function ClickInfo(props: ClickInfoProps) {
       <h2 className="text-lg font-bold">{props?.name}</h2>
       <p>MMSI: {props?.mmsi}</p>
       <p>Type: {props?.type}</p>
-      <p>Latitude: {props?.position?.lat.toFixed(2)}</p>
-      <p>Longitude: {props?.position?.lng.toFixed(2)}</p>
+      <p>Latitude: {props?.position?.lat?.toFixed(3)}</p>
+      <p>Longitude: {props?.position?.lng?.toFixed(3)}</p>
     </div>
   );
 }

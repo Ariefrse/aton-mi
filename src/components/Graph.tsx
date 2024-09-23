@@ -1,8 +1,8 @@
 import { LineChart } from "@mui/x-charts/LineChart";
 import { ChangeEvent, useEffect, useState } from "react";
 import { AtonData, Msg6 } from "../declarations/types/types";
-import { ATON_GRAPH_DATA } from "../mock/mock";
-import { fetchAtonData, fetchMsg6 } from "../api/aton-api";
+import { fetchMsg6 } from "../api/aton-api";
+import CloseButton from "./CloseButton";
 import { useAtonStore } from "../store/store";
 
 type GraphDataMap = {
@@ -25,6 +25,7 @@ type GraphProps = { atonData?: AtonData };
 type GraphType = keyof typeof graphDropdownItem;
 
 export default function Graph(props: GraphProps) {
+  const { toggles, setToggles } = useAtonStore();
   const [graphType, setGraphType] = useState<GraphType>("voltExt1");
   const [xAxisData, setXAxisData] = useState<string[]>([]);
   const [graphData, setGraphData] = useState<number[]>([]);
@@ -46,7 +47,7 @@ export default function Graph(props: GraphProps) {
           console.log("msg", atonData);
 
           // Check if data exists and has the expected properties
-          if (!msg6Data || !msg6Data.length || !msg6Data[0][graphType]) {
+          if (!msg6Data?.length || !msg6Data[0]?.[graphType]) {
             console.error("Missing or invalid data in API response");
             return;
           }
@@ -71,6 +72,10 @@ export default function Graph(props: GraphProps) {
 
   return (
     <div className="absolute bg-gray-900 rounded-md flex flex-col w-1/2 h-1/2">
+      <CloseButton
+        className="top-0 right-0 border-none m-1"
+        onClick={() => setToggles({ ...toggles, graph: false })}
+      />
       <div className="mb-4 z-50 ml-auto pt-4 pr-2">
         <label htmlFor="graphType" className="mr-2 text-white">
           Select Graph Type:

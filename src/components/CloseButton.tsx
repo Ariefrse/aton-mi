@@ -9,7 +9,7 @@ type CloseButtonProps = {
 const CloseButton: FC<CloseButtonProps> = ({ onClick, className }) => {
   return (
     <IoMdClose
-      className={`border-blue-400 mr-4 border-2 rounded-lg p-1 ${className}`}
+      className={`border-blue-400 border-2 rounded-lg p-1 ${className}`}
       fontSize={25}
       onClick={onClick}
     />

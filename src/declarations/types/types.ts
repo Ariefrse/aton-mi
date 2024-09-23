@@ -37,7 +37,7 @@ export type AtonData = {
   lastBattLant: number;
   ldrStatus: number;
   offPosStatus: number;
-  long: number;
+  lng: number;
   lat: number;
   name: string;
   mmsi: number;

@@ -67,12 +67,17 @@ export default function MapModule() {
     fetchData();
   }, []);
 
+  const filteredAtonData = useMemo(
+    () => filterAtonData(atonData, filterState),
+    [atonData, filterState]
+  );
+
   useEffect(() => {
     if (!atonData || atonData.length === 0) return;
     // const filteredData = memoisedFilteredAtonData;
     // console.log("Filtered Aton Data:", filteredData);
     // console.log("Filtered Aton Data Length:", filteredData.length);
-    const layers = createLayers(memoisedFilteredAtonData);
+    const layers = createLayers(filteredAtonData);
     // console.log("Layers:", layers);
     setLayers(layers);
   }, [atonData, filterState, toggles, setToggles]);
@@ -85,11 +90,6 @@ export default function MapModule() {
     }
   }, [mapRef, toggles, setToggles]);
 
-  const memoisedFilteredAtonData = useMemo(
-    () => filterAtonData(atonData, filterState),
-    [atonData, filterState]
-  );
-
   // Event handlers
   const handleRightClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -99,15 +99,15 @@ export default function MapModule() {
   };
 
   const createLayers = (data: AtonData[]) => {
-    const scatterplotLayer = new ScatterplotLayer({
+    const scatterplotLayer = new ScatterplotLayer<AtonData>({
       id: "aton-outline-layer",
       data: data,
-      getPosition: (d: AtonData) => [Number(d.long), Number(d.lat)],
+      getPosition: (d) => [d.lng, d.lat],
       getFillColor: [0, 0, 0, 0], // Transparent fill
-      getLineColor: (d: AtonData): Color => {
+      getLineColor: (d): Color => {
         return d.healthStatus === 1 ? ATON_COLORS.GOOD : ATON_COLORS.NOT_GOOD;
       },
-      getRadius: (d: AtonData) => {
+      getRadius: (d) => {
         switch (d.type) {
           case "Buoy":
             return 15;
@@ -135,37 +135,39 @@ export default function MapModule() {
     return [scatterplotLayer];
   };
 
-  const handleIconClick = (info: PickingInfo) => {
+  const handleIconClick = (info: PickingInfo<AtonData>) => {
     if (info.object) {
+      const { mmsi, name, type, lng, lat } = info.object;
       setToggles({ ...toggles, radialMenu: true });
       setRadialMenuData({
-        mmsi: info.object.mmsi,
+        mmsi: mmsi,
         position: [info.x, info.y],
       });
       setClickInfo({
-        name: info.object.name,
-        mmsi: info.object.mmsi,
-        type: info.object.type,
+        name: name,
+        mmsi: mmsi,
+        type: type,
         position: {
-          lng: Number(info.object.longitude),
-          lat: Number(info.object.latitude),
+          lng: lng,
+          lat: lat,
         },
       });
-      setSelectedAton(atonData.find((aton) => aton.mmsi === info.object.mmsi));
+      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi));
     } else {
       setRadialMenuData(null);
       setToggles({ ...toggles, radialMenu: false });
     }
   };
 
-  const handleIconHover = (info: PickingInfo) => {
+  const handleIconHover = (info: PickingInfo<AtonData>) => {
     if (info.object) {
+      const { mmsi, name, lastBattLant } = info.object;
       setToggles({ ...toggles, hoverInfo: true });
-      setSelectedAton(atonData.find((aton) => aton.mmsi === info.object.mmsi));
+      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi));
       setHoverData({
-        name: info.object.name,
-        mmsi: info.object.mmsi,
-        lantBatt: info.object.last_BattLant,
+        name: name,
+        mmsi: mmsi,
+        lantBatt: lastBattLant,
         position: [info.x, info.y],
       });
     } else {

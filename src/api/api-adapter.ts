@@ -24,7 +24,7 @@ export function transformAtonPanelData(data: AtonSummaryResDto): AtonData {
     lastBattLant: data.last_BattLant,
     ldrStatus: data.LDR_OKNG,
     offPosStatus: data.off_pos_OKNG,
-    long: data.longitude,
+    lng: data.longitude,
     lat: data.latitude,
     name: data.name,
     mmsi: data.mmsi,
