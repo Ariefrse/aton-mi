@@ -5,7 +5,7 @@ import Map, { MapRef } from "react-map-gl";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import { LayersList, Color } from "@deck.gl/core";
 import { useAtonStore } from "../store/store";
-import { AtonData } from "../declarations/types/types";
+import { AtonData, AtonType } from "../declarations/types/types";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import "mapbox-gl/dist/mapbox-gl.css";
 import circle from "../assets/icon/circle.svg";
@@ -40,12 +40,6 @@ const ATON_COLORS: { [key: string]: Color } = {
   GOOD: [0, 255, 0, 255], // Green
   NOT_GOOD: [255, 0, 0, 255], // Red
   OUTLINE: [255, 255, 255, 255], // White for the outline
-};
-
-const ATON_TYPE_ICONS: { [key in AtonType]: string } = {
-  Buoy: "icon/Rectangle1.svg",
-  Lighthouse: "icon/Rectangle2.svg",
-  Beacon: "icon/Ellipse.svg",
 };
 
 export default function MapModule() {
@@ -189,11 +183,11 @@ export default function MapModule() {
     return atonData.filter((aton) => {
       const structureMatch = match(filterState.structure)
         .with("All", () => true)
-        .otherwise((structure) => structure === aton.type);
+        .otherwise((structure: AtonType) => structure === aton.type);
 
       const regionMatch = match(filterState.region)
         .with("All", () => true)
-        .otherwise((region) => region === aton.region);
+        .otherwise((region: string) => region === aton.region);
 
       const conditionMatch = match(filterState.condition)
         .with("All", () => true)

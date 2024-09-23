@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useAtonStore } from "../store/store";
 import { fetchAtonData } from "../api/aton-api";
+import { CloseButton } from "@headlessui/react";
 
 export default function AtonSummaryPanel() {
   const {

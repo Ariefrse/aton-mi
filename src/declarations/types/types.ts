@@ -27,7 +27,7 @@ export type pkgType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
 export type msgType = keyof typeof AIS_MSG_TYPE
 
 export type AtonData = {
-  type: string;
+  type: AtonType;
   region: string;
   healthStatus: number;
   msg21Count: number;

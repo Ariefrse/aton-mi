@@ -26,7 +26,7 @@ type ViewState = {
 }
 
 export type FilterState = {
-  structure: string;
+  structure: AtonType;
   region: string;
   condition: 'All' | 'Good' | 'Not Good';
 }

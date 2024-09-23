@@ -94,7 +94,7 @@ export async function fetchAton() {
   try {
     const res = await fetch('http://10.10.20.200:8020/aton/cloud/lists')
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const summary = await res.json() as Aton[]
+    const summary = await res.json() as AtonData[]
     console.log(summary.length)
     return summary
    
@@ -115,15 +115,3 @@ export async function fetchAton() {
 //     throw error;
 //   }
 // };
-
-export async function fetchAtonData(): Promise<AtonData[]> {
-  try {
-    const res = await fetch('http://10.10.20.200:8020/aton/cloud/lists');
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const data: AtonSummaryItemResDto[] = await res.json()
-    return data.map(transformAtonPanelData)
-  } catch (error) {
-    console.error('Failed to fetch AtoN summary:', error);
-    throw error;
-  }
-}
