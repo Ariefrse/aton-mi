@@ -1,9 +1,14 @@
 import { LineChart } from "@mui/x-charts/LineChart";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import { Msg6 } from "../declarations/types/types";
 import { fetchMsg6 } from "../api/aton-api";
 import CloseButton from "../components/CloseButton";
 import { useAtonStore } from "../store/store";
+import { AxisConfig, ChartsXAxisProps } from "@mui/x-charts";
+import { AxisScaleConfig } from "@mui/x-charts/internals";
+import { IoDownload } from "react-icons/io5";
 
 type GraphDataMap = {
   [key in keyof Pick<
@@ -46,9 +51,6 @@ export default function GraphModule() {
           const msg6Data = await fetchMsg6(selectedAton?.mmsi!);
           setSelectedAton({ ...selectedAton, msg6: msg6Data });
 
-          console.log("msg", selectedAton);
-
-          // Check if data exists and has the expected properties
           if (!msg6Data?.length || !msg6Data[0]?.[graphType]) {
             console.error("Missing or invalid data in API response");
             return;
@@ -68,69 +70,113 @@ export default function GraphModule() {
     fetchData();
   }, [graphType]);
 
-  const handleGraphTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setGraphType(event.target.value as GraphType);
-  };
+  const xAxisDataConfig: AxisConfig<
+    keyof AxisScaleConfig,
+    any,
+    ChartsXAxisProps
+  >[] = useMemo(
+    () => [
+      {
+        id: "x-axis-id",
+        data: xAxisData?.map((x) => new Date(x)),
+        label: "Timestamp",
+        scaleType: "time" as const,
+        valueFormatter: (date) =>
+          date.toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }),
+        tickLabelStyle: { fill: "black" },
+        labelStyle: { fill: "black" },
+      },
+    ],
+    [xAxisData]
+  );
 
-  const handleCloseGraph = () => {
-    setToggles({...toggles, graph: !toggles.graph });
-    setSelectedAton(null);
+  const seriesDataConfig = useMemo(
+    () => [
+      {
+        data: graphData,
+        label: `${selectedAton?.mmsi} - ${selectedAton?.name} (${graphDropdownItem[graphType]})`,
+        color: "blue",
+      },
+    ],
+    [graphData, graphType, selectedAton?.mmsi, selectedAton?.name]
+  );
+
+  const handleDownloadReport = async () => {
+    const pdf = new jsPDF();
+    let currentPage = 1;
+    let chartsPerPage = 2; // Number of charts to include per page
+
+    for (const [key, label] of Object.entries(graphDropdownItem)) {
+      setGraphType(key as GraphType);
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const chartElement = document.querySelector(".chart-container");
+
+      if (chartElement) {
+        const canvas = await html2canvas(chartElement as HTMLElement);
+        const imgData = canvas.toDataURL("image/png");
+
+        // Check if a new page is needed based on current page and charts per page
+        if (currentPage > chartsPerPage) {
+          pdf.addPage();
+          currentPage = 1;
+        }
+
+        const yPosition = (currentPage - 1) * (100 + 20); // Adjust based on your chart and label height
+
+        pdf.text(label, 10, yPosition + 10);
+        pdf.addImage(imgData, "PNG", 10, yPosition + 20, 190, 100);
+
+        currentPage++;
+      }
+    }
+
+    pdf.save("chart-report.pdf");
   };
 
   return (
-    <div className="absolute bg-gray-900 rounded-md flex flex-col w-1/2 h-1/2">
-      <CloseButton
-        className="top-0 right-0 border-none m-1"
-        onClick={handleCloseGraph}
-      />
-      <div className="mb-4 z-50 ml-auto pt-4 pr-2">
-        <label htmlFor="graphType" className="mr-2 text-white">
-          Select Graph Type:
+    <div className="absolute transition-opacity bg-gray-900 rounded-md flex flex-col w-1/2 h-1/2">
+      <div className="flex w-full items-center gap-2 mb-4 z-50 ml-auto pt-2 pr-2">
+        <label htmlFor="graphType" className="mr-2 ml-4 text-white">
+          Graph Type:
         </label>
         <select
           id="graphType"
           value={graphType}
-          onChange={handleGraphTypeChange}
+          onChange={(e) => setGraphType(e.target.value as GraphType)}
           className="p-2 rounded bg-gray-700 text-white"
         >
-          {/* Dynamically create dropdown options */}
           {Object.entries(graphDropdownItem).map(([key, label]) => (
             <option key={key} value={key}>
               {label}
             </option>
           ))}
         </select>
+        <IoDownload className="text-white" onClick={handleDownloadReport} />
+        <div className="flex-1" />
+        <CloseButton
+          className="ml-auto m-1 hover:cursor-pointer border-none"
+          onClick={() => {
+            setToggles({ ...toggles, graph: !toggles.graph });
+            setSelectedAton(null);
+          }}
+        />
       </div>
       <LineChart
-        className="bg-gray-900 z-10"
-        xAxis={[
-          {
-            data: xAxisData?.map((x) => new Date(x)),
-            label: "Timestamp",
-            scaleType: "time",
-            valueFormatter: (date) =>
-              date.toLocaleDateString("fr-FR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              }),
-            tickLabelStyle: { fill: "white" },
-            labelStyle: { fill: "white" },
-          },
-        ]}
+        className="bg-white z-10 chart-container"
+        xAxis={xAxisDataConfig}
         yAxis={[
           {
-            tickLabelStyle: { fill: "white" },
-            labelStyle: { fill: "white" },
+            tickLabelStyle: { fill: "black" },
+            labelStyle: { fill: "black" },
           },
         ]}
-        series={[
-          {
-            data: graphData,
-            label: `${selectedAton?.mmsi} - ${selectedAton?.name} (${graphDropdownItem[graphType]})`,
-            color: "red",
-          },
-        ]}
+        series={seriesDataConfig}
       />
     </div>
   );
