@@ -9,7 +9,8 @@
   - All types from 3rd party libraries should be imported here prefixed with "T"
   - This is to ease refactoring of Types and imports
 */
-import  mapStyle  from "../../modules/MapModule";
+
+import mapStyle from "../../modules/MapModule";
 import { AIS_MSG_TYPE } from "../constants/constants";
 
 export type { Layer, LayersList } from "@deck.gl/core";
@@ -18,65 +19,84 @@ export type { HeatmapLayer, HexagonLayerProps } from '@deck.gl/aggregation-layer
 
 export type ShipTypeColorMap = { [key: number]: string; };
 
-export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse' | string; // Add any other types that might be in your data
+export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse';
 export type AtonStatus = 'Good' | 'Warning' | 'Error'
-export type PackageCh = 'A' | 'B'
+export type PkgCh = 'A' | 'B'
 export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
-export type PackageType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
-export type MessageType = keyof typeof AIS_MSG_TYPE
+export type pkgType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
+export type msgType = keyof typeof AIS_MSG_TYPE
+
+export type AtonData = {
+  type: string;
+  region: string;
+  healthStatus: number;
+  msg21Count: number;
+  msg6Count: number;
+  lastLight: number;
+  lastBattAton: number;
+  lastBattLant: number;
+  ldrStatus: number;
+  offPosStatus: number;
+  long: number;
+  lat: number;
+  name: string;
+  mmsi: number;
+  msg6?: Partial<Msg6>[]
+  msg21?: Partial<Msg21>[]
+};
 
 export type Msg6 = {
-  packageType: string;
-  packageID: number;
-  packageCh: string;
-  messageType: number;
-  messageTypeDesc: string;
+  pkgType: string;
+  pkgId: number;
+  pkgCh: string;
+  msgType: number;
+  msgTypeDesc: string;
   repeat: number;
   mmsi: number;
-  seqno: number;
-  dest_mmsi: number;
+  seqNo: number;
+  destMmsi: number;
   retransmit: number;
   dac: number;
   fid: number;
-  volt_int: number;
-  volt_ex1: number;
-  volt_ex2: number;
-  off_pos: number;
+  offPos: number;
+  voltInt: number;
+  voltExt1: number;
+  voltExt2: number;
   ambient: number;
   racon: number;
   light: number;
   health: number;
   beat: number;
-  alarm_active: number;
-  buoy_led_power: number;
-  buoy_low_vin: number;
-  buoy_photocell: number;
-  buoy_temp: number;
-  buoy_force_off: number;
-  buoy_islight: number;
-  buoy_errled_short: number;
-  buoy_errled_open: number;
-  buoy_errled_voltlow: number;
-  buoy_errled_vinlow: number;
-  buoy_errled_power: number;
-  buoy_adjmaxpower: number;
-  buoy_sensor_interru: number;
-  buoy_solarcharging: number;
+  alarmActive: number;
+  buoyLedPower: number;
+  buoyLowVin: number;
+  buoyPhotocell: number;
+  buoyTemp: number;
+  buoyForceOff: number;
+  buoyIsLight: number;
+  buoyErrLedShort: number;
+  buoyErrLedOpen: number;
+  buoyErrLedVoltLow: number;
+  buoyErrLedVinLow: number;
+  buoyErrLedPower: number;
+  buoyAdjMaxPower: number;
+  buoySensorInterru: number;
+  buoySolarCharging: number;
 };
 
 export type Msg21 = {
-  packageType: string;
-  packageCh: PackageCh;
-  messageType: number;
-  messageTypeDesc: string;
+  pkgType: string;
+  pkgCh: string;
+  msgType: number;
+  msgTypeDesc: string;
   repeat: number;
   mmsi: number;
   aidType: number;
   aidTypeDesc: string;
   aidName: string;
   positionAccuracy: number;
-  longitude: number;
-  latitude: number;
+  long: number;
+  lat: number;
   toBow: number;
   toStern: number;
   toPort: number;
@@ -91,21 +111,7 @@ export type Msg21 = {
   assigned: number;
 };
 
-export type AtonStore = {
-  last_BattAton: number;
-  last_BattLant: number;
-  latitude: number;
-  longitude: number;
-  meanBattAton: number;
-  mmsi: number;
-  name: string;
-  region: string;
-  ts: string;
-  msg6?: Partial<Msg6>[]
-  msg21?: Partial<Msg21>[]
-}
-
-export type AtonStatistics = {
+export type AtonTable = {
   ts: string;
   mmsi: number;
   minTemp: number;
@@ -124,38 +130,21 @@ export type AtonStatistics = {
   stddevBattLant: number;
   skewBattLant: number;
   kurtBattLant: number;
-  off_pos: number;
-  msg6: number;
-  rownum: number;
-  at_ts: string;
-  al_name: string;
-  al_mmsi: number;
-  al_region: string;
-  al_type: string;
-  lastseen: number;
-};
-
-export type AtonList = {
-  last_BattAton: number;
-  last_BattLant: number;
-  latitude: number;
-  longitude: number;
-  meanBattAton: number;
-  mmsi: number;
+  offPosition: number;
+  msg6Count: number;
+  rowNum: number;
+  atTs: string;
   name: string;
   region: string;
-  ts: string;
   type: AtonType;
-  health: number;
-  msg6?: Partial<Msg6>[];
-  msg21?: Partial<Msg21>[];
+  lastSeen: number;
 };
 
 export type UserSettings = {
   mapStyle: typeof mapStyle;
   mapViewState: {
-    latitude: number;
-    longitude: number;
+    lat: number;
+    long: number;
     zoom: number;
   }
   // TODO: To add table filter settings

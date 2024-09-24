@@ -1,71 +1,5 @@
 import { create } from "zustand";
-import { AtonStore, AtonStatus, AtonType, AtonStatistics } from "../declarations/types/types";
-import { GridFilterModel } from "@mui/x-data-grid";
-import { fetchAtonSummary, AtonSummaryItem } from '../api/aton-api'; // Add AtonSummaryItem to the import
-
-/** Popups/modals/nav tools to toggle on/off */
-type Toggles = {
-  radialMenu: boolean
-  hoverInfo: boolean
-  legend: boolean;
-  legendToggleBtn: boolean;
-  atonInfo: boolean;
-  atonSummaryToggleBtn: boolean;
-  atonSummaryPanel: boolean;
-  atonMessageCountOverview: boolean;
-  graph: boolean;
-  tableModule: boolean;
-  tableOptions: boolean;
-  tableToggelBtn: boolean;
-};
-
-type ViewState = {
-  longitude: number,
-  latitude: number,
-  zoom: number,
-  pitch: number,
-  bearing: number,
-}
-
-export type AtonFilterOptions = {
-  structure: AtonType
-  condition: AtonStatus | 'All'
-  regions: 'North' | 'South' | 'East' | 'West' | 'Borneo'
-  atonPropertyToFilter: 'No Message 21' | 'No Message 6' | 'Light Error' | 'Low Batt AtoN' | 'Low Batt Lantern' | 'Bad LDR' | 'Off Position'
-}
-
-type TableFilterOptions = GridFilterModel | null
-
-type AtonStoreState = {
-  atonData?: AtonStore[]
-  atonStatsData?: AtonStatistics[]
-  viewState?: ViewState
-
-  toggles: Toggles;
-  tableFilterOptions: TableFilterOptions;
-
-  setViewState: (data: ViewState) => void;
-  setAtonData: (data: AtonStore[]) => void;
-  setAtonStatsData: (data: AtonStatistics[]) => void;
-  setToggles: (modal: Toggles) => void;
-  setTableFilterOptions: (options: TableFilterOptions) => void;
-  atonSummary: AtonSummaryItem[];  // Updated type
-  fetchAtonSummary: () => Promise<void>;
-  filterState: {
-    selectedStructures: string[];
-    selectedRegions: string[];
-    condition: 'All' | 'Good' | 'Not Good';
-  };
-  uniqueStructures: string[];
-  uniqueRegions: string[];
-  setFilterState: (state: Partial<{
-    selectedStructures: string[];
-    selectedRegions: string[];
-    condition: 'All' | 'Good' | 'Not Good';
-  }>) => void;
-  selectedDate: Date | null;
-  setSelectedDate: (date: Date | null) => void;
-};
+import { AtonStoreState } from "../declarations/types/store-types";
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
   viewState: {
@@ -75,9 +9,6 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     pitch: 0,
     bearing: 0,
   },
-  atonData: [],
-  atonStatsData: [],
-  atonSummary: [],
   toggles: {
     radialMenu: false,
     hoverInfo: false,
@@ -98,29 +29,25 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   filterState: {
     selectedStructures: ['All'],
     selectedRegions: ['All'],
+    structure: 'All',
+    region: 'All',
     condition: 'All',
   },
   uniqueStructures: [],
   uniqueRegions: [],
+  atonData: [],
+  atonTablePreviewData: [],
+  atonSummaryData: [],
+
   setViewState: (data) => set({ viewState: data }),
   setAtonData: (data) => set({ atonData: data }),
-  setAtonStatsData: (data) => set({ atonStatsData: data }),
+  setAtonTableData: (data) => set({ atonTablePreviewData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableFilterOptions: (options) => set({ tableFilterOptions: options }),
   setFilterState: (newState) => set((state) => ({
     filterState: { ...state.filterState, ...newState },
   })),
-  fetchAtonSummary: async () => {
-    try {
-      const atonSummary = await fetchAtonSummary();
-      const uniqueStructures = ['All', ...Array.from(new Set(atonSummary.map(item => item.type)))];
-      const uniqueRegions = ['All', ...Array.from(new Set(atonSummary.map(item => item.region)))];
-      set({ atonSummary, uniqueStructures, uniqueRegions });
-    } catch (error) {
-      console.error('Failed to fetch AtoN summary:', error);
-    }
-  },
+  // setAtonSummaryData: (data) => set({ atonSummaryData: data }),
   selectedDate: null,
   setSelectedDate: (date) => set({ selectedDate: date }),
 }));
-

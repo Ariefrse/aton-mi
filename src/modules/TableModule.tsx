@@ -5,7 +5,7 @@ import {
   GridToolbar,
 } from "@mui/x-data-grid";
 import { useEffect } from "react";
-import { fetchAtonStats } from "../api/aton-api";
+import { fetchAtonTableData } from "../api/aton-api";
 import { useAtonStore } from "../store/store";
 import { Box } from "@mui/material";
 
@@ -64,28 +64,28 @@ const columns: GridColDef[] = [
   { field: "lastseen", headerName: "Last Seen", width: 200 },
 ];
 
-export default function DataTable() {
-  const { atonStatsData, setAtonStatsData } = useAtonStore();
+export default function TableModule() {
+  const { atonTablePreviewData: atonTableData, setAtonTableData } = useAtonStore();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const fetchAtonStatsData = await fetchAtonStats();
-        setAtonStatsData(fetchAtonStatsData!);
+        const data = await fetchAtonTableData();
+        setAtonTableData(data!);
       } catch (error) {
         console.error("Error fetching aton stats data :", error);
       }
     }
 
-    if (!atonStatsData || atonStatsData.length === 0) {
+    if (!atonTableData ||atonTableData.length === 0) {
       fetchData();
     }
-  }, [atonStatsData, setAtonStatsData]);
+  }, [atonTableData, setAtonTableData]);
 
   return (
     <div className="z-50 flex-grow h-[80vh]">
       <DataGrid
-        rows={atonStatsData}
+        rows={atonTableData}
         columns={columns}
         // pageSizeOptions={[20]}
         disableDensitySelector
