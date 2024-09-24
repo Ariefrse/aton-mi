@@ -13,9 +13,6 @@ import { useAtonStore } from "../store/store";
 import { AtonData } from "../declarations/types/types";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import "mapbox-gl/dist/mapbox-gl.css";
-import circle from "../assets/icon/circle.svg";
-import square from "../assets/icon/Square.svg";
-import beacon from "../assets/icon/beacon.svg";
 
 // Import components
 import Legend from "../components/Legend";
@@ -33,13 +30,6 @@ import { FilterState } from "../declarations/types/store-types";
 import { fetchAtonData } from "../api/aton-api";
 
 export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
-
-// Define a constant for AtoN type icons
-const ATON_TYPE_ICONS: { [key: string]: string } = {
-  Buoy: circle,
-  Lighthouse: square,
-  Beacon: beacon,
-};
 
 const ATON_COLORS: { [key: string]: Color } = {
   GOOD: [0, 255, 0, 255], // Green
@@ -72,7 +62,6 @@ export default function MapModule() {
         setAtonData(data);
         setIsDataLoaded(true);
       }
-      // console.log("Aton Summary Data:", atonData);
     };
 
     fetchData();
@@ -85,11 +74,7 @@ export default function MapModule() {
 
   useEffect(() => {
     if (!atonData || atonData.length === 0) return;
-    // const filteredData = memoisedFilteredAtonData;
-    // console.log("Filtered Aton Data:", filteredData);
-    // console.log("Filtered Aton Data Length:", filteredData.length);
     const layers = createLayers(filteredAtonData);
-    // console.log("Layers:", layers);
     setLayers(layers);
   }, [atonData, filterState, toggles, setToggles]);
 
