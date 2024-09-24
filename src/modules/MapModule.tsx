@@ -3,7 +3,12 @@ import { match } from "ts-pattern";
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef } from "react-map-gl";
 import { ScatterplotLayer } from "@deck.gl/layers";
-import { LayersList, Color, PickingInfo } from "@deck.gl/core";
+import {
+  LayersList,
+  Color,
+  PickingInfo,
+  ViewStateChangeParameters,
+} from "@deck.gl/core";
 import { useAtonStore } from "../store/store";
 import { AtonData } from "../declarations/types/types";
 import { MAP_STYLES } from "../declarations/constants/constants";
@@ -109,21 +114,15 @@ export default function MapModule() {
       id: "aton-outline-layer",
       data: data,
       getPosition: (d) => [d.lng, d.lat],
-      getFillColor: [0, 0, 0, 0], // Transparent fill
+      getFillColor: [0, 0, 0, 0],
       getLineColor: (d): Color => {
         return d.healthStatus === 1 ? ATON_COLORS.GOOD : ATON_COLORS.NOT_GOOD;
       },
       getRadius: (d) => {
-        switch (d.type) {
-          case "Buoy":
-            return 15;
-          case "Lighthouse":
-            return 17;
-          case "Beacon":
-            return 16;
-          default:
-            return 15;
-        }
+        if (d.type === "Buoy") return 15;
+        if (d.type === "Lighthouse") return 17;
+        if (d.type === "Beacon") return 16;
+        else return 15;
       },
       pickable: true,
       stroked: true,
@@ -205,27 +204,35 @@ export default function MapModule() {
     });
   }
 
+  const handleViewStateChange = (params: ViewStateChangeParameters) => {
+    const { isDragging, isZooming, isRotating } = params.interactionState;
+
+    if (isDragging || isZooming || isRotating) {
+      setToggles({ ...toggles, radialMenu: false });
+    }
+  };
+
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-900 text-white flex flex-col rounded-md">
       <MapHeader mapStyle={mapStyle} setMapStyle={setMapStyle} />
       <div className="flex items-center justify-center flex-1 relative">
-        {isDataLoaded ? (
-          <DeckGL
-            initialViewState={viewState}
-            controller={true}
-            layers={layers}
-          >
-            <Map
-              ref={mapRef}
-              mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-              mapStyle={mapStyle}
-              style={{ width: "100%", height: "100%" }}
-            >
-              {/* <NavigationControl visualizePitch position="bottom-right" /> */}
-            </Map>
-          </DeckGL>
-        ) : (
-          <div>Loading AtoN data...</div>
+        <DeckGL
+          initialViewState={viewState}
+          controller={true}
+          layers={layers}
+          onViewStateChange={handleViewStateChange}
+        >
+          <Map
+            ref={mapRef}
+            mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+            mapStyle={mapStyle}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </DeckGL>
+        {!isDataLoaded && (
+          <div className="absolute inset-0 flex justify-center items-center">
+            <div className="w-16 h-16 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
+          </div>
         )}
         {hoverData && <HoverInfo {...hoverData} />}
         {toggles.clickInfo && <ClickInfo {...clickInfo} />}

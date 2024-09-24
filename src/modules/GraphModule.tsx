@@ -1,6 +1,6 @@
 import { LineChart } from "@mui/x-charts/LineChart";
 import { ChangeEvent, useEffect, useState } from "react";
-import { AtonData, Msg6 } from "../declarations/types/types";
+import { Msg6 } from "../declarations/types/types";
 import { fetchMsg6 } from "../api/aton-api";
 import CloseButton from "../components/CloseButton";
 import { useAtonStore } from "../store/store";

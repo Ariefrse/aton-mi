@@ -19,7 +19,7 @@ function HoverInfo(props: HoverInfoProps) {
       {props?.mmsi && <p>MMSI: {props?.mmsi}</p>}
       {props?.lantBatt !== undefined && (
         <p>
-          <strong>Lant Battery:</strong> {props?.lantBatt.toFixed(2)}V
+          <strong>Lant Battery:</strong> {props?.lantBatt?.toFixed(2)}V
         </p>
       )}
     </div>

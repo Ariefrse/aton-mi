@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
 import { AtonData, AtonType, Region } from '../declarations/types/types'
 import { fetchAtonData } from '../api/aton-api'
+import { CloseButton } from "@headlessui/react";
 
 
 export default function AtonSummaryPanel() {
