@@ -47,7 +47,7 @@ export type AtonStoreState = {
   tableFilterOptions: TableFilterOptions;
   filterState: FilterState
   atonData: AtonData[]
-  selectedAton: AtonData | null
+  selectedAton: AtonData
   atonTablePreviewData?: AtonTable[]
   selectedDate: Date | null;
 
@@ -58,7 +58,7 @@ export type AtonStoreState = {
   setFilterState: (state: Partial<FilterState>) => void;
 
   setAtonData: (data: AtonData[]) => void;
-  setSelectedAton: (data: AtonData) => void
+  setSelectedAton: (data: AtonData | null) => void
   setAtonTableData: (data: AtonTable[]) => void;
   setSelectedDate: (date: Date | null) => void;
 };

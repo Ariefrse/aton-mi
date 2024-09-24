@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, ReactNode } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useAtonStore } from "../store/store";
 import { fetchAtonData } from "../api/aton-api";
@@ -100,7 +100,7 @@ export default function AtonSummaryPanel() {
     setFilterState({ condition: newCondition });
   };
 
-  const renderExpandableSection = (title: string, content: React.ReactNode) => (
+  const renderExpandableSection = (title: string, content: ReactNode) => (
     <div>
       <button
         className="w-full flex justify-between items-center py-2"
