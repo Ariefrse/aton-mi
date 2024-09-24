@@ -15,12 +15,13 @@ function RadialMenu(props: RadialMenuProps) {
     {
       title: "Graph",
       icon: <BsFileBarGraph />,
-      onClick: () => setToggles({ ...toggles, graph: true }),
+      onClick: () => setToggles({ ...toggles, graph: true, radialMenu: false }),
     },
     {
       title: "Info",
       icon: <BiMessageAltDetail />,
-      onClick: () => setToggles({ ...toggles, atonInfo: true })
+      onClick: () =>
+        setToggles({ ...toggles, clickInfo: true, radialMenu: false }),
     },
   ];
 

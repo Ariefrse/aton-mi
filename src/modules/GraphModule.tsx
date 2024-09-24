@@ -2,7 +2,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { ChangeEvent, useEffect, useState } from "react";
 import { AtonData, Msg6 } from "../declarations/types/types";
 import { fetchMsg6 } from "../api/aton-api";
-import CloseButton from "./CloseButton";
+import CloseButton from "../components/CloseButton";
 import { useAtonStore } from "../store/store";
 
 type GraphDataMap = {
@@ -21,30 +21,32 @@ const graphDropdownItem: GraphDataMap = {
   ambient: "Ambient Light Sensor",
 };
 
-type GraphProps = { atonData?: AtonData };
 type GraphType = keyof typeof graphDropdownItem;
 
-export default function Graph(props: GraphProps) {
-  const { toggles, setToggles } = useAtonStore();
-  const [graphType, setGraphType] = useState<GraphType>("voltExt1");
+export default function GraphModule() {
+  const { toggles, setToggles, selectedAton, setSelectedAton } = useAtonStore();
+  const [graphType, setGraphType] = useState<GraphType>("voltInt");
   const [xAxisData, setXAxisData] = useState<string[]>([]);
   const [graphData, setGraphData] = useState<number[]>([]);
-  const [atonData, setAtonData] = useState<AtonData>(props?.atonData!);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (atonData.msg6) {
-        const timestamps = atonData.msg6.slice(0, 10).map((msg) => msg.localTs);
-        const data = atonData.msg6.slice(0, 10).map((msg) => msg[graphType]);
+      if (selectedAton?.msg6) {
+        const timestamps = selectedAton?.msg6
+          .slice(0, 10)
+          .map((msg) => msg.localTs);
+        const data = selectedAton?.msg6
+          .slice(0, 10)
+          .map((msg) => msg[graphType]);
 
         setXAxisData(timestamps.filter((timestamp) => timestamp !== undefined));
         setGraphData(data.filter((data) => data !== undefined));
       } else {
         try {
-          const msg6Data = await fetchMsg6(atonData.mmsi);
-          setAtonData((prevData) => ({ ...prevData, msg6: msg6Data }));
+          const msg6Data = await fetchMsg6(selectedAton?.mmsi!);
+          setSelectedAton({ ...selectedAton, msg6: msg6Data });
 
-          console.log("msg", atonData);
+          console.log("msg", selectedAton);
 
           // Check if data exists and has the expected properties
           if (!msg6Data?.length || !msg6Data[0]?.[graphType]) {
@@ -70,11 +72,16 @@ export default function Graph(props: GraphProps) {
     setGraphType(event.target.value as GraphType);
   };
 
+  const handleCloseGraph = () => {
+    setToggles({...toggles, graph: !toggles.graph });
+    setSelectedAton(null);
+  };
+
   return (
     <div className="absolute bg-gray-900 rounded-md flex flex-col w-1/2 h-1/2">
       <CloseButton
         className="top-0 right-0 border-none m-1"
-        onClick={() => setToggles({ ...toggles, graph: false })}
+        onClick={handleCloseGraph}
       />
       <div className="mb-4 z-50 ml-auto pt-4 pr-2">
         <label htmlFor="graphType" className="mr-2 text-white">
@@ -120,7 +127,7 @@ export default function Graph(props: GraphProps) {
         series={[
           {
             data: graphData,
-            label: `${atonData.mmsi} - ${atonData.name} (${graphDropdownItem[graphType]})`,
+            label: `${selectedAton?.mmsi} - ${selectedAton?.name} (${graphDropdownItem[graphType]})`,
             color: "red",
           },
         ]}

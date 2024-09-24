@@ -19,7 +19,7 @@ import TableModule from "./TableModule";
 import LegendToggleBtn from "../components/LegendToggleBtn";
 import RadialMenu, { RadialMenuProps } from "../components/RadialMenu";
 import AtonMessageCountOverview from "../components/AtonMessageCountOverview";
-import Graph from "../components/Graph";
+import GraphModule from "./GraphModule";
 import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import AtonSummaryPanel from "../components/AtonSummaryPanel";
 import ClickInfo, { ClickInfoProps } from "../components/ClickInfo";
@@ -43,11 +43,17 @@ const ATON_COLORS: { [key: string]: Color } = {
 };
 
 export default function MapModule() {
-  const { viewState, atonData, setAtonData, toggles, setToggles, filterState } =
-    useAtonStore();
+  const {
+    viewState,
+    atonData,
+    setAtonData,
+    setSelectedAton,
+    toggles,
+    setToggles,
+    filterState,
+  } = useAtonStore();
   const mapRef = useRef<MapRef | null>(null);
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
-  const [selectedAton, setSelectedAton] = useState<AtonData>();
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [clickInfo, setClickInfo] = useState<ClickInfoProps | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
@@ -152,7 +158,7 @@ export default function MapModule() {
           lat: lat,
         },
       });
-      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi));
+      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi)!);
     } else {
       setRadialMenuData(null);
       setToggles({ ...toggles, radialMenu: false });
@@ -163,7 +169,7 @@ export default function MapModule() {
     if (info.object) {
       const { mmsi, name, lastBattLant } = info.object;
       setToggles({ ...toggles, hoverInfo: true });
-      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi));
+      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi)!);
       setHoverData({
         name: name,
         mmsi: mmsi,
@@ -222,7 +228,7 @@ export default function MapModule() {
           <div>Loading AtoN data...</div>
         )}
         {hoverData && <HoverInfo {...hoverData} />}
-        {clickInfo && <ClickInfo {...clickInfo} />}
+        {toggles.clickInfo && <ClickInfo {...clickInfo} />}
         {radialMenuData && <RadialMenu {...radialMenuData} />}
         {toggles.atonSummaryPanel && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
@@ -234,7 +240,7 @@ export default function MapModule() {
         {toggles.atonSummaryToggleBtn && <AtonSummaryToggleBtn />}
         {toggles.legend && <Legend />}
         {toggles.legendToggleBtn && <LegendToggleBtn />}
-        {toggles.graph && selectedAton && <Graph atonData={selectedAton} />}
+        {toggles.graph && <GraphModule />}
       </div>
     </div>
   );

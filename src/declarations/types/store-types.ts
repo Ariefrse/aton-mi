@@ -5,9 +5,9 @@ import { AtonData, AtonStatus, AtonTable, AtonType } from "./types";
 type Toggles = {
   radialMenu: boolean
   hoverInfo: boolean
+  clickInfo: boolean
   legend: boolean;
   legendToggleBtn: boolean;
-  atonInfo: boolean;
   atonSummaryToggleBtn: boolean;
   atonSummaryPanel: boolean;
   atonMessageCountOverview: boolean;
@@ -47,6 +47,7 @@ export type AtonStoreState = {
   tableFilterOptions: TableFilterOptions;
   filterState: FilterState
   atonData: AtonData[]
+  selectedAton: AtonData | null
   atonTablePreviewData?: AtonTable[]
   selectedDate: Date | null;
 
@@ -57,6 +58,7 @@ export type AtonStoreState = {
   setFilterState: (state: Partial<FilterState>) => void;
 
   setAtonData: (data: AtonData[]) => void;
+  setSelectedAton: (data: AtonData) => void
   setAtonTableData: (data: AtonTable[]) => void;
   setSelectedDate: (date: Date | null) => void;
 };

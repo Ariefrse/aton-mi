@@ -4,7 +4,7 @@ export type ClickInfoProps = null | {
   name?: string;
   mmsi?: number;
   type?: AtonType;
-  position: {
+  position?: {
     lat: number;
     lng: number;
   };
