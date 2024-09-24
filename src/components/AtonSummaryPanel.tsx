@@ -1,8 +1,9 @@
 import { useEffect, useState, useMemo } from 'react'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
-import { AtonData } from '../declarations/types/types'
+import { AtonData, AtonType, Region } from '../declarations/types/types'
 import { fetchAtonData } from '../api/aton-api'
+import { CloseButton } from "@headlessui/react";
 
 
 export default function AtonSummaryPanel() {
@@ -25,8 +26,8 @@ export default function AtonSummaryPanel() {
     if (!atonData) return null;
 
     return atonData.filter((item: AtonData) => {
-      const structureMatch = filterState.selectedStructures.includes('All') || filterState.selectedStructures.includes(item.type);
-      const regionMatch = filterState.selectedRegions.includes('All') || filterState.selectedRegions.includes(item.region);
+      const structureMatch = filterState.selectedStructures.includes('All') || filterState.selectedStructures.includes(item.type as AtonType);
+      const regionMatch = filterState.selectedRegions.includes('All') || filterState.selectedRegions.includes(item.region as Region);
       let conditionMatch = true;
       if (filterState.condition === 'Good') {
         conditionMatch = item.healthStatus === 1;
@@ -80,41 +81,56 @@ export default function AtonSummaryPanel() {
   };
 
   const handleStructureChange = (structure: string) => {
-    let newSelectedStructures = filterState.selectedStructures.includes(structure)
-      ? filterState.selectedStructures.filter(item => item !== structure)
-      : [...filterState.selectedStructures, structure];
+    if (structure === 'All') {
+      setFilterState({
+        ...filterState,
+        selectedStructures: ['All']
+      });
+    } else {
+      let newSelectedStructures = filterState.selectedStructures.includes('All')
+        ? []
+        : [...filterState.selectedStructures];
 
-    if (structure !== 'All') {
-      newSelectedStructures = newSelectedStructures.filter(item => item !== 'All');
+      if (newSelectedStructures.includes(structure)) {
+        newSelectedStructures = newSelectedStructures.filter(item => item !== structure);
+      } else {
+        newSelectedStructures.push(structure);
+      }
+
+      setFilterState({
+        ...filterState,
+        selectedStructures: newSelectedStructures.length === 0 ? ['All'] : newSelectedStructures
+      });
     }
-
-    setFilterState({
-      selectedStructures: newSelectedStructures.length === 0 ? ['All'] : newSelectedStructures,
-      selectedRegions: filterState.selectedRegions,
-      condition: filterState.condition,
-    });
   }
 
   const handleRegionChange = (region: string) => {
-    let newSelectedRegions = filterState.selectedRegions.includes(region)
-      ? filterState.selectedRegions.filter(item => item !== region)
-      : [...filterState.selectedRegions, region];
+    if (region === 'All') {
+      setFilterState({
+        ...filterState,
+        selectedRegions: ['All']
+      });
+    } else {
+      let newSelectedRegions = filterState.selectedRegions.includes('All')
+        ? []
+        : [...filterState.selectedRegions];
 
-    if (region !== 'All') {
-      newSelectedRegions = newSelectedRegions.filter(item => item !== 'All');
+      if (newSelectedRegions.includes(region)) {
+        newSelectedRegions = newSelectedRegions.filter(item => item !== region);
+      } else {
+        newSelectedRegions.push(region);
+      }
+
+      setFilterState({
+        ...filterState,
+        selectedRegions: newSelectedRegions.length === 0 ? ['All'] : newSelectedRegions
+      });
     }
-
-    setFilterState({
-      selectedRegions: newSelectedRegions.length === 0 ? ['All'] : newSelectedRegions,
-      selectedStructures: filterState.selectedStructures,
-      condition: filterState.condition,
-    });
   }
 
   const handleConditionChange = (newCondition: "All" | "Good" | "Not Good") => {
     setFilterState({
-      selectedStructures: filterState.selectedStructures,
-      selectedRegions: filterState.selectedRegions,
+      ...filterState,
       condition: newCondition,
     });
   };
@@ -163,7 +179,7 @@ export default function AtonSummaryPanel() {
 
       <div className="space-y-4">
         <ExpandableSection title='Structure'>
-        <div className="space-y-2">
+          <div className="space-y-2">
             {uniqueStructures.map((item) => (
               <div key={item} className="flex items-center space-x-2">
                 <input 
@@ -178,8 +194,6 @@ export default function AtonSummaryPanel() {
               </div>
             ))}
           </div>
-        
-
         </ExpandableSection>
           
 

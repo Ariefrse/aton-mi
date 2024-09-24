@@ -4,46 +4,57 @@ import { useAtonStore } from "../store/store";
 import { AtonStatus } from "../declarations/types/types";
 
 const Legend = () => {
+  const LEGEND_ITEMS = [
+    { shape: "diamond", device: "Beacon" },
+    { shape: "circle", device: "Buoy" },
+    { shape: "rectangle", device: "Lighthouse" },
+  ];
+
+  const STATUS_ITEMS = [
+    { color: "green", status: "Good" },
+    { color: "red", status: "Not Good" },
+  ];
+
   const { toggles, setToggles } = useAtonStore();
 
   return (
-    <div className="absolute rounded-lg bg-gray-800 opacity-90 bottom-2 right-2 text-white p-4 w-48">
-      <IoMdClose
-        className="absolute top-2 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
-        fontSize={20}
-        onClick={() =>
-          setToggles({ ...toggles, legend: false, legendToggleBtn: true })
-        }
-      />
-      <h2 className="text-lg font-semibold mb-2">Legend</h2>
-      <div className="mb-4">
-        <h3 className="text-sm text-gray-400 mb-2">Structure</h3>
-        <div className="space-y-2">
-          <div className="flex items-center">
-            <Diamond className="w-4 h-4 mr-2" />
-            <span className="text-sm">Beacon</span>
-          </div>
-          <div className="flex items-center">
-            <Circle className="w-4 h-4 mr-2" />
-            <span className="text-sm">Buoy</span>
-          </div>
-          <div className="flex items-center">
-            <Square className="w-4 h-4 mr-2" />
-            <span className="text-sm">Lighthouse</span>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h3 className="text-sm text-gray-400 mb-2">Status by Color</h3>
-        <div className="space-y-2">
-          <div className="flex items-center">
-            <div className="w-4 h-4 border-2 border-green-500 rounded-full mr-2"></div>
-            <span className="text-sm">Good</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-4 h-4 border-2 border-red-500 rounded-full mr-2"></div>
-            <span className="text-sm">Not Good</span>
-          </div>
+    <div className="absolute rounded-lg bg-gray-900 mb-4 bottom-2 right-2">
+      <div className="relative">
+        <IoMdClose
+          className="absolute top-1 right-2 hover:cursor-pointer hover:scale-110 transition-transform duration-300"
+          fontSize={24}
+          onClick={() =>
+            setToggles({ ...toggles, legend: false, legendToggleBtn: true })
+          }
+        />
+        <div className="bg-gray-800 text-white p-4 rounded-md">
+          <p className="text-lg font-bold leading-none mb-4">
+            Legend <br /> <span className="text-base text-white">AtoN</span>
+          </p>
+          <p className="text-sm text-gray-400 mb-2">Structure</p>
+          {LEGEND_ITEMS.map((item, index) => (
+            <div key={index} className="flex items-center mb-2">
+              <div
+                className={`w-4 h-4 mr-2 ${
+                  item.shape === "diamond"
+                    ? "transform rotate-45 border border-white"
+                    : item.shape === "circle"
+                    ? "rounded-full border border-white"
+                    : "border border-white"
+                }`}
+              ></div>
+              <span>{item.device}</span>
+            </div>
+          ))}
+          <p className="text-sm text-gray-400 mb-2">Status (By Color)</p>
+          {STATUS_ITEMS.map((item, index) => (
+            <div key={index} className="flex items-center mb-2">
+              <div
+                className={`w-4 h-4 mr-2 rounded-full bg-${item.color}-500`}
+              ></div>
+              <span>{item.status}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

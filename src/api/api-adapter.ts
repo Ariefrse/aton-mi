@@ -9,10 +9,10 @@
   - Input parameter should always be the corresponding "ResDto" type, and the return type should be the corresponding internal type.
 */
 
-import { AtonSummaryItemResDto, AtonTableResDto, Msg21ResDto, Msg6ResDto } from "../declarations/dtos/dtos"
+import { AtonSummaryResDto, AtonTableResDto, Msg21ResDto, Msg6ResDto } from "../declarations/dtos/dtos"
 import { AtonData, AtonTable, Msg21, Msg6 } from "../declarations/types/types"
 
-export function transformAtonPanelData(data: AtonSummaryItemResDto): AtonData {
+export function transformAtonPanelData(data: AtonSummaryResDto): AtonData {
   return {
     type: data.type,
     region: data.region,
@@ -24,7 +24,7 @@ export function transformAtonPanelData(data: AtonSummaryItemResDto): AtonData {
     lastBattLant: data.last_BattLant,
     ldrStatus: data.LDR_OKNG,
     offPosStatus: data.off_pos_OKNG,
-    long: data.longitude,
+    lng: data.longitude,
     lat: data.latitude,
     name: data.name,
     mmsi: data.mmsi,
@@ -33,11 +33,8 @@ export function transformAtonPanelData(data: AtonSummaryItemResDto): AtonData {
 
 export function transformMsg21(data: Msg21ResDto): Msg21 {
   return {
-    pkgType: data.packageType,
-    pkgCh: data.packageCh,
-    msgType: data.messageType,
-    msgTypeDesc: data.messageTypeDesc,
-    repeat: data.repeat,
+    msgType: data.msg_type,
+    msgTypeDesc: data.msg_type_desc,
     mmsi: data.mmsi,
     aidType: data.aidType,
     aidTypeDesc: data.aidTypeDesc,
@@ -45,14 +42,14 @@ export function transformMsg21(data: Msg21ResDto): Msg21 {
     positionAccuracy: data.positionAccuracy,
     long: data.longitude,
     lat: data.latitude,
-    toBow: data.toBow,
-    toStern: data.toStern,
-    toPort: data.toPort,
-    toStarboard: data.toStarboard,
+    toBow: data.to_bow,
+    toStern: data.to_stern,
+    toPort: data.to_port,
+    toStarboard: data.to_starboard,
     epfd: data.epfd,
     epfdDesc: data.epfdDesc,
-    utcSecond: data.utcSecond,
-    offPosition: data.offPosition,
+    utcSecond: data.utc_second,
+    offPosition: data.off_position,
     regional: data.regional,
     raimFlag: data.raimFlag,
     virtualAid: data.virtualAid,
@@ -62,11 +59,13 @@ export function transformMsg21(data: Msg21ResDto): Msg21 {
 
 export function transformMsg6(data: Msg6ResDto): Msg6 {
   return {
+    isoTs: data.ts_iso,
+    localTs: data.lcl_ts,
     pkgType: data.packageType,
     pkgId: data.packageID,
     pkgCh: data.packageCh,
-    msgType: data.messageType,
-    msgTypeDesc: data.messageTypeDesc,
+    msgType: data.msg_type,
+    msgTypeDesc: data.msg_type_desc,
     repeat: data.repeat,
     mmsi: data.mmsi,
     seqNo: data.seqno,
@@ -83,6 +82,7 @@ export function transformMsg6(data: Msg6ResDto): Msg6 {
     light: data.light,
     health: data.health,
     beat: data.beat,
+    ts: data.ts,
     alarmActive: data.alarm_active,
     buoyLedPower: data.buoy_led_power,
     buoyLowVin: data.buoy_low_vin,
@@ -96,7 +96,7 @@ export function transformMsg6(data: Msg6ResDto): Msg6 {
     buoyErrLedVinLow: data.buoy_errled_vinlow,
     buoyErrLedPower: data.buoy_errled_power,
     buoyAdjMaxPower: data.buoy_adjmaxpower,
-    buoySensorInterru: data.buoy_sensor_interru,
+    buoySensorInterrupt: data.buoy_sensor_interrupt,
     buoySolarCharging: data.buoy_solarcharging,
   }
 }
