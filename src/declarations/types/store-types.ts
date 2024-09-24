@@ -1,5 +1,6 @@
 import { GridFilterModel } from "@mui/x-data-grid";
-import { AtonData, AtonStatus, AtonTable, AtonType } from "./types";
+import { AtonStatus, AtonType } from "./types";
+import { AtonSummaryItem } from "../../api/aton-api";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -26,8 +27,8 @@ type ViewState = {
 }
 
 export type FilterState = {
-  structure: string;
-  region: string;
+  selectedStructures: string[];
+  selectedRegions: string[];
   condition: 'All' | 'Good' | 'Not Good';
 }
 
@@ -41,22 +42,11 @@ export type AtonFilterOptions = {
 type TableFilterOptions = GridFilterModel | null
 
 export type AtonStoreState = {
-  // STATES
-  viewState?: ViewState
+  viewState: ViewState;
+  atonSummary: AtonSummaryItem[];
+  setAtonSummary: (data: AtonSummaryItem[]) => void;
   toggles: Toggles;
-  tableFilterOptions: TableFilterOptions;
-  filterState: FilterState
-  atonData: AtonData[]
-  atonTablePreviewData?: AtonTable[]
-  selectedDate: Date | null;
-
-  // SET STATES FUNCTION
-  setViewState: (data: ViewState) => void;
-  setToggles: (modal: Toggles) => void;
-  setTableFilterOptions: (options: TableFilterOptions) => void;
-  setFilterState: (state: Partial<FilterState>) => void;
-
-  setAtonData: (data: AtonData[]) => void;
-  setAtonTableData: (data: AtonTable[]) => void;
-  setSelectedDate: (date: Date | null) => void;
+  setToggles: (toggles: Toggles) => void;
+  filterState: FilterState;
+  setFilterState: (filterState: FilterState) => void;
 };

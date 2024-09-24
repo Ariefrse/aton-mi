@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { DeckGL } from "@deck.gl/react";
 import Map, { MapRef } from "react-map-gl";
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { LayersList, MapViewState, Color } from "@deck.gl/core";
 import { useAtonStore } from "../store/store";
-import { AtonType } from "../declarations/types/types";
-import { AtonSummaryItem } from "../api/aton-api";
+import { AtonData, AtonSummaryItem, AtonType } from "../declarations/types/types";
+import { AtonSummaryItemResDto } from "../declarations/dtos/dtos";
+import { fetchAtonData } from "../api/aton-api";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import 'mapbox-gl/dist/mapbox-gl.css';
 // import circle from '../assets/icon/circle.svg';
@@ -59,39 +60,47 @@ const ATON_COLORS: { [key: string]: Color } = {
 
 export default function MapModule() {
   // Hooks
-  const { toggles, setToggles, filterState, atonSummary, fetchAtonSummary } = useAtonStore();
+  const { toggles, setToggles, filterState, atonData, setAtonData } = useAtonStore();
   const mapRef = useRef<MapRef | null>(null);
 
   // State
-  // const [mapAton, setMapAton] = useState<AtonList[]>([]);
-  const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
+  const [mapStyle, setMapStyle] = useState<string>(MAP_STYLES.satellite);
   const [layers, setLayers] = useState<LayersList | undefined>([]);
   const [clickInfo, setClickInfo] = useState<ClickInfoType | null>(null);
   const [radialMenuData, setRadialMenuData] = useState<RadialMenuProps>(null);
   const [hoverInfoData, setHoverInfoData] = useState<HoverInfoProps | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  
 
   // Effects
   useEffect(() => {
     const loadData = async () => {
-      if (atonSummary.length === 0) {  // Only fetch if data is not already loaded
-        await fetchAtonSummary();
-        setIsDataLoaded(true);
+      try {
+        const response = await fetchAtonData();
+        console.log('Fetched AtoN data:', response); // Add this line
+        // Check if response exists and has length before setting the data
+        if (response && response.length > 0) {
+          setAtonData(response);  // Use setData instead of setAtonData
+          setIsDataLoaded(true);
+        } else {
+          console.log('No ATON data received or empty data array');
+        }
+      } catch (error) {
+        console.error('Error fetching ATON data:', error);
       }
-      console.log("Aton Summary Data:", atonSummary);
     };
     loadData();
-  }, [fetchAtonSummary, atonSummary]);
+  }, []);
 
   useEffect(() => {
-    if (!atonSummary || atonSummary.length === 0) return;
-    const filteredData = filterAtonData(atonSummary, filterState);
-    console.log('Filtered Aton Data:', filteredData);
-    console.log('Filtered Aton Data Length:', filteredData.length);
-    const layers = createLayers(filteredData);
+    if (!atonData || atonData.length === 0) return;
+    const filteredData = filterAtonData(atonData as unknown as AtonSummaryItem[], filterState);
+    console.log('Filtered AtoN data:', filteredData); // Add this line
+    console.log('Filtered AtoN Data Length:', filteredData.length);
+    const layers = createLayers(filteredData as unknown as AtonData[]);
     console.log("Layers:", layers);
     setLayers(layers);
-  }, [atonSummary, filterState, toggles, setToggles]);
+  }, [atonData, filterState, toggles, setToggles]);
 
   useEffect(() => {
     const mapElement = mapRef.current?.getMap().getCanvas();
@@ -102,7 +111,7 @@ export default function MapModule() {
   }, [mapRef, toggles, setToggles]);
 
   // Memoized values
-  // const filteredAtonData = useMemo(() => filterAtonData(atonSummary, filterState), [atonSummary, filterState]);
+  // const filteredAtonData = useMemo(() => filterAtonData(atonData as unknown as AtonSummaryItem[], filterState), [atonData, filterState]);
 
   // Event handlers
   const handleRightClick = (event: MouseEvent) => {
@@ -129,16 +138,17 @@ export default function MapModule() {
   };
 
   // Helper functions
-  const createLayers = (data: AtonSummaryItem[]) => {
+  const createLayers = (data: AtonData[]) => {
+    console.log('Creating layers with data:', data); // Add this line
     const scatterplotLayer = new ScatterplotLayer({
       id: 'aton-outline-layer',
       data: data,
-      getPosition: (d: AtonSummaryItem) => [Number(d.longitude), Number(d.latitude)],
+      getPosition: (d: AtonData) => [Number(d.long), Number(d.lat)],
       getFillColor: [0, 0, 0, 0], // Transparent fill
-      getLineColor: (d: AtonSummaryItem): Color => {
-        return d.health_OKNG === 1 ? ATON_COLORS.GOOD : ATON_COLORS.NOT_GOOD;
+      getLineColor: (d: AtonData): Color => {
+        return d.healthStatus === 1 ? ATON_COLORS.GOOD : ATON_COLORS.NOT_GOOD;
       },
-      getRadius: (d: AtonSummaryItem) => {
+      getRadius: (d: AtonData) => {
         switch (d.type) {
           case 'Buoy': return 15;
           case 'Lighthouse': return 17;
@@ -173,7 +183,7 @@ export default function MapModule() {
         name: info.object.name,
         mmsi: info.object.mmsi,
         type: info.object.type,
-        position: [Number(info.object.longitude), Number(info.object.latitude)],
+        position: [Number(info.object.long), Number(info.object.lat)],
       });
     } else {
       setRadialMenuData(null);
@@ -229,6 +239,7 @@ export default function MapModule() {
   }
 
   function renderMap() {
+    console.log('Rendering map, isDataLoaded:', isDataLoaded, 'layers:', layers); // Add this line
     return isDataLoaded ? (
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
@@ -266,12 +277,12 @@ export default function MapModule() {
 
   function renderClickInfo() {
     return (
-      <div className="absolute top-2 right-2 bg-gray-800 text-white p-4 rounded-md shadow-lg">
+      <div className="absolute top-2 right-2 bg-gray-800 text-white p-4 rounded-md">
         <h2 className="text-lg font-bold">{clickInfo!.name}</h2>
         <p>MMSI: {clickInfo!.mmsi}</p>
         <p>Type: {clickInfo!.type}</p>
-        <p>Latitude: {clickInfo!.position[0].toFixed(6)}</p>
-        <p>Longitude: {clickInfo!.position[1].toFixed(6)}</p>
+        <p>Latitude: {clickInfo!.position[0]}</p>
+        <p>Longitude: {clickInfo!.position[1]}</p>
       </div>
     );
   }

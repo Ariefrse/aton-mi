@@ -41,8 +41,6 @@ export type AtonData = {
   lat: number;
   name: string;
   mmsi: number;
-  msg6?: Partial<Msg6>[]
-  msg21?: Partial<Msg21>[]
 };
 
 export type Msg6 = {
@@ -149,3 +147,20 @@ export type UserSettings = {
   }
   // TODO: To add table filter settings
 }
+
+export type AtonSummaryItem = {
+  type: string;
+  region: string;
+  health_OKNG: number;
+  cnt_msg21: number;
+  cnt_msg6: number;
+  last_light: number;
+  last_BattAton: number;
+  last_BattLant: number;
+  LDR_OKNG: number;
+  off_pos_OKNG: number;
+  longitude: number;
+  latitude: number;
+  name: string;
+  mmsi: number;
+};

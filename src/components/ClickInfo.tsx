@@ -6,7 +6,7 @@ export type ClickInfoProps = {
   type?: AtonType;
   position: {
     lat: number;
-    lng: number;
+    long: number;
   };
 };
 
@@ -16,8 +16,8 @@ export default function ClickInfo(props: ClickInfoProps) {
       <h2 className="text-lg font-bold">{props.name}</h2>
       <p>MMSI: {props.mmsi}</p>
       <p>Type: {props.type}</p>
-      <p>Latitude: {props.position?.lat.toFixed(6)}</p>
-      <p>Longitude: {props.position?.lng.toFixed(6)}</p>
+      <p>Latitude: {props.position?.lat}</p>
+      <p>Longitude: {props.position?.long}</p>
     </div>
   );
 }

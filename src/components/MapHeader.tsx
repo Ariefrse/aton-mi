@@ -1,13 +1,12 @@
 import { FormEvent } from "react";
-import { MapStyle } from "../modules/MapModule";
 import { useAtonStore } from "../store/store";
 import MapStyleDropdown from "./MapStyleDropdown";
 import TableBtn from "./TableBtn";
 import TableOptions from "./TableOptions";
 
 type MapHeaderProps = {
-  mapStyle: MapStyle;
-  setMapStyle: (value: MapStyle) => void;
+  mapStyle: string;
+  setMapStyle: (value: string) => void;
 };
 
 export default function MapHeader({ mapStyle, setMapStyle }: MapHeaderProps) {
@@ -26,7 +25,7 @@ export default function MapHeader({ mapStyle, setMapStyle }: MapHeaderProps) {
   };
 
   const handleMapStyleChange = (event: FormEvent<HTMLSelectElement>) => {
-    setMapStyle((event.target as HTMLSelectElement).value as MapStyle);
+    setMapStyle((event.target as HTMLSelectElement).value);
   };
 
   return (
