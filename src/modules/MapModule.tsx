@@ -5,7 +5,7 @@ import Map, { MapRef } from "react-map-gl";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import { LayersList, Color, PickingInfo } from "@deck.gl/core";
 import { useAtonStore } from "../store/store";
-import { AtonData, AtonType } from "../declarations/types/types";
+import { AtonData } from "../declarations/types/types";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import "mapbox-gl/dist/mapbox-gl.css";
 import circle from "../assets/icon/circle.svg";
@@ -187,14 +187,14 @@ export default function MapModule() {
     filterState: FilterState
   ): AtonData[] {
     return atonData.filter((aton) => {
-      const structureMatch = match(filterState.structure)
-        .with("All", () => true)
-        .otherwise((structure: AtonType) => structure === aton.type);
-
-      const regionMatch = match(filterState.region)
-        .with("All", () => true)
-        .otherwise((region: string) => region === aton.region);
-
+      const structureMatch = 
+        filterState.selectedStructures.includes('All') || 
+        filterState.selectedStructures.includes(aton.type);
+      
+      const regionMatch = 
+        filterState.selectedRegions.includes('All') || 
+        filterState.selectedRegions.includes(aton.region);
+      
       const conditionMatch = match(filterState.condition)
         .with("All", () => true)
         .with("Good", () => aton.healthStatus === 1)

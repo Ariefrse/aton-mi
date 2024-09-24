@@ -27,8 +27,8 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   },
   tableFilterOptions: null,
   filterState: {
-    structure: 'All',
-    region: 'All',
+    selectedStructures: ['All'],
+    selectedRegions: ['All'],
     condition: 'All',
   },
   atonData: [],

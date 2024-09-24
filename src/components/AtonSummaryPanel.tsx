@@ -1,45 +1,36 @@
-import { useEffect, useState, useMemo } from "react";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { useAtonStore } from "../store/store";
-import { fetchAtonData } from "../api/aton-api";
-import { CloseButton } from "@headlessui/react";
+import { useEffect, useState, useMemo } from 'react'
+import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { useAtonStore } from '../store/store'
+import { AtonData, AtonType, Region } from '../declarations/types/types'
+import { fetchAtonData } from '../api/aton-api'
+
 
 export default function AtonSummaryPanel() {
   const {
     toggles,
     setToggles,
     atonData,
-    setAtonData,
     filterState,
     setFilterState,
   } = useAtonStore();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  
+  
 
   useEffect(() => {
-    if (atonData.length < 0 && atonData.length === undefined) {
-      try {
-        async () => {
-          const data = await fetchAtonData();
-          setAtonData(data);
-        };
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }, [setAtonData]);
+    fetchAtonData();
+  }, []);
 
   const filteredPanelData = useMemo(() => {
     if (!atonData) return null;
 
-    return atonData.filter((item) => {
-      const structureMatch =
-        filterState.structure === "All" || filterState.structure === item.type;
-      const regionMatch =
-        filterState.region === "All" || filterState.region === item.region;
+    return atonData.filter((item: AtonData) => {
+      const structureMatch = filterState.selectedStructures.includes('All') || filterState.selectedStructures.includes(item.type as AtonType);
+      const regionMatch = filterState.selectedRegions.includes('All') || filterState.selectedRegions.includes(item.region as Region);
       let conditionMatch = true;
-      if (filterState.condition === "Good") {
+      if (filterState.condition === 'Good') {
         conditionMatch = item.healthStatus === 1;
-      } else if (filterState.condition === "Not Good") {
+      } else if (filterState.condition === 'Not Good') {
         conditionMatch = item.healthStatus === 0;
       }
       return structureMatch && regionMatch && conditionMatch;
@@ -89,18 +80,61 @@ export default function AtonSummaryPanel() {
   };
 
   const handleStructureChange = (structure: string) => {
-    setFilterState({ structure: structure });
-  };
+    if (structure === 'All') {
+      setFilterState({
+        ...filterState,
+        selectedStructures: ['All']
+      });
+    } else {
+      let newSelectedStructures = filterState.selectedStructures.includes('All')
+        ? []
+        : [...filterState.selectedStructures];
+
+      if (newSelectedStructures.includes(structure)) {
+        newSelectedStructures = newSelectedStructures.filter(item => item !== structure);
+      } else {
+        newSelectedStructures.push(structure);
+      }
+
+      setFilterState({
+        ...filterState,
+        selectedStructures: newSelectedStructures.length === 0 ? ['All'] : newSelectedStructures
+      });
+    }
+  }
 
   const handleRegionChange = (region: string) => {
-    setFilterState({ region: region });
-  };
+    if (region === 'All') {
+      setFilterState({
+        ...filterState,
+        selectedRegions: ['All']
+      });
+    } else {
+      let newSelectedRegions = filterState.selectedRegions.includes('All')
+        ? []
+        : [...filterState.selectedRegions];
+
+      if (newSelectedRegions.includes(region)) {
+        newSelectedRegions = newSelectedRegions.filter(item => item !== region);
+      } else {
+        newSelectedRegions.push(region);
+      }
+
+      setFilterState({
+        ...filterState,
+        selectedRegions: newSelectedRegions.length === 0 ? ['All'] : newSelectedRegions
+      });
+    }
+  }
 
   const handleConditionChange = (newCondition: "All" | "Good" | "Not Good") => {
-    setFilterState({ condition: newCondition });
+    setFilterState({
+      ...filterState,
+      condition: newCondition,
+    });
   };
 
-  const renderExpandableSection = (title: string, content: React.ReactNode) => (
+  const ExpandableSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <div>
       <button
         className="w-full flex justify-between items-center py-2"
@@ -109,11 +143,15 @@ export default function AtonSummaryPanel() {
         aria-controls={`${title.toLowerCase()}-content`}
       >
         <span className="font-medium">{title}</span>
-        {expandedSection === title ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        {expandedSection === title ? (
+          <ChevronUp size={16} />
+        ) : (
+          <ChevronDown size={16} />
+        )}
       </button>
       {expandedSection === title && (
         <div id={`${title.toLowerCase()}-content`} className="mt-2 space-y-2">
-          {content}
+          {children}
         </div>
       )}
     </div>
@@ -134,21 +172,20 @@ export default function AtonSummaryPanel() {
             })
           }
         >
-          <CloseButton className='border-none mr-0'/>
-        </button> 
+          <X size={20} />
+        </button>
       </div>
 
       <div className="space-y-4">
-        {renderExpandableSection(
-          "Structure",
+        <ExpandableSection title='Structure'>
           <div className="space-y-2">
             {uniqueStructures.map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id={`structure-${item}`}
+                <input 
+                  type="checkbox" 
+                  id={`structure-${item}`} 
                   name="structure"
-                  checked={filterState.structure === item}
+                  checked={filterState.selectedStructures.includes(item)}
                   onChange={() => handleStructureChange(item)}
                   className="bg-gray-700 border-gray-600"
                 />
@@ -156,10 +193,10 @@ export default function AtonSummaryPanel() {
               </div>
             ))}
           </div>
-        )}
+        </ExpandableSection>
+          
 
-        {renderExpandableSection(
-          "Condition",
+        <ExpandableSection title='Condition'>
           <div className="space-y-2">
             {["All", "Good", "Not Good"].map((item) => (
               <div key={item} className="flex items-center space-x-2">
@@ -177,18 +214,17 @@ export default function AtonSummaryPanel() {
               </div>
             ))}
           </div>
-        )}
+        </ExpandableSection>
 
-        {renderExpandableSection(
-          "Region",
+        <ExpandableSection title='Region'>
           <div className="space-y-2">
             {uniqueRegions.map((item) => (
               <div key={item} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id={`region-${item}`}
+                <input 
+                  type="checkbox" 
+                  id={`region-${item}`} 
                   name="region"
-                  checked={filterState.region === item}
+                  checked={filterState.selectedRegions.includes(item)}
                   onChange={() => handleRegionChange(item)}
                   className="bg-gray-700 border-gray-600"
                 />
@@ -196,7 +232,7 @@ export default function AtonSummaryPanel() {
               </div>
             ))}
           </div>
-        )}
+        </ExpandableSection>
 
         <div className="flex justify-between items-center">
           <span className="font-medium">Total Sites</span>
