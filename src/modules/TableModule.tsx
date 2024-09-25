@@ -1,119 +1,109 @@
-import { useEffect, useState } from "react";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridToolbar,
+} from "@mui/x-data-grid";
+import { useEffect } from "react";
+import { fetchAtonTableData } from "../api/aton-api";
 import { useAtonStore } from "../store/store";
-import { ColumnDefinition, ReactTabulator } from "react-tabulator";
-import { atonData } from "../declarations/types/types";
+import { Box } from "@mui/material";
 
-/**
- * Converts camelCase or snake_case string to Uppercase Normal Case (Title Case).
- * Example: "offPosition" -> "OFF POSITION"
- * Example: "message_type_desc" -> "MESSAGE TYPE DESC"
- * @param str - The camelCase or snake_case string to convert.
- * @returns The converted uppercase Normal Case string.
- */
-function formatToUpperCase(str: string): string {
-  const withSpaces = str.replace(/_/g, " ");
-  const withSpacesAndCamelCase = withSpaces.replace(/([a-z])([A-Z])/g, "$1 $2");
-  return withSpacesAndCamelCase
-    .split(" ")
-    .map((word) => word.toUpperCase())
-    .join(" ");
-}
+const renderCell = (params?: GridRenderCellParams) => {
+  if (!params) return null;
+  const { field, value } = params;
+  let bgColor = "";
 
-export default function TableModule() {
-  const { atonData } = useAtonStore();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const getFormatter = (condition: (value: number | string) => boolean) => {
-    const color = "rgba(29, 78, 216, 1)";
-    return (cell: any) => {
-      const value = cell.getValue();
-      const isNumber = typeof value === "number";
-      const shouldColor = isNumber && condition(value);
-      cell.getElement().style.backgroundColor = shouldColor ? color : "";
-      return value;
-    };
-  };
-
-  const columns: ColumnDefinition[] = [
-    { title: "No", field: "no", formatter: "rownum" },
-    { title: "Site Name", field: "al_name", headerFilter: "input", width: 100 },
-    { title: "MMSI", field: "mmsi", headerFilter: "input", width: 100 },
-    { title: "Structure", field: "al_type", headerFilter: "input", width: 100 },
-    { title: "Region", field: "al_region", headerFilter: "input", width: 120 },
-    { title: "Min. Temp.", field: "minTemp" },
-    { title: "Max. Temp.", field: "maxTemp" },
-    {
-      title: "Min Batt ATON",
-      field: "minBattAton",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value < 12.0
-      ),
-    },
-    {
-      title: "Max Batt ATON",
-      field: "maxBattAton",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value > 15.0
-      ),
-    },
-    { title: "Avg BattATON", field: "meanBattAton" },
-    { title: "Stddev Batt ATON", field: "stddevBattAton" },
-    { title: "Skew Batt ATON", field: "skewBattAton" },
-    { title: "Kurt Batt ATON", field: "kurtBattAton" },
-    {
-      title: "Min Batt Lantern",
-      field: "minBattLant",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value < 12.0
-      ),
-    },
-    {
-      title: "Max Batt Lantern",
-      field: "maxBattLant",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value > 15.0
-      ),
-    },
-    { title: "Avg. Batt Lantern", field: "meanBattLant" },
-    { title: "Stddev Batt Lantern", field: "stddevBattLant" },
-    { title: "Skew Batt Lantern", field: "skewBattLant" },
-    { title: "Kurt Batt Lantern", field: "kurtBattLant" },
-    {
-      title: "off Position",
-      field: "off_pos",
-      headerFilter: "input",
-      formatter: getFormatter((value) => value === "NG"),
-    },
-    {
-      title: "Message 6 Counting",
-      field: "msg6Count",
-      formatter: getFormatter(
-        (value) => typeof value === "number" && value <= 0
-      ),
-    },
-    {
-      title: "Site with Message 6",
-      field: "siteTx",
-      headerFilter: "input",
-      formatter: getFormatter((value) => value === "NG"),
-    },
-    { title: "Last Seen (Second)", field: "at_ts" },
-    { title: "Last Maintain", field: "last_maintain" },
-  ];
+  // RULES & CONDITIONS //TODO: Need to confirm with Mai
+  if (
+    (field === "minBattAton" && value < 13.0) ||
+    (field === "maxBattAton" && value < 12.0) ||
+    (field === "minBattLant" && value < 12.0) ||
+    (field === "maxBattLant" && value > 15.0) ||
+    (field === "off_pos" && value === "OK") ||
+    (field === "msg6" && value <= 0)
+  ) {
+    bgColor = "rgba(29, 78, 216, 1)";
+  }
 
   return (
-    <div className="z-50 absolute top-10 left-10 m-auto bg-gray-600 rounded-md bg-opacity-90">
-      <ReactTabulator
+    <Box
+      sx={{
+        backgroundColor: bgColor,
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      {value}
+    </Box>
+  );
+};
+
+const columns: GridColDef[] = [
+  { field: "al_name", headerName: "Sitename", width: 150 },
+  { field: "al_mmsi", headerName: "MMSI", width: 100 },
+  { field: "al_type", headerName: "Structure", width: 100 },
+  { field: "al_region", headerName: "Region", width: 200 },
+  { field: "minBattAton", headerName: "Min Batt Aton", width: 120, renderCell },
+  { field: "maxBattAton", headerName: "Max Batt Aton", width: 120, renderCell },
+  { field: "minTemp", headerName: "Min Temp", width: 100 },
+  { field: "maxTemp", headerName: "Max Temp", width: 100 },
+  { field: "meanBattAton", headerName: "Mean Batt Aton", width: 150 },
+  { field: "stddevBattAton", headerName: "Std Dev Batt Aton", width: 150 },
+  { field: "skewBattAton", headerName: "Skew Batt Aton", width: 150 },
+  { field: "kurtBattAton", headerName: "Kurt Batt Aton", width: 150 },
+  { field: "minBattLant", headerName: "Min Batt Lant", width: 150, renderCell },
+  { field: "maxBattLant", headerName: "Max Batt Lant", width: 150, renderCell },
+  { field: "meanBattLant", headerName: "Mean Batt Lant", width: 150 },
+  { field: "stddevBattLant", headerName: "Std Dev Batt Lant", width: 150 },
+  { field: "skewBattLant", headerName: "Skew Batt Lant", width: 120 },
+  { field: "kurtBattLant", headerName: "Kurt Batt Lant", width: 120 },
+  { field: "off_pos", headerName: "Off Pos", width: 100, renderCell },
+  { field: "msg6", headerName: "Msg 6 Count", width: 100, renderCell },
+  { field: "at_ts", headerName: "Timestamp", width: 200 },
+  { field: "lastseen", headerName: "Last Seen", width: 200 },
+];
+
+export default function TableModule() {
+  const { atonTablePreviewData: atonTableData, setAtonTableData } = useAtonStore();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await fetchAtonTableData();
+        setAtonTableData(data!);
+      } catch (error) {
+        console.error("Error fetching aton stats data :", error);
+      }
+    }
+
+    if (!atonTableData ||atonTableData.length === 0) {
+      fetchData();
+    }
+  }, [atonTableData, setAtonTableData]);
+
+  return (
+    <div className="z-50 flex-grow h-[80vh]">
+      <DataGrid
+        rows={atonTableData}
         columns={columns}
-        data={atonData}
-        options={{
-          height: "500px",
-          layout: "fitColumns",
-          pagination: "local",
-          paginationSize: 10,
-          movableColumns: true,
-          movableRows: true,
+        // pageSizeOptions={[20]}
+        disableDensitySelector
+        disableRowSelectionOnClick
+        disableColumnSelector
+        // filterModel={tableFilterOptions}
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
+        className="m-2 opacity-90 bg-white"
+        sx={{
+          "& .MuiDataGrid-cell": {
+            backgroundColor: "#121213",
+            color: "#ffffff",
+          },
         }}
       />
     </div>

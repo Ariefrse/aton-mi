@@ -6,7 +6,7 @@ const LegendToggleBtn = () => {
 
   return (
     <button
-      className="bg-red-900 absolute bottom-4 right-4 items-center border-2 rounded-full p-1"
+      className="bg-red-900 absolute bottom-4 right-4 items-center border-2 rounded-full p-1 z-50"
       onClick={() =>
         setToggles({
           ...toggles,

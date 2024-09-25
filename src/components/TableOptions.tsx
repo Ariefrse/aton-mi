@@ -1,21 +1,22 @@
 import { BackspaceIcon } from "@heroicons/react/20/solid";
 import CsvButton from "./CsvButton";
-import DropDownMenu from "./DropDownMenu";
-import TextInput from "./TextInput";
+// import DropDownMenu from "./DropDownMenu";
+// import TextInput from "./TextInput";
 import CloseButton from "./CloseButton";
 import { useAtonStore } from "../store/store";
+import { GridToolbar } from "@mui/x-data-grid";
 
 const TableOptions = () => {
   const { toggles, setToggles } = useAtonStore();
 
   return (
     <>
-      <h1 className="text-2xl font-bold">AtoN Analytics</h1>
+      <h1 className="text-xl">AtoN Analytics</h1>
+      {/* <DropDownMenu />
       <DropDownMenu />
-      <DropDownMenu />
-      <TextInput />
-      <BackspaceIcon className="w-10 h-10" />
-      <div className="flex justify-center gap-2 items-center">
+      <TextInput /> */}
+      {/* <BackspaceIcon className="w-10 h-10" /> */}
+      {/* <div className="flex justify-center gap-2 items-center">
         <p>From</p>
         <input className="rounded-md text-gray-500 p-1" type="date" />
       </div>
@@ -24,17 +25,19 @@ const TableOptions = () => {
         <input className="rounded-md text-gray-500 p-1" type="date" />
       </div>
       <BackspaceIcon className="w-10 h-10" />
-      <CsvButton />
-      <CloseButton
-        onClick={() =>
-          setToggles({
-            ...toggles,
-            tableModule: false,
-            tableOptions: false,
-            atonSummaryToggleBtn: true,
-          })
-        }
-      />
+      <CsvButton /> */}
+      <div className="flex gap-6 mr-4">
+        <CloseButton
+          onClick={() =>
+            setToggles({
+              ...toggles,
+              tableModule: false,
+              tableOptions: false,
+              atonSummaryToggleBtn: true,
+            })
+          }
+        />
+      </div>
     </>
   );
 };
