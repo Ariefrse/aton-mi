@@ -27,7 +27,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   },
   tableFilterOptions: null,
   filterState: {
-    selectedDate: '2024/09/20',
+    selectedDate: '2024-09-20 23:59:59',
     selectedStructures: ['All'],
     selectedRegions: ['All'],
     condition: 'All',
