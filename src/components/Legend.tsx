@@ -5,9 +5,9 @@ import { AtonStatus } from "../declarations/types/types";
 
 const Legend = () => {
   const LEGEND_ITEMS = [
-    { shape: "diamond", device: "Beacon" },
+    { shape: "rhombus", device: "Beacon" },
     { shape: "circle", device: "Buoy" },
-    { shape: "rectangle", device: "Lighthouse" },
+    { shape: "square", device: "Lighthouse" },
   ];
 
   const STATUS_ITEMS = [
@@ -36,7 +36,7 @@ const Legend = () => {
             <div key={index} className="flex items-center mb-2">
               <div
                 className={`w-4 h-4 mr-2 ${
-                  item.shape === "diamond"
+                  item.shape === "rhombus"
                     ? "transform rotate-45 border border-white"
                     : item.shape === "circle"
                     ? "rounded-full border border-white"

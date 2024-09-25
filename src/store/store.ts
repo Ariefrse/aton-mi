@@ -29,7 +29,8 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   filterState: {
     selectedStructures: ['All'],
     selectedRegions: ['All'],
-    condition: 'All',
+    selectedAton: [], // Add this line
+    condition: "All",
   },
   atonData: [],
   selectedAton: null,

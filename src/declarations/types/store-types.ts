@@ -26,7 +26,7 @@ type ViewState = {
 }
 
 export type FilterState = {
-  selectedData: string
+  selectedData: string[];
   selectedStructures: string[];
   selectedRegions: string[];
   condition: 'All' | 'Good' | 'Not Good';
@@ -47,7 +47,7 @@ export type AtonStoreState = {
   tableFilterOptions: TableFilterOptions;
   filterState: FilterState
   atonData: AtonData[]
-  selectedAton: AtonData | null
+  selectedAton: AtonData
   atonTablePreviewData?: AtonTable[]
 
   setViewState: (data: ViewState) => void;
