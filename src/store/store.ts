@@ -27,19 +27,20 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   },
   tableFilterOptions: null,
   filterState: {
+    selectedDate: '2024-09-20 23:59:59',
     selectedStructures: ['All'],
     selectedRegions: ['All'],
     condition: 'All',
   },
   atonData: [],
   selectedAton: null,
-  atonTablePreviewData: [],
+  atonTableData: [],
   atonSummaryData: [],
 
   setViewState: (data) => set({ viewState: data }),
   setAtonData: (data) => set({ atonData: data }),
   setSelectedAton: (data) => set({ selectedAton: data }),
-  setAtonTableData: (data) => set({ atonTablePreviewData: data }),
+  setAtonTableData: (data) => set({ atonTableData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableFilterOptions: (options) => set({ tableFilterOptions: options }),
   setFilterState: (newState) => set((state) => ({

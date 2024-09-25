@@ -90,7 +90,6 @@ export type Msg21 = {
   msgTypeDesc: string;
   mmsi: number;
   aidType: number;
-  aidTypeDesc: string;
   aidName: string;
   positionAccuracy: number;
   long: number;
