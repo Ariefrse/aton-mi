@@ -35,7 +35,7 @@ export default function GraphModule() {
   const [graphData, setGraphData] = useState<number[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       if (selectedAton?.msg6) {
         const timestamps = selectedAton?.msg6
           .slice(0, 10)
@@ -49,7 +49,7 @@ export default function GraphModule() {
       } else {
         try {
           const msg6Data = await fetchMsg6(selectedAton?.mmsi!);
-          setSelectedAton({ ...selectedAton, msg6: msg6Data });
+          setSelectedAton({ ...selectedAton!, msg6: msg6Data });
 
           if (!msg6Data?.length || !msg6Data[0]?.[graphType]) {
             console.error("Missing or invalid data in API response");
@@ -65,9 +65,7 @@ export default function GraphModule() {
           console.error("Error fetching data:", error);
         }
       }
-    };
-
-    fetchData();
+    })();
   }, [graphType]);
 
   const xAxisDataConfig: AxisConfig<
@@ -108,7 +106,7 @@ export default function GraphModule() {
   const handleDownloadReport = async () => {
     const pdf = new jsPDF();
     let currentPage = 1;
-    let chartsPerPage = 2; // Number of charts to include per page
+    let chartsPerPage = 2;
 
     for (const [key, label] of Object.entries(graphDropdownItem)) {
       setGraphType(key as GraphType);
@@ -121,13 +119,12 @@ export default function GraphModule() {
         const canvas = await html2canvas(chartElement as HTMLElement);
         const imgData = canvas.toDataURL("image/png");
 
-        // Check if a new page is needed based on current page and charts per page
         if (currentPage > chartsPerPage) {
           pdf.addPage();
           currentPage = 1;
         }
 
-        const yPosition = (currentPage - 1) * (100 + 20); // Adjust based on your chart and label height
+        const yPosition = (currentPage - 1) * (100 + 20);
 
         pdf.text(label, 10, yPosition + 10);
         pdf.addImage(imgData, "PNG", 10, yPosition + 20, 190, 100);
