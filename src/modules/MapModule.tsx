@@ -56,15 +56,13 @@ export default function MapModule() {
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       if (atonData.length === 0) {
         const data = await fetchAtonData();
         setAtonData(data);
         setIsDataLoaded(true);
       }
-    };
-
-    fetchData();
+    })();
   }, []);
 
   const filteredAtonData = useMemo(
@@ -171,14 +169,14 @@ export default function MapModule() {
     filterState: FilterState
   ): AtonData[] {
     return atonData.filter((aton) => {
-      const structureMatch = 
-        filterState.selectedStructures.includes('All') || 
+      const structureMatch =
+        filterState.selectedStructures.includes("All") ||
         filterState.selectedStructures.includes(aton.type);
-      
-      const regionMatch = 
-        filterState.selectedRegions.includes('All') || 
+
+      const regionMatch =
+        filterState.selectedRegions.includes("All") ||
         filterState.selectedRegions.includes(aton.region);
-      
+
       const conditionMatch = match(filterState.condition)
         .with("All", () => true)
         .with("Good", () => aton.healthStatus === 1)
