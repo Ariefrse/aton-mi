@@ -11,8 +11,8 @@ const Legend = () => {
   ];
 
   const STATUS_ITEMS = [
-    { color: "green", status: "Good" },
-    { color: "red", status: "Not Good" },
+    { color: "#4CAF50", status: "Good" },  // Updated to match ATON_COLORS.GOOD
+    { color: "#FF0000", status: "Not Good" },  // Updated to match ATON_COLORS.NOT_GOOD
   ];
 
   const { toggles, setToggles } = useAtonStore();
@@ -50,7 +50,8 @@ const Legend = () => {
           {STATUS_ITEMS.map((item, index) => (
             <div key={index} className="flex items-center mb-2">
               <div
-                className={`w-4 h-4 mr-2 rounded-full bg-${item.color}-500`}
+                className={`w-4 h-4 mr-2 rounded-full`}
+                style={{ backgroundColor: item.color }}
               ></div>
               <span>{item.status}</span>
             </div>

@@ -32,7 +32,7 @@ import { fetchAtonData } from "../api/aton-api";
 export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
 
 const ATON_COLORS: { [key: string]: Color } = {
-  GOOD: [0, 255, 0, 255], // Green
+  GOOD: [76, 175, 80, 255], // #4CAF50
   NOT_GOOD: [255, 0, 0, 255], // Red
   OUTLINE: [255, 255, 255, 255], // White for the outline
 };
