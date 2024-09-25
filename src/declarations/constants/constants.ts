@@ -138,9 +138,9 @@ export const MAP_STYLES = {
 } as const;
 
 export const ATON_TYPE_ICONS = {
-  Buoy: "/assets/icon/buoy-icon.png",
-  Lighthouse: "/assets/icon/lighthouse-icon.png",
-  Beacon: "/assets/icon/beacon-icon.png",
+  Buoy: "/src/assets/icon/circle.svg",
+  Lighthouse: "/src/assets/icon/square.svg",
+  Beacon: "/src/assets/icon/rhombus.svg",
 } as const;
 
 export const INITIAL_VIEW_STATE = {

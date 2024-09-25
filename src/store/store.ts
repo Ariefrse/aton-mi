@@ -30,7 +30,8 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     selectedDate: '2024-09-20 23:59:59',
     selectedStructures: ['All'],
     selectedRegions: ['All'],
-    condition: 'All',
+    selectedAton: [], // Add this line
+    condition: "All",
   },
   atonData: [],
   selectedAton: null,
