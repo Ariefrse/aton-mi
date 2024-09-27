@@ -41,13 +41,13 @@ export type AtonFilterOptions = {
 
 type TableFilterOptions = GridFilterModel | null
 
-export type AtonStoreState = {
+export interface AtonStoreState {
   viewState?: ViewState
   toggles: Toggles;
   tableFilterOptions: TableFilterOptions;
   filterState: FilterState
-  atonData: AtonData[]
-  selectedAton: AtonData
+  atonData: AtonData[];
+  selectedAton: AtonData | null;
   atonTablePreviewData?: AtonTable[]
 
   setViewState: (data: ViewState) => void;
@@ -56,6 +56,7 @@ export type AtonStoreState = {
   setFilterState: (state: Partial<FilterState>) => void;
 
   setAtonData: (data: AtonData[]) => void;
-  setSelectedAton: (data: AtonData | null) => void
+  setSelectedAton: (data: AtonData[]) => void
   setAtonTableData: (data: AtonTable[]) => void;
+  setSelectedData: (data: AtonData[]) => void;
 };

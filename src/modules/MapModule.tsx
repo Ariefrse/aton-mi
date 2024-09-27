@@ -42,7 +42,7 @@ export default function MapModule() {
     viewState,
     atonData,
     setAtonData,
-    setSelectedAton,
+    setSelectedData,
     toggles,
     setToggles,
     filterState,
@@ -142,7 +142,7 @@ export default function MapModule() {
           lat: lat,
         },
       });
-      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi)!);
+      setSelectedData([atonData.find((aton) => aton.mmsi === mmsi)!]);
     } else {
       setRadialMenuData(null);
       setToggles({ ...toggles, radialMenu: false });
@@ -153,7 +153,7 @@ export default function MapModule() {
     if (info.object) {
       const { mmsi, name, lastBattLant } = info.object;
       setToggles({ ...toggles, hoverInfo: true });
-      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi)!);
+      setSelectedData([atonData.find((aton) => aton.mmsi === mmsi)!]);
       setHoverData({
         name: name,
         mmsi: mmsi,

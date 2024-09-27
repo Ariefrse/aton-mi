@@ -38,12 +38,24 @@ export async function fetchAtonTableData(): Promise<AtonTable[]> {
   }
 }
 
-export async function fetchAtonData(): Promise<AtonData[]> {
+export async function fetchAtonData(dateOption?: { startDate?: string; endDate?: string; selectDate?: string }): Promise<AtonData[]> {
   try {
-    const res = await fetch('http://10.10.20.200:8020/aton/cloud/lists');
+    let url = 'http://10.10.20.200:8020/aton/cloud/lists';
+
+    if (dateOption) {
+      if (dateOption.startDate && dateOption.endDate) {
+        // Date range
+        url = `http://10.10.20.200:8020/aton/cloud/lists/${dateOption.startDate}/${dateOption.endDate}`;
+      } else if (dateOption.selectDate) {
+        // Single date selection
+        url = `http://10.10.20.200:8020/aton/cloud/lists/select/${dateOption.selectDate}`;
+      }
+    }
+
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const data: AtonSummaryResDto[] = await res.json()
-    return data.map(transformAtonPanelData)
+    const data: AtonSummaryResDto[] = await res.json();
+    return data.map(transformAtonPanelData);
   } catch (error) {
     console.error('Failed to fetch AtoN summary:', error);
     throw error;

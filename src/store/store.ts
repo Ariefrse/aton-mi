@@ -1,5 +1,14 @@
 import { create } from "zustand";
+import { AtonData } from '../declarations/types/types';
 import { AtonStoreState } from "../declarations/types/store-types";
+
+
+interface AtonStore{
+  // ... existing state ...
+  atonData: AtonData[] | null
+  setAtonData: (data: AtonData[]) => void
+  // ... other existing methods ...
+}
 
 export const useAtonStore = create<AtonStoreState>((set) => ({
   viewState: {
@@ -29,17 +38,17 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   filterState: {
     selectedStructures: ['All'],
     selectedRegions: ['All'],
-    selectedAton: [], // Add this line
+    selectedData: [],
     condition: "All",
   },
-  atonData: [],
-  selectedAton: null,
+  atonData: [],  // Changed from null to an empty array
+  selectedAton: null,  // Changed from [] to null
   atonTablePreviewData: [],
   atonSummaryData: [],
 
   setViewState: (data) => set({ viewState: data }),
-  setAtonData: (data) => set({ atonData: data }),
-  setSelectedAton: (data) => set({ selectedAton: data }),
+  setAtonData: (data: AtonData[]) => set({ atonData: data }),
+  setSelectedAton: (data: AtonData | null) => set({ selectedAton: data }),
   setAtonTableData: (data) => set({ atonTablePreviewData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableFilterOptions: (options) => set({ tableFilterOptions: options }),

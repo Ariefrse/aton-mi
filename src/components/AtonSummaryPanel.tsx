@@ -3,16 +3,27 @@ import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
 import { AtonData, AtonType, Region } from '../declarations/types/types'
 import { fetchAtonData } from '../api/aton-api'
+import DateSelector from './DateSelector'
 
 export default function AtonSummaryPanel() {
   const {
     toggles,
     setToggles,
     atonData,
+    setAtonData,
     filterState,
     setFilterState,
   } = useAtonStore();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+  const handleDateChange = async (dateOption: { startDate?: string; endDate?: string; selectDate?: string }) => {
+    try {
+      const data = await fetchAtonData(dateOption);
+      setAtonData(data);
+    } catch (error) {
+      console.error('Error fetching AtoN data:', error);
+    }
+  };
 
   useEffect(() => {
     fetchAtonData();
@@ -155,142 +166,145 @@ export default function AtonSummaryPanel() {
   );
 
   return (
-    <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">AtoN Summary</h2>
+    <div className="aton-summary-panel">
+      <DateSelector onDateChange={handleDateChange} />
+      <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">AtoN Summary</h2>
+          <button
+            className="text-gray-400 hover:text-white"
+            aria-label="Close"
+            onClick={() =>
+              setToggles({
+                ...toggles,
+                atonSummaryPanel: false,
+                atonSummaryToggleBtn: true,
+              })
+            }
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <ExpandableSection title='Structure'>
+            <div className="space-y-2">
+              {uniqueStructures.map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id={`structure-${item}`} 
+                    name="structure"
+                    checked={filterState.selectedStructures.includes(item)}
+                    onChange={() => handleStructureChange(item)}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                  <label htmlFor={`structure-${item}`}>{item}</label>
+                </div>
+              ))}
+            </div>
+          </ExpandableSection>
+          
+
+          <ExpandableSection title='Condition'>
+            <div className="space-y-2">
+              {["All", "Good", "Not Good"].map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id={`condition-${item}`}
+                    name="condition"
+                    checked={filterState.condition === item}
+                    onChange={() =>
+                      handleConditionChange(item as "All" | "Good" | "Not Good")
+                    }
+                    className="bg-gray-700 border-gray-600"
+                  />
+                  <label htmlFor={`condition-${item}`}>{item}</label>
+                </div>
+              ))}
+            </div>
+          </ExpandableSection>
+
+          <ExpandableSection title='Region'>
+            <div className="space-y-2">
+              {uniqueRegions.map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id={`region-${item}`} 
+                    name="region"
+                    checked={filterState.selectedRegions.includes(item)}
+                    onChange={() => handleRegionChange(item)}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                  <label htmlFor={`region-${item}`}>{item}</label>
+                </div>
+              ))}
+            </div>
+          </ExpandableSection>
+
+          <div className="flex justify-between items-center">
+            <span className="font-medium">Total Sites</span>
+            <span className="font-bold">
+              {memoizedPanelData?.totalSites || "Loading..."}
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            {memoizedPanelData ? (
+              <>
+                <SummaryItem
+                  label="No Messages 21"
+                  value={memoizedPanelData.msg21Count}
+                  total={memoizedPanelData.totalSites}
+                />
+                <SummaryItem
+                  label="No Messages 6"
+                  value={memoizedPanelData.msg6Count}
+                  total={memoizedPanelData.totalSites}
+                />
+                <SummaryItem
+                  label="Light Error"
+                  value={memoizedPanelData.lightError}
+                  total={memoizedPanelData.totalSites}
+                />
+                <SummaryItem
+                  label="Low Batt AtoN"
+                  value={memoizedPanelData.lowBattAtoN}
+                  total={memoizedPanelData.totalSites}
+                />
+                <SummaryItem
+                  label="Low Batt Lantern"
+                  value={memoizedPanelData.lowBattLant}
+                  total={memoizedPanelData.totalSites}
+                />
+                <SummaryItem
+                  label="Bad LDR"
+                  value={memoizedPanelData.badLDR}
+                  total={memoizedPanelData.totalSites}
+                />
+                <SummaryItem
+                  label="Off Position"
+                  value={memoizedPanelData.offPos}
+                  total={memoizedPanelData.totalSites}
+                />
+              </>
+            ) : (
+              <p>Loading summary data...</p>
+            )}
+          </div>
+        </div>
         <button
-          className="text-gray-400 hover:text-white"
-          aria-label="Close"
+          className="absolute bottom-2 right-2 bg-red-500 rounded-xl w-7 h-7 border-2 border-white hover:bg-red-400 flex items-center justify-center"
           onClick={() =>
             setToggles({
               ...toggles,
-              atonSummaryPanel: false,
-              atonSummaryToggleBtn: true,
+              atonMessageCountOverview: !toggles.atonMessageCountOverview,
             })
           }
-        >
-          <X size={20} />
-        </button>
+        ></button>
       </div>
-
-      <div className="space-y-4">
-        <ExpandableSection title='Structure'>
-          <div className="space-y-2">
-            {uniqueStructures.map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input 
-                  type="checkbox" 
-                  id={`structure-${item}`} 
-                  name="structure"
-                  checked={filterState.selectedStructures.includes(item)}
-                  onChange={() => handleStructureChange(item)}
-                  className="bg-gray-700 border-gray-600"
-                />
-                <label htmlFor={`structure-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
-        </ExpandableSection>
-          
-
-        <ExpandableSection title='Condition'>
-          <div className="space-y-2">
-            {["All", "Good", "Not Good"].map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id={`condition-${item}`}
-                  name="condition"
-                  checked={filterState.condition === item}
-                  onChange={() =>
-                    handleConditionChange(item as "All" | "Good" | "Not Good")
-                  }
-                  className="bg-gray-700 border-gray-600"
-                />
-                <label htmlFor={`condition-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
-        </ExpandableSection>
-
-        <ExpandableSection title='Region'>
-          <div className="space-y-2">
-            {uniqueRegions.map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input 
-                  type="checkbox" 
-                  id={`region-${item}`} 
-                  name="region"
-                  checked={filterState.selectedRegions.includes(item)}
-                  onChange={() => handleRegionChange(item)}
-                  className="bg-gray-700 border-gray-600"
-                />
-                <label htmlFor={`region-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
-        </ExpandableSection>
-
-        <div className="flex justify-between items-center">
-          <span className="font-medium">Total Sites</span>
-          <span className="font-bold">
-            {memoizedPanelData?.totalSites || "Loading..."}
-          </span>
-        </div>
-
-        <div className="space-y-2">
-          {memoizedPanelData ? (
-            <>
-              <SummaryItem
-                label="No Messages 21"
-                value={memoizedPanelData.msg21Count}
-                total={memoizedPanelData.totalSites}
-              />
-              <SummaryItem
-                label="No Messages 6"
-                value={memoizedPanelData.msg6Count}
-                total={memoizedPanelData.totalSites}
-              />
-              <SummaryItem
-                label="Light Error"
-                value={memoizedPanelData.lightError}
-                total={memoizedPanelData.totalSites}
-              />
-              <SummaryItem
-                label="Low Batt AtoN"
-                value={memoizedPanelData.lowBattAtoN}
-                total={memoizedPanelData.totalSites}
-              />
-              <SummaryItem
-                label="Low Batt Lantern"
-                value={memoizedPanelData.lowBattLant}
-                total={memoizedPanelData.totalSites}
-              />
-              <SummaryItem
-                label="Bad LDR"
-                value={memoizedPanelData.badLDR}
-                total={memoizedPanelData.totalSites}
-              />
-              <SummaryItem
-                label="Off Position"
-                value={memoizedPanelData.offPos}
-                total={memoizedPanelData.totalSites}
-              />
-            </>
-          ) : (
-            <p>Loading summary data...</p>
-          )}
-        </div>
-      </div>
-      <button
-        className="absolute bottom-2 right-2 bg-red-500 rounded-xl w-7 h-7 border-2 border-white hover:bg-red-400 flex items-center justify-center"
-        onClick={() =>
-          setToggles({
-            ...toggles,
-            atonMessageCountOverview: !toggles.atonMessageCountOverview,
-          })
-        }
-      ></button>
     </div>
   );
 }
