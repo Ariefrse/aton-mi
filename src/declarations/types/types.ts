@@ -27,10 +27,10 @@ export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
 export type PkgType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
 export type MsgType = keyof typeof AIS_MSG_TYPE
 
-export type AtonData = {
+export interface AtonData {
   type: AtonType;
   region: string;
-  healthStatus: number;
+  healthStatus: number; // 1 for good, 0 for not good
   msg21Count: number;
   msg6Count: number;
   lastLight: number;

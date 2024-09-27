@@ -49,7 +49,7 @@ export type AtonStoreState = {
   filter: Filter
   atonData: AtonData[]
   selectedAton: AtonData | null
-  atonTableData?: AtonTable[]
+  atonTablePreviewData?: AtonTable[]
 
   setViewState: (data: ViewState) => void;
   setToggles: (modal: Toggles) => void;

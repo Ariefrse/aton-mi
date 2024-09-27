@@ -31,9 +31,9 @@ import { fetchAtonData } from "../api/aton-api";
 export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
 
 const ATON_COLORS: { [key: string]: Color } = {
-  GOOD: [76, 175, 80, 255],
-  NOT_GOOD: [255, 0, 0, 255],
-  OUTLINE: [255, 255, 255, 255],
+  GOOD: [0, 255, 0, 255], // Green
+  NOT_GOOD: [255, 0, 0, 255], // Red
+  OUTLINE: [255, 255, 255, 255], // White for the outline
 };
 
 export default function MapModule() {
@@ -201,7 +201,10 @@ export default function MapModule() {
 
   return (
     <div className="h-[90vh] overflow-visible p-3 mx-10 bg-gray-900 text-white flex flex-col rounded-md">
-      <MapHeader mapStyle={mapStyle} setMapStyle={setMapStyle} />
+      <MapHeader 
+        mapStyle={mapStyle} 
+        setMapStyle={(style: string) => setMapStyle(style as MapStyle)} 
+      />
       <div className="flex items-center justify-center flex-1 relative">
         <DeckGL
           initialViewState={viewState}
