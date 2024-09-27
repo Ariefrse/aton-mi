@@ -1,5 +1,5 @@
 import { GridFilterModel } from "@mui/x-data-grid";
-import { AtonData, AtonStatus, AtonTable, AtonType, Msg6 } from "./types";
+import { AtonData, AtonStatus, AtonTable, AtonType } from "./types";
 
 /** Popups/modals/nav tools to toggle on/off */
 type Toggles = {
@@ -25,10 +25,11 @@ type ViewState = {
   bearing: number,
 }
 
-export type FilterState = {
-  selectedDate: string
-  selectedStructures: string[];
-  selectedRegions: string[];
+export type Filter = {
+  /** Date fmt = yyyy-mm-dd */
+  date: string
+  structures: string[];
+  regions: string[];
   condition: 'All' | 'Good' | 'Not Good';
 }
 
@@ -45,7 +46,7 @@ export type AtonStoreState = {
   viewState?: ViewState
   toggles: Toggles;
   tableFilterOptions: TableFilterOptions;
-  filterState: FilterState
+  filter: Filter
   atonData: AtonData[]
   selectedAton: AtonData | null
   atonTableData?: AtonTable[]
@@ -53,7 +54,7 @@ export type AtonStoreState = {
   setViewState: (data: ViewState) => void;
   setToggles: (modal: Toggles) => void;
   setTableFilterOptions: (options: TableFilterOptions) => void;
-  setFilterState: (state: Partial<FilterState>) => void;
+  setFilter: (state: Partial<Filter>) => void;
 
   setAtonData: (data: AtonData[]) => void;
   setSelectedAton: (data: AtonData | null) => void

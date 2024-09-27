@@ -1,9 +1,7 @@
-import { Diamond, Circle, Square } from "lucide-react";
 import { IoMdClose } from "react-icons/io";
 import { useAtonStore } from "../store/store";
-import { AtonStatus } from "../declarations/types/types";
 
-const Legend = () => {
+export default function Legend(){
   const LEGEND_ITEMS = [
     { shape: "diamond", device: "Beacon" },
     { shape: "circle", device: "Buoy" },
@@ -61,5 +59,3 @@ const Legend = () => {
     </div>
   );
 };
-
-export default Legend;

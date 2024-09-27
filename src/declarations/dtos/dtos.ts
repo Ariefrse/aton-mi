@@ -46,9 +46,9 @@ export type Msg6ResDto = {
   msg_type: number;
   msg_type_desc: string;
   off_pos: number;
-  packageCh: string;
+  packageCh: PkgCh;
   packageID: number;
-  packageType: string;
+  packageType: PkgType;
   racon: number;
   repeat: number;
   retransmit: number;

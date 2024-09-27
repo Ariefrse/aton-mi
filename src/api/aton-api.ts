@@ -38,9 +38,9 @@ export async function fetchAtonTableData(): Promise<AtonTable[]> {
   }
 }
 
-export async function fetchAtonData(): Promise<AtonData[]> {
+export async function fetchAtonData(selectedDate: string): Promise<AtonData[]> {
   try {
-    const res = await fetch('http://10.10.20.200:8020/aton/cloud/lists');
+    const res = await fetch(`http://10.10.20.200:8020/aton/cloud/lists/select/${selectedDate}`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data: AtonSummaryResDto[] = await res.json()
     return data.map(transformAtonPanelData)

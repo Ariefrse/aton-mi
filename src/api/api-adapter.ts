@@ -28,6 +28,7 @@ export function transformAtonPanelData(data: AtonSummaryResDto): AtonData {
     lat: data.latitude,
     name: data.name,
     mmsi: data.mmsi,
+    ts: data.ts_iso,
   }
 }
 
@@ -37,7 +38,6 @@ export function transformMsg21(data: Msg21ResDto): Msg21 {
     msgTypeDesc: data.msg_type_desc,
     mmsi: data.mmsi,
     aidType: data.aidType,
-    aidTypeDesc: data.aidTypeDesc,
     aidName: data.aidName,
     positionAccuracy: data.positionAccuracy,
     long: data.longitude,

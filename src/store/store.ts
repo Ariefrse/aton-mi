@@ -26,10 +26,10 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     messageCountOverview: false,
   },
   tableFilterOptions: null,
-  filterState: {
-    selectedDate: '2024-09-20 23:59:59',
-    selectedStructures: ['All'],
-    selectedRegions: ['All'],
+  filter: {
+    date: new Date().toISOString().split('T')[0].toString(),
+    structures: ['All'],
+    regions: ['All'],
     condition: 'All',
   },
   atonData: [],
@@ -43,7 +43,7 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
   setAtonTableData: (data) => set({ atonTableData: data }),
   setToggles: (toggles) => set({ toggles }),
   setTableFilterOptions: (options) => set({ tableFilterOptions: options }),
-  setFilterState: (newState) => set((state) => ({
-    filterState: { ...state.filterState, ...newState },
+  setFilter: (newState) => set((state) => ({
+    filter: { ...state.filter, ...newState },
   })),
 }));
