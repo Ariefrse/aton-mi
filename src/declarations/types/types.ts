@@ -21,6 +21,7 @@ export type ShipTypeColorMap = { [key: number]: string; };
 
 export type AtonType = 'Beacon' | 'Buoy' | 'Lighthouse';
 export type AtonStatus = 'Good' | 'Warning' | 'Error'
+
 export type PkgCh = 'A' | 'B'
 export type Region = 'North' | 'South' | 'East' | 'West' | 'Borneo'
 export type PkgType = '!AIVDM' | '!AIVDO' | '!AIQHM' | '!ABVDM'
@@ -41,8 +42,9 @@ export interface AtonData {
   lat: number;
   name: string;
   mmsi: number;
-  msg6?: Msg6[];
-  msg21?: Msg21[];
+  ts: string
+  msg6?: Msg6[]
+  msg21?: Msg21[]
 };
 
 export type Msg6 = {
@@ -92,7 +94,6 @@ export type Msg21 = {
   msgTypeDesc: string;
   mmsi: number;
   aidType: number;
-  aidTypeDesc: string;
   aidName: string;
   positionAccuracy: number;
   long: number;

@@ -40,6 +40,11 @@ export const useAtonStore = create<AtonStoreState>((set) => ({
     selectedRegions: ['All'],
     selectedData: [],
     condition: "All",
+  filter: {
+    date: new Date().toISOString().split('T')[0].toString(),
+    structures: ['All'],
+    regions: ['All'],
+    condition: 'All',
   },
   atonData: [],  // Changed from null to an empty array
   selectedAton: null,  // Changed from [] to null

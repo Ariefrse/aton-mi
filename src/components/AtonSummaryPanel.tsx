@@ -1,21 +1,18 @@
-/* The above code is a TypeScript React component called `AtonSummaryPanel`. */
-/* The above code is a TypeScript React component called `AtonSummaryPanel`. */
-import { useEffect, useState, useMemo } from 'react'
-import { ChevronDown, ChevronUp, X } from 'lucide-react'
-import { useAtonStore } from '../store/store'
-import { AtonData, AtonType, Region } from '../declarations/types/types'
-import { fetchAtonData } from '../api/aton-api'
-import DateSelector from './DateSelector'
+import { useEffect, useState, useMemo, ReactNode } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useAtonStore } from "../store/store";
+import { AtonData } from "../declarations/types/types";
+import { fetchAtonData } from "../api/aton-api";
+import { BiChevronDown } from "react-icons/bi";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import { ClickAwayListener } from "@mui/base/ClickAwayListener";
+import dayjs, { Dayjs } from "dayjs";
 
 export default function AtonSummaryPanel() {
-  const {
-    toggles,
-    setToggles,
-    atonData,
-    setAtonData,
-    filterState,
-    setFilterState,
-  } = useAtonStore();
+  const { toggles, setToggles, atonData, filter, setFilter } = useAtonStore();
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const handleDateChange = async (dateOption: { selectDate: string }) => {
@@ -28,24 +25,28 @@ export default function AtonSummaryPanel() {
   };
 
   useEffect(() => {
-    fetchAtonData();
+    fetchAtonData(filter.date);
   }, []);
 
   const filteredPanelData = useMemo(() => {
     if (!atonData) return null;
 
     return atonData.filter((item: AtonData) => {
-      const structureMatch = filterState.selectedStructures.includes('All') || filterState.selectedStructures.includes(item.type as AtonType);
-      const regionMatch = filterState.selectedRegions.includes('All') || filterState.selectedRegions.includes(item.region as Region);
+      const structureMatch =
+        filter.structures.includes("All") ||
+        filter.structures.includes(item.type);
+      const regionMatch =
+        filter.regions.includes("All") || filter.regions.includes(item.region);
       let conditionMatch = true;
-      if (filterState.condition === 'Good') {
+      if (filter.condition === "Good") {
         conditionMatch = item.healthStatus === 1;
-      } else if (filterState.condition === 'Not Good') {
+      } else if (filter.condition === "Not Good") {
         conditionMatch = item.healthStatus === 0;
       }
+
       return structureMatch && regionMatch && conditionMatch;
     });
-  }, [atonData, filterState]);
+  }, [atonData, filter]);
 
   const memoizedPanelData = useMemo(() => {
     if (!filteredPanelData) return null;
@@ -90,61 +91,62 @@ export default function AtonSummaryPanel() {
   };
 
   const handleStructureChange = (structure: string) => {
-    if (structure === 'All') {
-      setFilterState({
-        ...filterState,
-        selectedStructures: ['All']
-      });
+    if (structure === "All") {
+      setFilter({ ...filter, structures: ["All"] });
     } else {
-      let newSelectedStructures = filterState.selectedStructures.includes('All')
+      let newSelectedStructures = filter.structures.includes("All")
         ? []
-        : [...filterState.selectedStructures];
+        : [...filter.structures];
 
       if (newSelectedStructures.includes(structure)) {
-        newSelectedStructures = newSelectedStructures.filter(item => item !== structure);
+        newSelectedStructures = newSelectedStructures.filter(
+          (item) => item !== structure
+        );
       } else {
         newSelectedStructures.push(structure);
       }
 
-      setFilterState({
-        ...filterState,
-        selectedStructures: newSelectedStructures.length === 0 ? ['All'] : newSelectedStructures
+      setFilter({
+        ...filter,
+        structures:
+          newSelectedStructures.length === 0 ? ["All"] : newSelectedStructures,
       });
     }
-  }
+  };
 
   const handleRegionChange = (region: string) => {
-    if (region === 'All') {
-      setFilterState({
-        ...filterState,
-        selectedRegions: ['All']
+    if (region === "All") {
+      setFilter({
+        ...filter,
+        regions: ["All"],
       });
     } else {
-      let newSelectedRegions = filterState.selectedRegions.includes('All')
+      let newSelectedRegions = filter.regions.includes("All")
         ? []
-        : [...filterState.selectedRegions];
+        : [...filter.regions];
 
       if (newSelectedRegions.includes(region)) {
-        newSelectedRegions = newSelectedRegions.filter(item => item !== region);
+        newSelectedRegions = newSelectedRegions.filter(
+          (item) => item !== region
+        );
       } else {
         newSelectedRegions.push(region);
       }
 
-      setFilterState({
-        ...filterState,
-        selectedRegions: newSelectedRegions.length === 0 ? ['All'] : newSelectedRegions
+      setFilter({
+        ...filter,
+        regions: newSelectedRegions.length === 0 ? ["All"] : newSelectedRegions,
       });
     }
-  }
-
-  const handleConditionChange = (newCondition: "All" | "Good" | "Not Good") => {
-    setFilterState({
-      ...filterState,
-      condition: newCondition,
-    });
   };
 
-  const ExpandableSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  const ExpandableSection = ({
+    title,
+    children,
+  }: {
+    title: string;
+    children: ReactNode;
+  }) => (
     <div>
       <button
         className="w-full flex justify-between items-center py-2"
@@ -168,83 +170,115 @@ export default function AtonSummaryPanel() {
   );
 
   return (
-    <div className="aton-summary-panel">
-      <DateSelector onDateChange={handleDateChange} />
-      <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">AtoN Summary</h2>
-          <button
-            className="text-gray-400 hover:text-white"
-            aria-label="Close"
-            onClick={() =>
-              setToggles({
-                ...toggles,
-                atonSummaryPanel: false,
-                atonSummaryToggleBtn: true,
-              })
-            }
+    <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-baseline">
+          <h2 className="text-xl font-semibold">AtoN Summary</h2>
+          <div
+            className="flex items-center gap-1"
+            onClick={() => setIsDatePickerOpen(true)}
           >
-            <X size={20} />
-          </button>
+            <p className="text-blue-400 ml-3 font-semibold hover:cursor-pointer text-sm">
+              {filter.date}
+            </p>
+            <div className="relative">
+              <BiChevronDown className="text-blue-400 hover:text-blue-300 transition-all duration-200 hover:cursor-pointer" />
+              {isDatePickerOpen && (
+                <ClickAwayListener
+                  onClickAway={() => setIsDatePickerOpen(false)}
+                >
+                  <div className="absolute top-full left-0 bg-gray-700 w-auto h-auto rounded-md shadow-md">
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateCalendar
+                        value={dayjs(filter.date)}
+                        onChange={(val: Dayjs) =>
+                          setFilter({
+                            ...filter,
+                            date: val.format("YYYY-MM-DD"),
+                          })
+                        }
+                      />
+                    </LocalizationProvider>
+                  </div>
+                </ClickAwayListener>
+              )}
+            </div>
+          </div>
         </div>
+        <button
+          className="text-gray-400 hover:text-white"
+          aria-label="Close"
+          onClick={() =>
+            setToggles({
+              ...toggles,
+              atonSummaryPanel: false,
+              atonSummaryToggleBtn: true,
+            })
+          }
+        >
+          <X size={20} />
+        </button>
+      </div>
 
-        <div className="space-y-4">
-          <ExpandableSection title='Structure'>
-            <div className="space-y-2">
-              {uniqueStructures.map((item) => (
-                <div key={item} className="flex items-center space-x-2">
-                  <input 
-                    type="checkbox" 
-                    id={`structure-${item}`} 
-                    name="structure"
-                    checked={filterState.selectedStructures.includes(item)}
-                    onChange={() => handleStructureChange(item)}
-                    className="bg-gray-700 border-gray-600"
-                  />
-                  <label htmlFor={`structure-${item}`}>{item}</label>
-                </div>
-              ))}
-            </div>
-          </ExpandableSection>
-          
+      <div className="space-y-4">
+        <ExpandableSection title="Structure">
+          <div className="space-y-2">
+            {uniqueStructures.map((item) => (
+              <div key={item} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id={`structure-${item}`}
+                  name="structure"
+                  checked={filter.structures.includes(item)}
+                  onChange={() => handleStructureChange(item)}
+                  className="bg-gray-700 border-gray-600"
+                />
+                <label htmlFor={`structure-${item}`}>{item}</label>
+              </div>
+            ))}
+          </div>
+        </ExpandableSection>
 
-          <ExpandableSection title='Condition'>
-            <div className="space-y-2">
-              {["All", "Good", "Not Good"].map((item) => (
-                <div key={item} className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    id={`condition-${item}`}
-                    name="condition"
-                    checked={filterState.condition === item}
-                    onChange={() =>
-                      handleConditionChange(item as "All" | "Good" | "Not Good")
-                    }
-                    className="bg-gray-700 border-gray-600"
-                  />
-                  <label htmlFor={`condition-${item}`}>{item}</label>
-                </div>
-              ))}
-            </div>
-          </ExpandableSection>
+        <ExpandableSection title="Condition">
+          <div className="space-y-2">
+            {["All", "Good", "Not Good"].map((item) => (
+              <div key={item} className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  id={`condition-${item}`}
+                  name="condition"
+                  checked={filter.condition === item}
+                  onChange={() =>
+                    setFilter({
+                      ...filter,
+                      condition: item as "All" | "Good" | "Not Good",
+                    })
+                  }
+                  className="bg-gray-700 border-gray-600"
+                />
+                <label htmlFor={`condition-${item}`}>{item}</label>
+              </div>
+            ))}
+          </div>
+        </ExpandableSection>
 
-          <ExpandableSection title='Region'>
-            <div className="space-y-2">
-              {uniqueRegions.map((item) => (
-                <div key={item} className="flex items-center space-x-2">
-                  <input 
-                    type="checkbox" 
-                    id={`region-${item}`} 
-                    name="region"
-                    checked={filterState.selectedRegions.includes(item)}
-                    onChange={() => handleRegionChange(item)}
-                    className="bg-gray-700 border-gray-600"
-                  />
-                  <label htmlFor={`region-${item}`}>{item}</label>
-                </div>
-              ))}
-            </div>
-          </ExpandableSection>
+        <ExpandableSection title="Region">
+          <div className="space-y-2">
+            {uniqueRegions.map((item) => (
+              <div key={item} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id={`region-${item}`}
+                  name="region"
+                  checked={filter.regions.includes(item)}
+                  onChange={() => handleRegionChange(item)}
+                  className="bg-gray-700 border-gray-600"
+                />
+                <label htmlFor={`region-${item}`}>{item}</label>
+              </div>
+            ))}
+          </div>
+        </ExpandableSection>
 
           <div className="flex justify-between items-center">
             <span className="font-medium">Total Sites</span>

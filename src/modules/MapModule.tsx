@@ -14,7 +14,6 @@ import { AtonData } from "../declarations/types/types";
 import { MAP_STYLES } from "../declarations/constants/constants";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-// Import components
 import Legend from "../components/Legend";
 import HoverInfo, { HoverInfoProps } from "../components/HoverInfo";
 import TableModule from "./TableModule";
@@ -26,7 +25,7 @@ import AtonSummaryToggleBtn from "../components/AtonSummaryToggleBtn";
 import AtonSummaryPanel from "../components/AtonSummaryPanel";
 import ClickInfo, { ClickInfoProps } from "../components/ClickInfo";
 import MapHeader from "../components/MapHeader";
-import { FilterState } from "../declarations/types/store-types";
+import { Filter } from "../declarations/types/store-types";
 import { fetchAtonData } from "../api/aton-api";
 
 export type MapStyle = (typeof MAP_STYLES)[keyof typeof MAP_STYLES];
@@ -45,7 +44,7 @@ export default function MapModule() {
     setSelectedData,
     toggles,
     setToggles,
-    filterState,
+    filter,
   } = useAtonStore();
   const mapRef = useRef<MapRef | null>(null);
   const [mapStyle, setMapStyle] = useState<MapStyle>(MAP_STYLES.satellite);
@@ -56,27 +55,38 @@ export default function MapModule() {
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (atonData.length === 0) {
-        const data = await fetchAtonData();
-        setAtonData(data);
-        setIsDataLoaded(true);
+    (async () => {
+      if (filter.date) {
+        console.log('Clearing atonData...');
+        setAtonData([]);
+        setLayers([])
+        setIsDataLoaded(false);
+  
+        try {
+          const data = await fetchAtonData(filter.date);
+          console.log('Fetched data:', data);
+          if (data.length === 0) console.log('No data for selected date');
+          setAtonData(data);
+        } catch (error) {
+          console.error("Error fetching Aton data:", error);
+        } finally {
+          setIsDataLoaded(true);
+        }
       }
-    };
-
-    fetchData();
-  }, []);
+    })();
+  }, [filter.date]);
+  
 
   const filteredAtonData = useMemo(
-    () => filterAtonData(atonData, filterState),
-    [atonData, filterState]
+    () => filterAtonData(atonData, filter),
+    [atonData, filter]
   );
 
   useEffect(() => {
     if (!atonData || atonData.length === 0) return;
     const layers = createLayers(filteredAtonData);
     setLayers(layers);
-  }, [atonData, filterState, toggles, setToggles]);
+  }, [atonData, filter, toggles, setToggles]);
 
   useEffect(() => {
     const mapEl = mapRef.current?.getMap().getCanvas();
@@ -86,7 +96,6 @@ export default function MapModule() {
     }
   }, [mapRef, toggles, setToggles]);
 
-  // Event handlers
   const handleRightClick = (event: MouseEvent) => {
     event.preventDefault();
     const { clientX: x, clientY: y } = event;
@@ -130,17 +139,14 @@ export default function MapModule() {
       const { mmsi, name, type, lng, lat } = info.object;
       setToggles({ ...toggles, radialMenu: true });
       setRadialMenuData({
-        mmsi: mmsi,
+        mmsi,
         position: [info.x, info.y],
       });
       setClickInfo({
-        name: name,
-        mmsi: mmsi,
-        type: type,
-        position: {
-          lng: lng,
-          lat: lat,
-        },
+        name,
+        mmsi,
+        type,
+        position: { lng, lat },
       });
       setSelectedData([atonData.find((aton) => aton.mmsi === mmsi)!]);
     } else {
@@ -155,8 +161,8 @@ export default function MapModule() {
       setToggles({ ...toggles, hoverInfo: true });
       setSelectedData([atonData.find((aton) => aton.mmsi === mmsi)!]);
       setHoverData({
-        name: name,
-        mmsi: mmsi,
+        name,
+        mmsi,
         lantBatt: lastBattLant,
         position: [info.x, info.y],
       });
@@ -166,20 +172,16 @@ export default function MapModule() {
     }
   };
 
-  function filterAtonData(
-    atonData: AtonData[],
-    filterState: FilterState
-  ): AtonData[] {
+  function filterAtonData(atonData: AtonData[], filter: Filter): AtonData[] {
     return atonData.filter((aton) => {
-      const structureMatch = 
-        filterState.selectedStructures.includes('All') || 
-        filterState.selectedStructures.includes(aton.type);
-      
-      const regionMatch = 
-        filterState.selectedRegions.includes('All') || 
-        filterState.selectedRegions.includes(aton.region);
-      
-      const conditionMatch = match(filterState.condition)
+      const structureMatch =
+        filter.structures.includes("All") ||
+        filter.structures.includes(aton.type);
+
+      const regionMatch =
+        filter.regions.includes("All") || filter.regions.includes(aton.region);
+
+      const conditionMatch = match(filter.condition)
         .with("All", () => true)
         .with("Good", () => aton.healthStatus === 1)
         .with("Not Good", () => aton.healthStatus === 0)

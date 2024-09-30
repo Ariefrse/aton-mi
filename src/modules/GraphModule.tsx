@@ -19,8 +19,8 @@ type GraphDataMap = {
 
 const graphDropdownItem: GraphDataMap = {
   voltInt: "ARMS Battery",
-  voltExt1: "ATON Battery",
-  voltExt2: "Battery Lantern Primary",
+  voltExt1: "Battery Lantern Primary",
+  voltExt2: "ATON Battery",
   light: "Light Sensor",
   beat: "Heart Beat Sensor",
   ambient: "Ambient Light Sensor",
@@ -29,7 +29,8 @@ const graphDropdownItem: GraphDataMap = {
 type GraphType = keyof typeof graphDropdownItem;
 
 export default function GraphModule() {
-  const { toggles, setToggles, selectedAton, setSelectedAton } = useAtonStore();
+  const { toggles, setToggles, selectedAton, setSelectedAton, filter: filterState } =
+    useAtonStore();
   const [graphType, setGraphType] = useState<GraphType>("voltInt");
   const [xAxisData, setXAxisData] = useState<string[]>([]);
   const [graphData, setGraphData] = useState<number[]>([]);
@@ -133,7 +134,7 @@ export default function GraphModule() {
       }
     }
 
-    pdf.save("chart-report.pdf");
+    pdf.save(`Report-${selectedAton?.mmsi}-${filterState?.date}.pdf`);
   };
 
   return (
