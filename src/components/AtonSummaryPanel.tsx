@@ -1,3 +1,5 @@
+/* The above code is a TypeScript React component called `AtonSummaryPanel`. */
+/* The above code is a TypeScript React component called `AtonSummaryPanel`. */
 import { useEffect, useState, useMemo } from 'react'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useAtonStore } from '../store/store'
@@ -16,7 +18,7 @@ export default function AtonSummaryPanel() {
   } = useAtonStore();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
-  const handleDateChange = async (dateOption: { startDate?: string; endDate?: string; selectDate?: string }) => {
+  const handleDateChange = async (dateOption: { selectDate: string }) => {
     try {
       const data = await fetchAtonData(dateOption);
       setAtonData(data);
@@ -309,6 +311,17 @@ export default function AtonSummaryPanel() {
   );
 }
 
+/**
+ * The type `SummaryItemProps` defines props for a component that displays a label, value, and total as
+ * strings.
+ * @property {string} label - The `label` property in the `SummaryItemProps` type represents a string
+ * value that describes the label or name associated with a particular summary item.
+ * @property {number} value - The `value` property in the `SummaryItemProps` type represents a specific
+ * numerical value related to the summary item.
+ * @property {number} total - The `total` property in the `SummaryItemProps` type represents the total
+ * value or amount associated with the summary item. It is a number type, indicating the overall total
+ * value that the summary item is a part of.
+ */
 type SummaryItemProps = {
   label: string;
   value: number;

@@ -38,18 +38,12 @@ export async function fetchAtonTableData(): Promise<AtonTable[]> {
   }
 }
 
-export async function fetchAtonData(dateOption?: { startDate?: string; endDate?: string; selectDate?: string }): Promise<AtonData[]> {
+export async function fetchAtonData(dateOption?: { selectDate: string }): Promise<AtonData[]> {
   try {
     let url = 'http://10.10.20.200:8020/aton/cloud/lists';
 
-    if (dateOption) {
-      if (dateOption.startDate && dateOption.endDate) {
-        // Date range
-        url = `http://10.10.20.200:8020/aton/cloud/lists/${dateOption.startDate}/${dateOption.endDate}`;
-      } else if (dateOption.selectDate) {
-        // Single date selection
-        url = `http://10.10.20.200:8020/aton/cloud/lists/select/${dateOption.selectDate}`;
-      }
+    if (dateOption && dateOption.selectDate) {
+      url = `http://10.10.20.200:8020/aton/cloud/lists/select/${dateOption.selectDate}`;
     }
 
     const res = await fetch(url);
