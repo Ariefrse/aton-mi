@@ -1,63 +1,43 @@
 import { GridFilterModel } from "@mui/x-data-grid";
 import { AtonData, AtonStatus, AtonTable, AtonType } from "./types";
+import { ViewState } from "react-map-gl";
 
 /** Popups/modals/nav tools to toggle on/off */
-type Toggles = {
-  radialMenu: boolean
-  hoverInfo: boolean
-  clickInfo: boolean
+export interface Toggles {
+  tableToggelBtn: boolean;
+  radialMenu: boolean;
+  hoverInfo: boolean;
+  clickInfo: boolean;
   legend: boolean;
   legendToggleBtn: boolean;
   atonSummaryToggleBtn: boolean;
   atonSummaryPanel: boolean;
-  atonMessageCountOverview: boolean;
   graph: boolean;
   tableModule: boolean;
   tableOptions: boolean;
-  tableToggelBtn: boolean;
-};
-
-type ViewState = {
-  longitude: number,
-  latitude: number,
-  zoom: number,
-  pitch: number,
-  bearing: number,
 }
 
-export type Filter = {
-  /** Date fmt = yyyy-mm-dd */
-  date: string
+export interface Filter {
   structures: string[];
   regions: string[];
-  condition: 'All' | 'Good' | 'Not Good';
+  selectedData: AtonData[];
+  condition: string;
+  date: string;
 }
-
-export type AtonFilterOptions = {
-  structure: AtonType
-  condition: AtonStatus | 'All'
-  regions: string
-  atonPropertyToFilter: 'No Message 21' | 'No Message 6' | 'Light Error' | 'Low Batt AtoN' | 'Low Batt Lantern' | 'Bad LDR' | 'Off Position'
-}
-
-type TableFilterOptions = GridFilterModel | null
 
 export interface AtonStoreState {
-  viewState?: ViewState
+  viewState: ViewState;
   toggles: Toggles;
-  tableFilterOptions: TableFilterOptions;
-  filter: Filter
-  atonData: AtonData[]
-  selectedAton: AtonData | null
-  atonTablePreviewData?: AtonTable[]
+  filter: Filter;
+  atonData: AtonData[];
+  selectedAton: AtonData | null;
+  atonTableData: AtonTable[];
+  atonSummaryData: any[]; // Replace 'any' with the correct type if available
 
-  setViewState: (data: ViewState) => void;
-  setToggles: (modal: Toggles) => void;
-  setTableFilterOptions: (options: TableFilterOptions) => void;
-  setFilter: (state: Partial<Filter>) => void;
-
-  setAtonData: (data: AtonData[]) => void;
-  setSelectedAton: (data: AtonData[]) => void
-  setAtonTableData: (data: AtonTable[]) => void;
-  setSelectedData: (data: AtonData[]) => void;
-};
+  setViewState: (viewState: Partial<ViewState>) => void;
+  setAtonData: (atonData: AtonData[]) => void;
+  setSelectedAton: (selectedAton: AtonData | null) => void;
+  setAtonTableData: (atonTableData: AtonTable[]) => void;
+  setToggles: (toggles: Partial<Toggles>) => void;
+  setFilter: (filter: Partial<Filter>) => void;
+}

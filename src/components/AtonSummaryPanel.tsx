@@ -15,9 +15,9 @@ export default function AtonSummaryPanel() {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
-  const handleDateChange = async (dateOption: { selectDate: string }) => {
+  const handleDateChange = async (date: string) => {
     try {
-      const data = await fetchAtonData(dateOption);
+      const data = await fetchAtonData(date);
       setAtonData(data);
     } catch (error) {
       console.error('Error fetching AtoN data:', error);
@@ -336,11 +336,10 @@ export default function AtonSummaryPanel() {
           onClick={() =>
             setToggles({
               ...toggles,
-              atonMessageCountOverview: !toggles.atonMessageCountOverview,
+              atonSummaryPanel: !toggles.atonSummaryPanel,
             })
           }
-        ></button>
-      </div>
+      ></button>
     </div>
   );
 }

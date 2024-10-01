@@ -41,7 +41,8 @@ export default function MapModule() {
     viewState,
     atonData,
     setAtonData,
-    setSelectedData,
+    selectedAton,
+    setSelectedAton,
     toggles,
     setToggles,
     filter,
@@ -66,16 +67,16 @@ export default function MapModule() {
           const data = await fetchAtonData(filter.date);
           console.log('Fetched data:', data);
           if (data.length === 0) console.log('No data for selected date');
-          setAtonData(data);
+        setAtonData(data);
         } catch (error) {
           console.error("Error fetching Aton data:", error);
         } finally {
-          setIsDataLoaded(true);
-        }
+        setIsDataLoaded(true);
+      }
       }
     })();
   }, [filter.date]);
-  
+
 
   const filteredAtonData = useMemo(
     () => filterAtonData(atonData, filter),
@@ -148,7 +149,7 @@ export default function MapModule() {
         type,
         position: { lng, lat },
       });
-      setSelectedData([atonData.find((aton) => aton.mmsi === mmsi)!]);
+      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi)!);
     } else {
       setRadialMenuData(null);
       setToggles({ ...toggles, radialMenu: false });
@@ -159,7 +160,7 @@ export default function MapModule() {
     if (info.object) {
       const { mmsi, name, lastBattLant } = info.object;
       setToggles({ ...toggles, hoverInfo: true });
-      setSelectedData([atonData.find((aton) => aton.mmsi === mmsi)!]);
+      setSelectedAton(atonData.find((aton) => aton.mmsi === mmsi)!);
       setHoverData({
         name,
         mmsi,
@@ -174,13 +175,13 @@ export default function MapModule() {
 
   function filterAtonData(atonData: AtonData[], filter: Filter): AtonData[] {
     return atonData.filter((aton) => {
-      const structureMatch =
+      const structureMatch = 
         filter.structures.includes("All") ||
         filter.structures.includes(aton.type);
-
-      const regionMatch =
+      
+      const regionMatch = 
         filter.regions.includes("All") || filter.regions.includes(aton.region);
-
+      
       const conditionMatch = match(filter.condition)
         .with("All", () => true)
         .with("Good", () => aton.healthStatus === 1)
@@ -230,7 +231,6 @@ export default function MapModule() {
         {toggles.atonSummaryPanel && (
           <div className="flex gap-2 absolute top-2 left-2 h-[95%]">
             <AtonSummaryPanel />
-            {toggles.atonMessageCountOverview && <AtonMessageCountOverview />}
           </div>
         )}
         {toggles.tableModule && <TableModule />}
