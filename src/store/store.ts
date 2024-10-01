@@ -10,6 +10,12 @@ export const useAtonStore = create<AtonStoreState>()((set) => ({
     zoom: 13,
     pitch: 0,
     bearing: 0,
+    padding: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0
+    }
   },
   toggles: {
     tableToggelBtn: true,
@@ -37,7 +43,11 @@ export const useAtonStore = create<AtonStoreState>()((set) => ({
   atonSummaryData: [],
 
   setViewState: (viewState: Partial<ViewState>) => 
-    set((state) => ({ viewState: { ...state.viewState, ...viewState } })),
+    set((state) => {
+      const newViewState = { ...state.viewState, ...viewState };
+      console.log('Current ViewState:', newViewState);
+      return { viewState: newViewState };
+    }),
   setAtonData: (atonData: AtonData[]) => set({ atonData }),
   setSelectedAton: (selectedAton: AtonData | null) => set({ selectedAton }),
   setAtonTableData: (atonTableData: AtonTable[]) => set({ atonTableData }),

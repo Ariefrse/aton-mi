@@ -9,6 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { ClickAwayListener } from "@mui/base/ClickAwayListener";
 import dayjs, { Dayjs } from "dayjs";
+import Draggable from 'react-draggable';
 
 export default function AtonSummaryPanel() {
   const { toggles, setToggles, atonData, filter, setFilter } = useAtonStore();
@@ -170,115 +171,116 @@ export default function AtonSummaryPanel() {
   );
 
   return (
-    <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-baseline">
-          <h2 className="text-xl font-semibold">AtoN Summary</h2>
-          <div
-            className="flex items-center gap-1"
-            onClick={() => setIsDatePickerOpen(true)}
-          >
-            <p className="text-blue-400 ml-3 font-semibold hover:cursor-pointer text-sm">
-              {filter.date}
-            </p>
-            <div className="relative">
-              <BiChevronDown className="text-blue-400 hover:text-blue-300 transition-all duration-200 hover:cursor-pointer" />
-              {isDatePickerOpen && (
-                <ClickAwayListener
-                  onClickAway={() => setIsDatePickerOpen(false)}
-                >
-                  <div className="absolute top-full left-0 bg-gray-700 w-auto h-auto rounded-md shadow-md">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateCalendar
-                        value={dayjs(filter.date)}
-                        onChange={(val: Dayjs) =>
-                          setFilter({
-                            ...filter,
-                            date: val.format("YYYY-MM-DD"),
-                          })
-                        }
-                      />
-                    </LocalizationProvider>
-                  </div>
-                </ClickAwayListener>
-              )}
+    <Draggable handle=".drag-handle">
+      <div className="bg-gray-900 text-white p-4 rounded-lg w-80 shadow-lg absolute">
+        <div className="flex justify-between items-center mb-4 drag-handle cursor-move">
+          <div className="flex items-baseline">
+            <h2 className="text-xl font-semibold">AtoN Summary</h2>
+            <div
+              className="flex items-center gap-1"
+              onClick={() => setIsDatePickerOpen(true)}
+            >
+              <p className="text-blue-400 ml-3 font-semibold hover:cursor-pointer text-sm">
+                {filter.date}
+              </p>
+              <div className="relative">
+                <BiChevronDown className="text-blue-400 hover:text-blue-300 transition-all duration-200 hover:cursor-pointer" />
+                {isDatePickerOpen && (
+                  <ClickAwayListener
+                    onClickAway={() => setIsDatePickerOpen(false)}
+                  >
+                    <div className="absolute top-full left-0 bg-gray-700 w-auto h-auto rounded-md shadow-md">
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateCalendar
+                          value={dayjs(filter.date)}
+                          onChange={(val: Dayjs) =>
+                            setFilter({
+                              ...filter,
+                              date: val.format("YYYY-MM-DD"),
+                            })
+                          }
+                        />
+                      </LocalizationProvider>
+                    </div>
+                  </ClickAwayListener>
+                )}
+              </div>
             </div>
           </div>
+          <button
+            className="text-gray-400 hover:text-white"
+            aria-label="Close"
+            onClick={() =>
+              setToggles({
+                ...toggles,
+                atonSummaryPanel: false,
+                atonSummaryToggleBtn: true,
+              })
+            }
+          >
+            <X size={20} />
+          </button>
         </div>
-        <button
-          className="text-gray-400 hover:text-white"
-          aria-label="Close"
-          onClick={() =>
-            setToggles({
-              ...toggles,
-              atonSummaryPanel: false,
-              atonSummaryToggleBtn: true,
-            })
-          }
-        >
-          <X size={20} />
-        </button>
-      </div>
 
-      <div className="space-y-4">
-        <ExpandableSection title="Structure">
-          <div className="space-y-2">
-            {uniqueStructures.map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id={`structure-${item}`}
-                  name="structure"
-                  checked={filter.structures.includes(item)}
-                  onChange={() => handleStructureChange(item)}
-                  className="bg-gray-700 border-gray-600"
-                />
-                <label htmlFor={`structure-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
-        </ExpandableSection>
+        <div className="space-y-4">
+          <ExpandableSection title="Structure">
+            <div className="space-y-2">
+              {uniqueStructures.map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={`structure-${item}`}
+                    name="structure"
+                    checked={filter.structures.includes(item)}
+                    onChange={() => handleStructureChange(item)}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                  <label htmlFor={`structure-${item}`}>{item}</label>
+                </div>
+              ))}
+            </div>
+          </ExpandableSection>
 
-        <ExpandableSection title="Condition">
-          <div className="space-y-2">
-            {["All", "Good", "Not Good"].map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id={`condition-${item}`}
-                  name="condition"
-                  checked={filter.condition === item}
-                  onChange={() =>
-                    setFilter({
-                      ...filter,
-                      condition: item as "All" | "Good" | "Not Good",
-                    })
-                  }
-                  className="bg-gray-700 border-gray-600"
-                />
-                <label htmlFor={`condition-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
-        </ExpandableSection>
+          <ExpandableSection title="Condition">
+            <div className="space-y-2">
+              {["All", "Good", "Not Good"].map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id={`condition-${item}`}
+                    name="condition"
+                    checked={filter.condition === item}
+                    onChange={() =>
+                      setFilter({
+                        ...filter,
+                        condition: item as "All" | "Good" | "Not Good",
+                      })
+                    }
+                    className="bg-gray-700 border-gray-600"
+                  />
+                  <label htmlFor={`condition-${item}`}>{item}</label>
+                </div>
+              ))}
+            </div>
+          </ExpandableSection>
 
-        <ExpandableSection title="Region">
-          <div className="space-y-2">
-            {uniqueRegions.map((item) => (
-              <div key={item} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id={`region-${item}`}
-                  name="region"
-                  checked={filter.regions.includes(item)}
-                  onChange={() => handleRegionChange(item)}
-                  className="bg-gray-700 border-gray-600"
-                />
-                <label htmlFor={`region-${item}`}>{item}</label>
-              </div>
-            ))}
-          </div>
-        </ExpandableSection>
+          <ExpandableSection title="Region">
+            <div className="space-y-2">
+              {uniqueRegions.map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={`region-${item}`}
+                    name="region"
+                    checked={filter.regions.includes(item)}
+                    onChange={() => handleRegionChange(item)}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                  <label htmlFor={`region-${item}`}>{item}</label>
+                </div>
+              ))}
+            </div>
+          </ExpandableSection>
 
           <div className="flex justify-between items-center">
             <span className="font-medium">Total Sites</span>
@@ -339,8 +341,9 @@ export default function AtonSummaryPanel() {
               atonSummaryPanel: !toggles.atonSummaryPanel,
             })
           }
-      ></button>
-    </div>
+        ></button>
+      </div>
+    </Draggable>
   );
 }
 
